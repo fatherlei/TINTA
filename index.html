@@ -216,7 +216,7 @@ body{background:var(--cream)}
 main,.page{background:transparent}
 main{padding:6px 10px 100px}
 header{height:68px;background:#fff;border-bottom:4px solid;border-image:linear-gradient(90deg,var(--pink),var(--sky),var(--yellow)) 1;padding:7px 14px;box-shadow:none;gap:10px;display:flex;align-items:center}
-.logo{width:46px;height:46px;object-fit:contain}
+.logo{width:46px;height:46px;object-fit:contain;overflow:hidden}
 .business-logo-slot{flex:0 0 46px;width:46px;height:46px;border-radius:12px;background:#fff;object-fit:contain}
 .business-title{min-width:0;display:flex;flex-direction:column;justify-content:center;line-height:1.05}
 header .brand{display:block;color:#241f2b;font-family:var(--font-display);font-weight:800;font-size:20px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -2573,20 +2573,44 @@ function previewIdentityLogo(input){
   reader.readAsDataURL(file);
 }
 function saveIdentitySetup(){
+  const ov=$('identityOverlay');
+
   try{
     const name=($('identityName')?.value||'').trim();
     const input=$('identityLogoFile');
+
     db.identity=db.identity||{};
     db.identity.name=name;
-    if(input?.dataset.logo) db.identity.logo=input.dataset.logo;
+
+    if(input?.dataset.logo){
+      db.identity.logo=input.dataset.logo;
+    }
+
     db.identity.onboardingDone=true;
-    // Cerramos primero para que un error de almacenamiento/renderizado nunca deje bloqueada la app.
-    closeIdentitySetup();
-    try{ save(); }catch(e){ console.error('No se pudo guardar la identidad:',e); }
-    try{ renderBusinessIdentity(); }catch(e){ console.error('No se pudo actualizar la identidad visual:',e); }
+
+    // Cerrar la ventana INMEDIATAMENTE.
+    if(ov){
+      ov.style.display='none';
+      ov.classList.remove('open');
+    }
+    document.body.classList.remove('identity-lock');
+
+    // Después guardamos y actualizamos la identidad.
+    try{ save(); }
+    catch(e){ console.error('No se pudo guardar la identidad:',e); }
+
+    try{ renderBusinessIdentity(); }
+    catch(e){ console.error('No se pudo actualizar la identidad visual:',e); }
+
   }catch(e){
     console.error('Error en la configuración inicial:',e);
-    closeIdentitySetup();
+
+    // Aunque algo falle, la ventana debe cerrarse.
+    if(ov){
+      ov.style.display='none';
+      ov.classList.remove('open');
+    }
+    document.body.classList.remove('identity-lock');
   }
 }
 function skipIdentitySetup(){
