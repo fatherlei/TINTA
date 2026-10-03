@@ -2864,10 +2864,40 @@ function renderAll(){
 ['cHojas','cTiempo','cHoras','cMinutos','cMargen'].forEach(id=>$(id).addEventListener('input',calc)); $('cPapel').addEventListener('change',calc);
 if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
 if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
-renderAll();
-renderBusinessIdentity();
-loadBusinessSettings();
-if(!db.identity?.onboardingDone){ setTimeout(showIdentitySetup,120); }
+(async function bootTinta(){
+
+  const c=initCloud();
+
+  if(!c){
+    alert('No pudimos conectar con TINTA. Revisá tu conexión e intentá nuevamente.');
+    return;
+  }
+
+  const {data:{session}}=await c.auth.getSession();
+
+  // Sin Google: mostrar la pantalla de acceso.
+  if(!session?.user){
+    showIdentitySetup();
+    return;
+  }
+
+  // Con Google: comprobar licencia antes de cargar TINTA.
+  const licensed=await checkTintaLicense();
+
+  if(!licensed){
+    return;
+  }
+
+  // Google + licencia válida: recién ahora cargar la aplicación.
+  renderAll();
+  renderBusinessIdentity();
+  loadBusinessSettings();
+
+  if(db.identity?.onboardingDone){
+    setTimeout(showIdentitySetup,120);
+  }
+
+})();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
