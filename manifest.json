@@ -1,7 +1,7 @@
 {
-  "name": "NOT · Gestión",
-  "short_name": "NOT Gestión",
-  "description": "Gestión, costos, pedidos y calculadora para emprendimientos creativos.",
+  "name": "TINTA",
+  "short_name": "TINTA",
+  "description": "TINTA · Gestión, costos, pedidos y calculadora para emprendimientos creativos.",
   "start_url": ".",
   "scope": "./",
   "display": "standalone",
