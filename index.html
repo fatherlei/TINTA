@@ -1319,16 +1319,41 @@ function initCloud(){
 async function cloudApplySession(session,event){
   const out=$('cloudSignedOut'), inn=$('cloudSignedIn');
   if(!out||!inn) return;
+
   if(session?.user){
-    out.style.display='none'; inn.style.display='block';
-    if($('cloudUserEmail')) $('cloudUserEmail').textContent=session.user.email||'Cuenta conectada';
-    if(event!=='SIGNED_OUT'){
-  const licensed=await checkTintaLicense();
-  if(!licensed) return;
-  await cloudInitialSync();
+
+    const licensed=await checkTintaLicense();
+
+    if(!licensed){
+      await initCloud()?.auth.signOut();
+
+      alert('🔒 Esta cuenta no tiene una licencia activa de TINTA.\n\nComprá tu licencia para acceder a la aplicación.');
+
+      out.style.display='block';
+      inn.style.display='none';
+
+      return;
     }
-    if($('identityOverlay')?.style.display==='flex') closeIdentitySetup();
-  }else{ out.style.display='block'; inn.style.display='none'; if($('cloudSetupHint')) $('cloudSetupHint').textContent=cloudReady()?'':'La nube todavía no está conectada en esta versión.'; }
+
+    out.style.display='none';
+    inn.style.display='block';
+
+    if($('cloudUserEmail')){
+      $('cloudUserEmail').textContent=session.user.email||'';
+    }
+
+    if(event!=='SIGNED_OUT'){
+      await cloudInitialSync();
+    }
+
+    if($('identityOverlay')?.style.display==='flex'){
+      $('identityOverlay').style.display='none';
+    }
+
+  }else{
+    out.style.display='block';
+    inn.style.display='none';
+  }
 }
   async function checkTintaLicense(){
   const c=initCloud();
