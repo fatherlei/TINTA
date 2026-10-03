@@ -2670,7 +2670,7 @@ function previewIdentityLogo(input){
   reader.onload=()=>{const prev=$('identityPreview'); if(prev) prev.innerHTML=`<img src="${reader.result}" alt="Logo">`; input.dataset.logo=reader.result;};
   reader.readAsDataURL(file);
 }
-function saveIdentitySetup(){
+async function saveIdentitySetup(){
   const ov=$('identityOverlay');
 
   try{
@@ -2686,16 +2686,41 @@ function saveIdentitySetup(){
 
     db.identity.onboardingDone=true;
 
-    // Cerrar la ventana INMEDIATAMENTE.
+    // Guardamos primero los datos de identidad.
+    try{ save(); }
+    catch(e){ console.error('No se pudo guardar la identidad:',e); }
+
+    // TINTA requiere una cuenta Google con licencia activa.
+    const c=initCloud();
+
+    if(!c){
+      alert('No pudimos conectar con TINTA. Revisá tu conexión e intentá nuevamente.');
+      return;
+    }
+
+    const {data:{session}}=await c.auth.getSession();
+
+    // Si todavía no hay Google conectado, lo pedimos ahora.
+    if(!session?.user){
+      alert('☁️ Para comenzar a usar TINTA necesitás conectar una cuenta de Google con una licencia activa.');
+      await cloudGoogleSignIn('onboarding');
+      return;
+    }
+
+    // Si hay Google conectado, comprobamos la licencia.
+    const licensed=await checkTintaLicense();
+
+    if(!licensed){
+      return;
+    }
+
+    // Cuenta + licencia válidas: recién ahora dejamos entrar.
     if(ov){
       ov.style.display='none';
       ov.classList.remove('open');
     }
-    document.body.classList.remove('identity-lock');
 
-    // Después guardamos y actualizamos la identidad.
-    try{ save(); }
-    catch(e){ console.error('No se pudo guardar la identidad:',e); }
+    document.body.classList.remove('identity-lock');
 
     try{ renderBusinessIdentity(); }
     catch(e){ console.error('No se pudo actualizar la identidad visual:',e); }
@@ -2703,13 +2728,14 @@ function saveIdentitySetup(){
   }catch(e){
     console.error('Error en la configuración inicial:',e);
 
-    // Aunque algo falle, la ventana debe cerrarse.
     if(ov){
       ov.style.display='none';
       ov.classList.remove('open');
     }
+
     document.body.classList.remove('identity-lock');
   }
+}
 }
 function skipIdentitySetup(){
   try{
