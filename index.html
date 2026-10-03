@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>TINTA</title>
+<title>NOT · Gestión</title>
 <meta content="#ff66c4" name="theme-color"/>
 <link href="manifest.json" rel="manifest"/>
 <link href="icon-192.png" rel="icon"/>
@@ -216,7 +216,7 @@ body{background:var(--cream)}
 main,.page{background:transparent}
 main{padding:6px 10px 100px}
 header{height:68px;background:#fff;border-bottom:4px solid;border-image:linear-gradient(90deg,var(--pink),var(--sky),var(--yellow)) 1;padding:7px 14px;box-shadow:none;gap:10px;display:flex;align-items:center}
-.logo{width:46px;height:46px;object-fit:contain;overflow:hidden}
+.logo{width:46px;height:46px;object-fit:contain}
 .business-logo-slot{flex:0 0 46px;width:46px;height:46px;border-radius:12px;background:#fff;object-fit:contain}
 .business-title{min-width:0;display:flex;flex-direction:column;justify-content:center;line-height:1.05}
 header .brand{display:block;color:#241f2b;font-family:var(--font-display);font-weight:800;font-size:20px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -368,37 +368,18 @@ nav::before{display:none!important}
 .ticket-icon svg{width:30px;height:30px;display:block}
 .pedido-pdf .ticket-icon{display:inline-flex;align-items:center;justify-content:center}
 </style>
-
-<style id="tinta-splash-style">
-#tintaSplash{position:fixed;inset:0;z-index:1000000;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;opacity:1;visibility:visible;transition:opacity .45s ease,visibility .45s ease}
-#tintaSplash.hide{opacity:0;visibility:hidden;pointer-events:none}
-#tintaSplash::before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 50% 50%,rgba(255,59,145,.30) 0%,rgba(111,225,242,.23) 18%,rgba(255,221,86,.16) 35%,rgba(255,255,255,0) 68%);transform:scale(.65);animation:tintaGlow 1.55s ease-out forwards}
-#tintaSplash::after{content:"";position:absolute;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(255,59,145,.18),rgba(111,225,242,.10) 45%,transparent 72%);filter:blur(8px);animation:tintaPulse 1.35s ease-out infinite}
-.tinta-splash-logo{position:relative;z-index:2;width:min(190px,48vw);height:min(190px,48vw);object-fit:contain;filter:drop-shadow(0 16px 30px rgba(80,55,110,.18));animation:tintaLogoIn .95s cubic-bezier(.18,.78,.25,1) both}
-.tinta-splash-name{position:absolute;z-index:2;top:calc(50% + min(112px,28vw));font-size:15px;font-weight:900;letter-spacing:.28em;color:#3b2f43;opacity:0;animation:tintaNameIn .55s ease .42s forwards}
-@keyframes tintaGlow{0%{transform:scale(.55);opacity:.2}100%{transform:scale(1.25);opacity:1}}
-@keyframes tintaPulse{0%{transform:scale(.55);opacity:0}35%{opacity:1}100%{transform:scale(1.8);opacity:0}}
-@keyframes tintaLogoIn{0%{transform:scale(.58);opacity:0;filter:blur(8px) drop-shadow(0 16px 30px rgba(80,55,110,.12))}65%{transform:scale(1.04);opacity:1;filter:blur(0) drop-shadow(0 16px 30px rgba(80,55,110,.18))}100%{transform:scale(1);opacity:1}}
-@keyframes tintaNameIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@media(prefers-reduced-motion:reduce){#tintaSplash::before,#tintaSplash::after,.tinta-splash-logo,.tinta-splash-name{animation:none!important}.tinta-splash-logo,.tinta-splash-name{opacity:1}}
-</style>
 </head>
 <body>
-<div id="tintaSplash" aria-label="Cargando TINTA">
-  <img class="tinta-splash-logo" src="tinta-logo.png" alt="TINTA">
-  <div class="tinta-splash-name">TINTA</div>
-</div>
-
 <div class="identity-overlay" id="identityOverlay" style="display:none">
 <div class="identity-box">
 <div class="identity-logo-preview" id="identityPreview">✦</div>
 <h1>Empecemos con tu negocio ✨</h1>
-<p>Personalizá la app con los datos de tu emprendimiento. Para usar TINTA necesitás iniciar sesión con Google y tener una licencia activa.</p>
+<p>Personalizá la app con los datos de tu emprendimiento. Podés usarla sin registrarte o conectar una cuenta para que tus datos queden guardados y actualizados en la nube.</p>
 <div class="welcome-cloud">
 <div class="welcome-cloud-title">☁️ Guardá tu negocio siempre actualizado</div>
 <div class="welcome-cloud-text">Conectá Google y tus pedidos, costos, artículos y configuración quedan asociados a tu cuenta para recuperarlos desde otro dispositivo.</div>
 <button class="google-btn" onclick="cloudGoogleSignIn('welcome')" type="button"><span class="google-g">G</span> Continuar con Google</button>
-<div class="welcome-cloud-note">Tu licencia queda asociada a esta cuenta de Google para que puedas recuperar TINTA y tus datos desde cualquier dispositivo.</div>
+<div class="welcome-cloud-note">Podés conectarte con Google ahora o continuar sin cuenta.</div>
 </div>
 <label for="identityName">Nombre de tu negocio</label>
 <input id="identityName" maxlength="60" placeholder="Ej.: Cata Toppers" type="text"/>
@@ -406,7 +387,7 @@ nav::before{display:none!important}
 <button class="identity-logo-btn" onclick="document.getElementById('identityLogoFile').click()" type="button">🖼️ Elegir logo desde el celular</button>
 <input accept="image/*" id="identityLogoFile" onchange="previewIdentityLogo(this)" style="display:none" type="file"/>
 <div class="identity-actions">
-
+<button class="identity-skip" onclick="skipIdentitySetup()" type="button">Continuar sin cuenta</button>
 <button class="identity-start" onclick="saveIdentitySetup()" type="button">Guardar y comenzar</button>
 </div>
 </div>
@@ -1184,8 +1165,8 @@ html body main{padding-bottom:135px!important}
 <script>
 const NOTFOME_CLOUD_CONFIG = {
   // Completá estos dos valores una sola vez antes de publicar la app.
-  url: 'https://sfpkvjhtlwmifiidwbwz.supabase.co',
-  anonKey: 'sb_publishable_Lx74swkifNV9Ys-AqY09kg_sRgtEUJf'
+  url: '',
+  anonKey: ''
 };
 </script>
 <script>
@@ -1338,111 +1319,12 @@ function initCloud(){
 async function cloudApplySession(session,event){
   const out=$('cloudSignedOut'), inn=$('cloudSignedIn');
   if(!out||!inn) return;
-
   if(session?.user){
-
-    const licensed=await checkTintaLicense();
-
-    if(!licensed){
-      await initCloud()?.auth.signOut();
-
-      alert('🔒 Esta cuenta no tiene una licencia activa de TINTA.\n\nComprá tu licencia para acceder a la aplicación.');
-
-      out.style.display='block';
-      inn.style.display='none';
-
-      return;
-    }
-
-    out.style.display='none';
-    inn.style.display='block';
-
-    if($('cloudUserEmail')){
-      $('cloudUserEmail').textContent=session.user.email||'';
-    }
-
-    if(event!=='SIGNED_OUT'){
-      await cloudInitialSync();
-    }
-
-    if($('identityOverlay')?.style.display==='flex'){
-      $('identityOverlay').style.display='none';
-    }
-
-  }else{
-    out.style.display='block';
-    inn.style.display='none';
-  }
-}
-async function checkTintaLicense(){
-  const c=initCloud();
-  if(!c) return false;
-
-  const {data,error}=await c
-    .from('notfome_licenses')
-    .select('status,plan')
-    .eq('user_id',(await c.auth.getUser()).data.user.id)
-    .maybeSingle();
-
-  if(error){
-    console.error('Error comprobando licencia:',error);
-    hideTintaSplash();
-    alert('No pudimos comprobar tu licencia. Revisá tu conexión e intentá nuevamente.');
-    return false;
-  }
-
-  const lock=document.getElementById('tintaLicenseLock');
-
-  if(!data || data.status!=='active'){
-    if(!lock){
-      const overlay=document.createElement('div');
-      overlay.id='tintaLicenseLock';
-      overlay.style.cssText=`
-        position:fixed;
-        inset:0;
-        z-index:999999;
-        background:rgba(255,255,255,.97);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:24px;
-        text-align:center;
-        font-family:Arial,sans-serif;
-      `;
-
-      overlay.innerHTML=`
-        <div style="max-width:420px;">
-          <div style="font-size:52px;margin-bottom:14px;">🔒</div>
-          <h2 style="margin:0 0 10px;color:#222;">TINTA está bloqueada</h2>
-          <p style="margin:0 0 20px;color:#666;line-height:1.5;">
-            Esta cuenta de Google no tiene una licencia activa de TINTA.
-          </p>
-          <button onclick="location.reload()" style="
-            border:0;
-            border-radius:12px;
-            padding:12px 20px;
-            font-weight:700;
-            background:#ff3b91;
-            color:white;
-            cursor:pointer;
-          ">
-            Volver a intentar
-          </button>
-        </div>
-      `;
-
-        document.body.appendChild(overlay);
-    }
-
-    hideTintaSplash();
-    return false;
-  }
-
-  if(lock){
-    lock.remove();
-  }
-
-  return true;
+    out.style.display='none'; inn.style.display='block';
+    if($('cloudUserEmail')) $('cloudUserEmail').textContent=session.user.email||'Cuenta conectada';
+    if(event!=='SIGNED_OUT') await cloudInitialSync();
+    if($('identityOverlay')?.style.display==='flex') closeIdentitySetup();
+  }else{ out.style.display='block'; inn.style.display='none'; if($('cloudSetupHint')) $('cloudSetupHint').textContent=cloudReady()?'':'La nube todavía no está conectada en esta versión.'; }
 }
 async function cloudSession(){const c=initCloud(); if(!c)return null; const r=await c.auth.getSession(); return r.data?.session||null;}
 function cloudPayload(){ return {data:db, client_updated_at:db.dataUpdatedAt||new Date().toISOString()}; }
@@ -2672,13 +2554,6 @@ function renderBalance(){
   `;
 }
 
-function hideTintaSplash(){
-  const splash=$('tintaSplash');
-  if(!splash) return;
-  splash.classList.add('hide');
-  setTimeout(()=>splash.remove(),520);
-}
-
 function showIdentitySetup(){
   const ov=$('identityOverlay'); if(!ov) return;
   ov.style.display='flex'; document.body.classList.add('identity-lock');
@@ -2697,76 +2572,35 @@ function previewIdentityLogo(input){
   reader.onload=()=>{const prev=$('identityPreview'); if(prev) prev.innerHTML=`<img src="${reader.result}" alt="Logo">`; input.dataset.logo=reader.result;};
   reader.readAsDataURL(file);
 }
-async function saveIdentitySetup(){
-  const ov=$('identityOverlay');
-
+function saveIdentitySetup(){
   try{
     const name=($('identityName')?.value||'').trim();
     const input=$('identityLogoFile');
-
     db.identity=db.identity||{};
     db.identity.name=name;
-
-    if(input?.dataset.logo){
-      db.identity.logo=input.dataset.logo;
-    }
-
+    if(input?.dataset.logo) db.identity.logo=input.dataset.logo;
     db.identity.onboardingDone=true;
-
-    // Guardamos primero los datos de identidad.
-    try{ save(); }
-    catch(e){ console.error('No se pudo guardar la identidad:',e); }
-
-    // TINTA requiere una cuenta Google con licencia activa.
-    const c=initCloud();
-
-    if(!c){
-      alert('No pudimos conectar con TINTA. Revisá tu conexión e intentá nuevamente.');
-      return;
-    }
-
-    const {data:{session}}=await c.auth.getSession();
-
-    // Si todavía no hay Google conectado, lo pedimos ahora.
-    if(!session?.user){
-      alert('☁️ Para comenzar a usar TINTA necesitás conectar una cuenta de Google con una licencia activa.');
-      await cloudGoogleSignIn('onboarding');
-      return;
-    }
-
-    // Si hay Google conectado, comprobamos la licencia.
-    const licensed=await checkTintaLicense();
-
-    if(!licensed){
-      return;
-    }
-
-    // Cuenta + licencia válidas: recién ahora dejamos entrar.
-    if(ov){
-      ov.style.display='none';
-      ov.classList.remove('open');
-    }
-
-    document.body.classList.remove('identity-lock');
-
-    try{ renderBusinessIdentity(); }
-    catch(e){ console.error('No se pudo actualizar la identidad visual:',e); }
-
+    // Cerramos primero para que un error de almacenamiento/renderizado nunca deje bloqueada la app.
+    closeIdentitySetup();
+    try{ save(); }catch(e){ console.error('No se pudo guardar la identidad:',e); }
+    try{ renderBusinessIdentity(); }catch(e){ console.error('No se pudo actualizar la identidad visual:',e); }
   }catch(e){
     console.error('Error en la configuración inicial:',e);
-
-    if(ov){
-      ov.style.display='none';
-      ov.classList.remove('open');
-    }
-
-    document.body.classList.remove('identity-lock');
+    closeIdentitySetup();
   }
 }
 function skipIdentitySetup(){
-  // No se permite omitir el acceso: TINTA requiere Google + licencia activa.
-  alert('🔒 Para usar TINTA necesitás iniciar sesión con Google y tener una licencia activa.');
-  cloudGoogleSignIn('onboarding');
+  try{
+    db.identity=db.identity||{};
+    db.identity.onboardingDone=true;
+    // El botón Omitir siempre debe permitir entrar a la aplicación, incluso si el almacenamiento falla.
+    closeIdentitySetup();
+    try{ save(); }catch(e){ console.error('No se pudo guardar la configuración inicial:',e); }
+    try{ renderBusinessIdentity(); }catch(e){ console.error('No se pudo actualizar la identidad visual:',e); }
+  }catch(e){
+    console.error('Error al omitir la configuración inicial:',e);
+    closeIdentitySetup();
+  }
 }
 function renderBusinessIdentity(){
   const name=(db.identity?.name||'').trim()||'Papelería creativa';
@@ -2882,45 +2716,10 @@ function renderAll(){
 ['cHojas','cTiempo','cHoras','cMinutos','cMargen'].forEach(id=>$(id).addEventListener('input',calc)); $('cPapel').addEventListener('change',calc);
 if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
 if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
-(async function bootTinta(){
-
-  const c=initCloud();
-
-  if(!c){
-    hideTintaSplash();
-    alert('No pudimos conectar con TINTA. Revisá tu conexión e intentá nuevamente.');
-    return;
-  }
-
-  const {data:{session}}=await c.auth.getSession();
-
-  // Sin Google: mostrar la pantalla de acceso.
-  if(!session?.user){
-    hideTintaSplash();
-    showIdentitySetup();
-    return;
-  }
-
-  // Con Google: comprobar licencia antes de cargar TINTA.
-  const licensed=await checkTintaLicense();
-
-  if(!licensed){
-    hideTintaSplash();
-    return;
-  }
-
-  // Google + licencia válida: recién ahora cargar la aplicación.
-  renderAll();
-  renderBusinessIdentity();
-  loadBusinessSettings();
-
-  hideTintaSplash();
-
-  if(db.identity?.onboardingDone){
-    setTimeout(showIdentitySetup,120);
-  }
-
-})();
+renderAll();
+renderBusinessIdentity();
+loadBusinessSettings();
+if(!db.identity?.onboardingDone){ setTimeout(showIdentitySetup,120); }
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
