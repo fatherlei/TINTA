@@ -1,0 +1,2780 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>NOT · Gestión</title>
+<meta content="#ff66c4" name="theme-color"/>
+<link href="manifest.json" rel="manifest"/>
+<link href="icon-192.png" rel="icon"/>
+<link href="icon-192.png" rel="apple-touch-icon"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="NOT" name="apple-mobile-web-app-title"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&amp;family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&amp;display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --pink:#ee4aa0;--pink-600:#d6298f;--pink-700:#a81f72;--pink-50:#fff0f8;
+  --sky:#38bfd6;--sky-700:#1f5964;--sky-50:#e9f9fc;
+  --yellow:#fdce43;--yellow-700:#6b4c06;--yellow-50:#fff9e6;
+  --green:#3fb87f;--green-700:#1f6b48;--green-50:#eafaf3;
+  --red:#ef5875;--red-700:#a22b46;--red-50:#fdeaf0;
+  --bg:#ffffff;--surface:#fff;--ink:#241f2b;--muted:#8b8391;--line:#ece5ea;
+  --r-sm:11px;--r-md:16px;--r-lg:20px;--r-pill:999px;
+  --shadow-sm:0 1px 3px rgba(36,31,43,.06);
+  --shadow-md:0 6px 20px rgba(36,31,43,.09);
+  --shadow-pink:0 6px 16px rgba(214,41,143,.28);
+  --font-display:'Baloo 2',system-ui,sans-serif;
+  --font-body:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+header{position:sticky;top:0;z-index:20;background:#ffffff;border-bottom:3px solid;border-image:linear-gradient(90deg,var(--pink),var(--sky),var(--yellow)) 1;padding:12px 16px;display:flex;align-items:center;gap:11px;box-shadow:var(--shadow-sm)}
+.logo{width:104px;height:50px;object-fit:contain}
+.brand{font-family:var(--font-display);font-weight:700;font-size:21px;letter-spacing:.2px}
+.muted,small{color:var(--muted);font-size:12.5px}
+main{max-width:1050px;margin:auto;padding:10px 12px 88px;background:#ffffff;min-height:calc(100vh - 75px)}
+.page{display:none;background:#ffffff}.page.active{display:block;animation:fadein .25s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat,.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:10px;margin:6px 0;box-shadow:var(--shadow-sm)}
+.stat{position:relative;overflow:hidden;padding-top:9px;padding-bottom:9px}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--line)}
+.stat.acc-pink::before{background:var(--pink)}.stat.acc-sky::before{background:var(--sky)}
+.stat.acc-yellow::before{background:var(--yellow)}.stat.acc-green::before{background:var(--green)}
+.stat.acc-ink::before{background:var(--ink)}
+.stat strong{display:block;font-family:var(--font-display);font-size:23px;font-weight:700;margin-top:4px}
+.stat small{text-transform:uppercase;font-size:10.5px;font-weight:600;letter-spacing:.4px;color:var(--muted)}
+
+h2{font-family:var(--font-display);font-size:19px;font-weight:700;margin:0 0 4px}
+h3{font-family:var(--font-display);font-size:15px;font-weight:600;margin:16px 0 8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:9px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+
+button{border:0;border-radius:16px;padding:10px 15px;background:var(--pink-600);color:#fff;font-family:var(--font-body);font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 7px 18px rgba(214,41,143,.20);transition:transform .12s ease,box-shadow .12s ease,background .12s ease}
+button:hover{box-shadow:0 9px 22px rgba(214,41,143,.24)}
+button:active{transform:scale(.97)}
+.yellow{background:#fff4c9;color:var(--yellow-700);box-shadow:none}
+.sky{background:#e6f8fc;color:var(--sky-700);box-shadow:none}
+.soft{background:#f3eef3;color:#57515a;box-shadow:none}
+.sky:hover{background:#dff4f9}.soft:hover{background:#eee7ed}.yellow:hover{background:#ffefb8}
+.pending-btn{background:#ffe1e6;color:#b4233c;border:1px solid #f3a7b5;box-shadow:none;font-weight:700}.pending-btn:hover{background:#ffd2da}.paid-btn{background:#dff5e8;color:#18794e;border:1px solid #9ed8b8;box-shadow:none;font-weight:700}.paid-btn:hover{background:#ccefdc}
+.danger{background:var(--red-50);color:var(--red-700);box-shadow:none}
+
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-top:8px}
+input,select,textarea{width:100%;margin-top:5px;padding:11px 12px;border:1.5px solid var(--line);border-radius:var(--r-sm);background:#fff;font:inherit;font-size:14px;color:var(--ink);transition:border-color .15s ease}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pink-600);box-shadow:0 0 0 3px rgba(214,41,143,.12)}
+textarea{min-height:85px}
+
+.choice{border:1.5px solid var(--line);border-radius:var(--r-md);padding:12px 13px;margin:7px 0;cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.choice.active{border-color:var(--pink-600);background:var(--pink-50)}
+.choice small{display:block;margin-top:3px}
+.cols{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+
+.result{background:var(--green-50);border:1px solid #cdeedc;border-radius:var(--r-lg);padding:14px;margin-top:10px}
+.line{padding:9px 0;border-bottom:1px solid #e6e0e5}
+.big{font-family:var(--font-display);font-size:25px;font-weight:700}
+
+.notice{padding:11px 13px;background:var(--yellow-50);border:1px solid #f3e2ab;border-radius:var(--r-md);font-size:13px;color:var(--yellow-700)}
+.empty{text-align:center;color:var(--muted);padding:20px}
+
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 4px;border-bottom:1px solid var(--line);font-size:12px}
+
+.order{border:1px solid var(--line);border-radius:var(--r-lg);padding:13px;margin:9px 0;background:#fff;cursor:pointer;transition:box-shadow .15s ease,border-color .15s ease}
+.order:hover{border-color:#d8d0d6;box-shadow:var(--shadow-md)}
+
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:30;box-shadow:0 -4px 16px rgba(36,31,43,.06)}
+nav .navinner{max-width:1050px;margin:auto;display:grid;grid-template-columns:repeat(6,1fr)}
+nav button{background:none;color:var(--muted);border-radius:0;padding:7px 2px 8px;font-size:10px;font-weight:700;box-shadow:none;position:relative}
+nav button.active{color:var(--pink-600)}
+nav button.active::before{content:'';position:absolute;top:0;left:25%;right:25%;height:3px;border-radius:0 0 5px 5px;background:linear-gradient(90deg,var(--pink),var(--sky))}
+nav button:active{transform:none}
+nav span{display:flex;align-items:center;justify-content:center;width:34px;height:27px;margin:0 auto 2px;font-size:19px;font-weight:800}
+
+.price-grid{display:grid;grid-template-columns:1fr 150px;gap:8px;align-items:end}
+.section-title{margin-top:24px;padding-bottom:7px;border-bottom:2px solid var(--line);font-family:var(--font-display);font-weight:600;font-size:14px}
+
+.costs-accordion{border-top:1px solid var(--line)}
+.costs-accordion details{border-bottom:1px solid var(--line);margin:0}
+.costs-accordion summary{list-style:none;cursor:pointer;padding:10px 4px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--ink)}
+.costs-accordion summary::-webkit-details-marker{display:none}
+.costs-accordion summary::after{content:'⌄';font-family:Arial,sans-serif;font-size:16px;color:#8b8790;transition:transform .18s ease}
+.costs-accordion details[open] summary::after{transform:rotate(180deg)}
+.costs-accordion .accordion-body{padding:0 4px 8px}
+.costs-accordion .accordion-body>.price-grid:first-child,.costs-accordion .accordion-body>.form:first-child{margin-top:0}
+.costs-accordion .section-title{margin-top:10px}
+@media(max-width:719px){.costs-accordion summary{font-size:15px;padding:12px 2px}.costs-accordion .accordion-body{padding-left:0;padding-right:0}.costs-accordion .price-grid{gap:6px}.costs-accordion input{padding:9px 10px}.costs-accordion label{margin-top:5px}}
+.costs-main-card{padding:10px}.costs-header h2{margin-bottom:2px}.costs-header-actions{gap:7px}.costs-header-actions button{padding:8px 11px;border-radius:13px;font-size:13px;box-shadow:none;min-height:36px}.costs-header-actions .sky{background:#e9f9fc;color:var(--sky-700)}
+@media(min-width:720px){.grid{grid-template-columns:repeat(4,1fr)}.form{grid-template-columns:repeat(3,1fr)}nav{position:sticky;top:0;bottom:auto;box-shadow:var(--shadow-sm)}}
+@media(max-width:719px){
+  .pedido-actions{gap:5px}
+  .pedido-action{width:calc((100vw - 45px)/4);height:96px;border-radius:48px!important;font-size:10px}
+  .pedido-action .pedido-icon{width:48px;height:48px}
+  .pedido-action .pedido-icon svg{width:27px;height:27px}
+  body{background:#ffffff}
+  header{padding:9px 13px}
+  main{padding:8px 10px 82px;background:#ffffff}
+  .card{padding:10px;margin:6px 0;border-radius:18px}
+  .stat{padding:8px 10px;margin:5px 0}
+  .stat strong{font-size:21px;margin-top:2px}
+  .row{align-items:center}
+  .actions{width:auto;gap:6px}
+  .actions button{flex:0 0 auto}
+  .costs-main-card{padding:9px}
+  .costs-header{gap:8px}
+  .costs-header-actions{flex-shrink:0}
+  .costs-header-actions button{padding:7px 9px;font-size:12px;min-height:34px;border-radius:12px}
+  .costs-accordion{margin-top:9px!important}
+  .costs-accordion summary{font-size:14px;padding:9px 1px;min-height:38px}
+  .costs-accordion .accordion-body{padding:0 1px 7px}
+  .costs-accordion input{padding:7px 9px}
+  .costs-accordion label{margin-top:4px;font-size:11px}
+  .price-grid{grid-template-columns:1fr 105px;gap:5px}
+  .costs-header h2{font-size:18px}
+}
+
+/* v4 — visual inspired by the previous calculator: section cards + stacked compact options */
+@media(max-width:719px){
+  main{padding:7px 10px 82px}
+  .card{padding:12px 10px;margin:7px 0;border-radius:18px}
+  .card h3{font-size:15px;margin:8px 0 7px}
+  .card h2{font-size:18px}
+  .cols{grid-template-columns:1fr !important;gap:7px}
+  .choice{display:flex;align-items:center;min-height:0;padding:10px 13px;margin:0;border-radius:15px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .choice b{font-size:14px;line-height:1.2}
+  .choice small{font-size:11px;line-height:1.25;margin-top:2px}
+  label{font-size:11px;margin-top:5px}
+  input,select,textarea{padding:8px 9px;margin-top:4px;font-size:13px;border-radius:10px}
+  .form{gap:7px}
+  .result{padding:10px;margin-top:7px}
+  .line{padding:7px 0}
+  #artChoices{margin-bottom:7px}
+  #artChoices>.cols{padding:11px;border:1px solid var(--line);border-radius:18px;background:#fff}
+}
+
+/* Compact sheet counter used only for B · Diseño personalizado */
+.sheet-control{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin:6px 0 2px;padding:8px 10px;border:1.5px solid var(--line);
+  border-radius:14px;background:#fff;
+}
+.sheet-control .sheet-label{font-size:12px;font-weight:700;color:var(--ink)}
+.sheet-control .sheet-sub{display:block;font-size:10px;font-weight:500;color:var(--muted);margin-top:2px}
+.sheet-control .sheet-actions{display:flex;align-items:center;gap:5px}
+.sheet-control button{
+  width:30px;height:30px;min-width:30px;padding:0;border-radius:10px;
+  box-shadow:none;font-size:18px;line-height:1;
+}
+.sheet-control input{
+  width:48px;height:30px;margin:0;padding:3px 5px;text-align:center;
+  border-radius:10px;font-size:13px;font-weight:700;
+}
+
+
+/* Selector compacto del configurador: una sola columna, opciones en línea */
+.option-row{display:flex!important;grid-template-columns:none!important;gap:8px;align-items:stretch;margin-bottom:12px}
+.compact-choice{flex:1;min-width:0!important;display:flex!important;align-items:center;justify-content:center;text-align:center;padding:11px 8px!important;margin:0!important;min-height:48px!important}
+.compact-choice b{font-size:14px;white-space:nowrap}
+.paper-row .compact-choice{flex:1}
+.quantity-row .compact-choice{flex:1}
+.exact-quantity{margin-top:4px;margin-bottom:12px}
+.compact-builder h3{margin-bottom:8px}
+.card-inner-extra{margin-top:4px}
+@media(max-width:420px){.option-row{gap:6px}.compact-choice{padding:10px 5px!important}.compact-choice b{font-size:13px}.quantity-row .compact-choice b{font-size:12px}}
+.admin-quote-detail{
+  margin-top:8px;
+  padding:8px 10px;
+  border:1px dashed var(--line);
+  border-radius:10px;
+  background:#fafafa;
+  font-size:11px;
+  color:var(--muted);
+}
+.admin-quote-detail div{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  line-height:1.5;
+}
+.admin-quote-detail b{color:var(--ink)}
+
+.order-entregado{background:#f1f1f1 !important;color:#777;opacity:.78}.order-entregado b,.order-entregado small{color:#777 !important}.order-entregado .actions button{filter:grayscale(.35)}
+
+/* ===== Tema NOT: rosa #ff66c4 · celeste #20bad5 · amarillo #fdce43 ===== */
+:root{--pink:#ff66c4;--pink-600:#ee4fae;--pink-700:#b3277e;--pink-50:#ffeaf7;--sky:#20bad5;--sky-700:#0f7284;--sky-50:#dff6fa;--yellow:#fdce43;--yellow-50:#fff4c9;--bg:#fff;--cream:#fff;--line:#f3e6d4;--navh:66px}
+html,body{-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;text-size-adjust:100%}
+body{background:var(--cream)}
+.row>button{white-space:nowrap;flex:none}
+main,.page{background:transparent}
+main{padding:6px 10px 100px}
+header{height:68px;background:#fff;border-bottom:4px solid;border-image:linear-gradient(90deg,var(--pink),var(--sky),var(--yellow)) 1;padding:7px 14px;box-shadow:none;gap:10px;display:flex;align-items:center}
+.logo{width:46px;height:46px;object-fit:contain}
+.business-logo-slot{flex:0 0 46px;width:46px;height:46px;border-radius:12px;background:#fff;object-fit:contain}
+.business-title{min-width:0;display:flex;flex-direction:column;justify-content:center;line-height:1.05}
+header .brand{display:block;color:#241f2b;font-family:var(--font-display);font-weight:800;font-size:20px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .muted{color:var(--pink-700);font-family:var(--font-display);font-weight:700;font-size:11px;margin-top:3px}
+@media(max-width:600px){header{height:62px;padding:6px 12px}.logo,.business-logo-slot{width:42px;height:42px;flex-basis:42px}header .brand{font-size:18px}header .muted{font-size:10.5px}}
+.user-menu-wrap{position:relative;flex:0 0 auto}.user-menu-btn{width:42px;height:42px;border-radius:50%;border:0;background:var(--pink);color:#ffd9f0;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 3px 0 rgba(179,39,126,.18);padding:0}.user-menu-btn:active{transform:scale(.96)}.user-menu-panel{position:absolute;left:0;top:49px;width:min(330px,calc(100vw - 24px));background:#fff;border:2px solid #ffd1eb;border-radius:22px;box-shadow:0 14px 35px rgba(80,40,80,.18);padding:12px;display:none;z-index:1000}.user-menu-panel.open{display:block}.user-menu-head{display:flex;align-items:center;gap:10px;padding:4px 4px 10px;border-bottom:1px solid #f2e5ee;margin-bottom:8px}.user-menu-head .avatar{width:38px;height:38px;border-radius:50%;background:var(--pink);color:#ffd9f0;display:flex;align-items:center;justify-content:center;font-size:20px}.user-menu-head b{font-size:15px}.user-menu-head small{display:block;color:var(--muted);margin-top:2px}.user-setting{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 7px;border-radius:14px}.user-setting:hover{background:#fff7fb}.user-setting-label{display:flex;align-items:center;gap:9px;font-weight:800}.user-setting-label span:first-child{font-size:19px}.user-setting select{border:2px solid #eadfcd;border-radius:12px;padding:7px 9px;background:#fff;font-weight:700;color:#444}.user-menu-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.user-menu-actions button{border:0;border-radius:13px;padding:10px 8px;font-weight:800;cursor:pointer}.user-export{background:#e9f9fc;color:#0f7284}.user-import{background:#fff2cf;color:#765800}.user-business{background:#ffeaf7;color:#b3277e}.user-full{background:#f3eff8;color:#5e4a70}.toggle{width:44px;height:24px;border-radius:20px;border:0;background:#d8d1d7;padding:3px;cursor:pointer}.toggle i{display:block;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s}.toggle.on{background:var(--pink)}.toggle.on i{transform:translateX(20px)}
+.user-menu-item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:0;background:#fff;padding:12px 9px;border-radius:15px;cursor:pointer;color:#333}.user-menu-item:hover{background:#fff7fb}.user-menu-item-icon{width:38px;height:38px;border-radius:12px;background:#ffeaf7;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 auto}.user-menu-item>span:nth-child(2){flex:1}.user-menu-item b{display:block;font-size:14px}.user-menu-item small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.user-menu-arrow{font-size:24px;color:#b3277e}.account-overlay{position:fixed;inset:0;background:rgba(255,255,255,.78);backdrop-filter:blur(3px);z-index:10000;display:none;align-items:center;justify-content:center;padding:18px}.account-overlay.open{display:flex}.account-box{width:min(100%,390px);background:#fff;border:2px solid #ffd1eb;border-radius:25px;box-shadow:0 18px 50px rgba(80,40,80,.18);padding:20px}.account-box h2{margin:0 0 5px}.account-box>p{margin:0 0 15px;color:var(--muted);font-size:13px}.account-logo-preview{width:84px;height:84px;border-radius:22px;border:2px dashed #8edbea;background:#f2fbfd;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;overflow:hidden;font-size:32px}.account-logo-preview img{width:100%;height:100%;object-fit:contain}.account-box label{display:block;font-weight:800;margin:11px 0 6px}.account-box input[type=text]{width:100%;box-sizing:border-box;border:2px solid #eadfcd;border-radius:14px;padding:12px;font-size:15px}.account-logo-btn{width:100%;border:0;border-radius:14px;background:#dff7fb;color:#176b78;padding:11px;font-weight:800;cursor:pointer}.account-actions{display:flex;gap:8px;margin-top:15px}.account-actions button{flex:1;border:0;border-radius:14px;padding:11px;font-weight:800;cursor:pointer}.account-cancel{background:#f3eff8;color:#5e4a70}.account-save{background:var(--pink);color:#fff}.help-card{text-align:left;border:2px solid #f0e5ed;cursor:pointer;min-height:125px}.help-card b{display:block;margin:7px 0 4px}.help-card small{color:var(--muted)}@media(max-width:600px){.user-menu-btn{width:40px;height:40px}.user-menu-panel{top:47px}}
+h2,h3,.brand{font-family:var(--font-display);font-weight:800}
+h2{font-size:20px}h3{margin:10px 0 6px}
+.card{background:#fff;border:2px solid #ffd9f0;border-radius:24px;padding:12px;margin:8px 0;box-shadow:0 5px 0 rgba(255,102,196,.13)}
+.grid{gap:8px}
+.stat{position:relative;border:0;border-radius:24px;padding:12px 14px;margin:0;box-shadow:none;overflow:hidden}
+.stat::before{display:none}
+.stat::after{content:'';position:absolute;right:-16px;bottom:-16px;width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.55)}
+.stat.acc-pink{background:#ffd3ee}.stat.acc-sky{background:#c9f0f7}.stat.acc-green{background:#ffefb0}.stat.acc-ink{background:#ffe9f6;border:2px dashed #ff66c4}
+.stat strong{font-size:26px;font-weight:800;position:relative;z-index:1}
+.stat.acc-pink strong{color:var(--pink-700)}.stat.acc-sky strong{color:var(--sky-700)}.stat.acc-green strong{color:#7a5a00}.stat.acc-ink strong{color:var(--pink-700)}
+button{font-family:var(--font-display);font-weight:800;font-size:15px;border-radius:999px;padding:9px 16px}
+button:not(.soft):not(.sky):not(.yellow):not(.danger):not(.paid-btn):not(.pending-btn){background:linear-gradient(135deg,#ff66c4,#ff8fd6);box-shadow:0 4px 0 #d23fa0}
+button:not(.soft):not(.sky):not(.yellow):not(.danger):not(.paid-btn):not(.pending-btn):active{transform:translateY(3px);box-shadow:0 1px 0 #d23fa0}
+.sky{background:#c9f0f7;color:var(--sky-700)}.yellow{background:var(--yellow-50);color:#7a5a00}.soft{background:#fff0d6;color:#8a5a00}
+label{font-size:12px;font-weight:700;margin-bottom:3px;display:block}
+input,select,textarea{border:2px solid #f3e6d4!important;border-radius:16px!important;background:#fffdf7;padding:8px 11px;font-size:15px;font-family:var(--font-body);width:100%}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--pink)!important;box-shadow:0 0 0 4px rgba(255,102,196,.18);background:#fff}
+textarea{min-height:56px}
+#nuevoPedido .form{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}
+#nuevoPedido .form>div:has(#pNombre){grid-column:1/-1}
+.choice{border-radius:18px;border:2px solid #f3e6d4}.choice.active{border-color:var(--pink);background:var(--pink-50)}
+.order{border:0!important;border-left:8px solid var(--pink)!important;border-radius:20px!important;background:#fff;box-shadow:0 4px 0 rgba(255,102,196,.13)}
+.order-entregado{border-left-color:var(--sky)!important;opacity:.75}
+nav{left:0;right:0;bottom:0;background:#ff66c4;border:0!important;border-radius:0;box-shadow:none;overflow:visible;padding-top:4px}
+nav::before{content:'';position:absolute;left:0;right:0;top:-13px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 14'%3E%3Cpath d='M0 7Q15 0 30 7T60 7V14H0Z' fill='%23ff66c4'/%3E%3C/svg%3E") repeat-x;background-size:60px 14px}
+nav .navinner{padding:3px}
+nav button{background:transparent!important;box-shadow:none!important;border-radius:20px;padding:5px 2px 6px;color:rgba(255,255,255,.9);font-size:10px}
+nav button.active{background:#fff!important;color:var(--pink-700)}
+nav button.active::before{display:none}
+nav span{height:29px;margin-bottom:0;font-size:24px;line-height:1;display:flex;align-items:center;justify-content:center}
+.stickybar{position:sticky;bottom:var(--navh);z-index:14;padding:8px 0 6px;margin:6px 0;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 35%)}
+.stickybar button{flex:1;padding:11px 10px}
+#cartMini{background:var(--yellow-50);border:2px dashed var(--yellow);border-radius:18px;padding:9px 12px;font-size:14px;margin:8px 0}
+/* ===== Tamaño compacto ===== */
+body{font-size:14px}
+h2{font-size:17px}h3{font-size:14px}
+label{font-size:11.5px}
+button{font-size:13px;padding:7px 14px}
+.order .actions button{font-size:12px;padding:6px 11px}
+.stickybar button{padding:9px 10px}
+.stat strong{font-size:21px}
+.big{font-size:17px!important}
+input,select,textarea{font-size:14px;padding:7px 10px}
+.logo{height:36px}
+nav button{font-size:10px}
+.order .row b{font-size:14px}
+#pedidosLista .order{padding:8px 12px 7px;margin:6px 0;border-radius:16px!important;border-left-width:6px!important}
+#pedidosLista .order .actions button{font-size:11.5px;padding:4px 10px;box-shadow:none!important;white-space:nowrap}
+#pedidosLista .order summary{list-style:none}
+#inicioStock{margin:0}
+
+.article-fixed{border-color:#ffd9f0!important;background:#fffafd!important}.article-fixed .row small{font-size:10px;font-weight:700}.article-config-card{margin:7px 0!important}.article-config-card .form{gap:7px}.article-config-card input,.article-config-card select{font-size:13px}
+/* Los productos especiales originales ya no forman parte de la versión personalizable.
+   Se ocultan de Costos y precios porque cada usuario define sus propios artículos. */
+.legacy-special-section{display:none!important}
+
+/* Botones inferiores del pedido */
+.pedido-actions{display:flex;justify-content:center;align-items:flex-start;gap:10px;flex-wrap:nowrap}
+.pedido-action{border:0!important;box-shadow:none!important;width:108px;min-width:0;height:108px;border-radius:54px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:6px!important;padding:10px 6px!important;font-family:var(--font-display);font-weight:800;font-size:12px;line-height:1.15;text-align:center}
+.pedido-action .pedido-icon{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:29px;font-weight:800}
+.pedido-action .pedido-icon svg{width:31px;height:31px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.pedido-back{background:#fff0d2!important;color:#8b5a00!important}
+.pedido-save{background:var(--pink-600)!important;color:#fff!important}
+.pedido-save .pedido-icon{background:#fff;color:var(--pink-700)}
+.pedido-share{background:#d9f6fb!important;color:#006d82!important}
+.pedido-share .pedido-icon{background:#c9f2f8;color:#006d82}
+.pedido-delete{background:#fde8ef!important;color:#9d284e!important}
+.cart-remove{width:30px!important;height:30px!important;padding:0!important;border-radius:50%!important;background:transparent!important;color:var(--pink-700)!important;border:0!important;box-shadow:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+.cart-remove svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+/* v5 — botones de acción redondos, didácticos */
+@media(max-width:719px){
+.pedido-actions{gap:5px!important;justify-content:space-between!important}
+.pedido-action{flex:0 0 78px!important;width:78px!important;height:78px!important;min-width:78px!important;border-radius:50%!important;padding:6px 4px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important}
+.pedido-action .pedido-icon{width:34px!important;height:34px!important;min-width:34px!important;border-radius:50%!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important}
+.pedido-action .pedido-icon svg{width:23px!important;height:23px!important;display:block!important}
+.pedido-action > span:last-child{font-size:8px!important;line-height:1.05!important;font-weight:800!important;text-align:center!important;white-space:normal!important}
+.pedido-save{background:var(--pink-600)!important;color:#fff!important}
+.pedido-save .pedido-icon{background:transparent!important;color:#fff!important}
+.pedido-save .pedido-icon svg{stroke:#fff!important;fill:none!important}
+.pedido-share{background:#d9f6fb!important;color:#006d82!important}
+.pedido-share .pedido-icon{background:transparent!important;color:#006d82!important}
+.pedido-share .pedido-icon svg{stroke:#006d82!important;fill:none!important}
+.pedido-back .pedido-icon{background:transparent!important;font-size:25px!important;font-weight:800!important}
+.pedido-delete .pedido-icon{background:transparent!important;color:#9d284e!important}
+.pedido-delete .pedido-icon svg{stroke:#9d284e!important;fill:none!important}
+}
+
+/* === IDENTIDAD DEL NEGOCIO / PRIMER INGRESO === */
+.identity-overlay{position:fixed;inset:0;background:rgba(255,255,255,.96);z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
+.welcome-cloud{margin:16px 0 6px;padding:15px;border:2px solid #dff2f6;border-radius:20px;background:linear-gradient(180deg,#f8fdfe,#fff);text-align:left}.welcome-cloud-title{font-weight:800;color:#176b78;font-size:15px}.welcome-cloud-text{margin-top:5px;color:#777;font-size:12.5px;line-height:1.45}.welcome-cloud-note{margin-top:8px;text-align:center;color:#999;font-size:10.5px}.google-btn{width:100%;margin-top:11px;background:#fff!important;color:#333!important;border:1px solid #ddd!important;box-shadow:0 2px 8px rgba(0,0,0,.07)!important;display:flex;align-items:center;justify-content:center;gap:9px;font-weight:800}.google-g{width:25px;height:25px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:Arial,sans-serif;font-weight:800;color:#4285f4;background:#fff;border:1px solid #eee}.identity-box{width:min(100%,460px);background:#fff;border:3px solid #ffd1eb;border-radius:28px;box-shadow:0 18px 50px rgba(90,50,90,.16);padding:24px 20px;text-align:center}
+.identity-logo-preview{width:92px;height:92px;border-radius:24px;border:2px dashed #8edbea;background:#f2fbfd;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;overflow:hidden;font-size:38px}
+.identity-logo-preview img{width:100%;height:100%;object-fit:contain}
+.identity-box h1{font-size:24px;margin:0 0 8px;color:#333}
+.identity-box p{color:#777;margin:0 auto 20px;line-height:1.45;font-size:14px}
+.identity-box label{display:block;text-align:left;font-weight:800;margin:12px 0 6px;color:#444}
+.identity-box input[type=text]{width:100%;box-sizing:border-box;border:2px solid #eadfcd;border-radius:16px;padding:13px 14px;font-size:16px;outline:none}
+.identity-logo-btn{display:block;width:100%;border:0;border-radius:16px;background:#dff7fb;color:#176b78;padding:13px;font-weight:800;font-size:14px;cursor:pointer}
+.identity-actions{display:flex;gap:10px;margin-top:18px}
+.identity-actions button{flex:1;border:0;border-radius:17px;padding:13px 12px;font-weight:900;font-size:14px;cursor:pointer}
+.identity-start{background:var(--pink);color:var(--on-pink)}
+.identity-skip{background:#fff2cf;color:#765800}
+body.identity-lock{overflow:hidden}
+</style>
+<style>
+/* Adaptación de la onda al tema actual */
+nav::after{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:-16px!important;
+  height:18px!important;
+  background:var(--pink)!important;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 18' preserveAspectRatio='none'%3E%3Cpath d='M0 9 C13 0 27 0 40 9 S67 18 80 9 S107 0 120 9 S147 18 160 9 V18 H0 Z' fill='black'/%3E%3C/svg%3E");
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 18' preserveAspectRatio='none'%3E%3Cpath d='M0 9 C13 0 27 0 40 9 S67 18 80 9 S107 0 120 9 S147 18 160 9 V18 H0 Z' fill='black'/%3E%3C/svg%3E");
+  -webkit-mask-repeat:repeat-x;
+  mask-repeat:repeat-x;
+  -webkit-mask-size:160px 18px;
+  mask-size:160px 18px;
+  pointer-events:none!important;
+  z-index:31!important;
+}
+nav::before{display:none!important}
+</style>
+<style>
+/* ===== Configuración por secciones ===== */
+.config-intro{margin:4px 0 12px;color:var(--muted);font-size:13px;line-height:1.45}
+.config-menu{display:grid;gap:9px;margin-top:10px}
+.config-menu-item{width:100%;display:flex!important;align-items:center!important;gap:11px!important;text-align:left!important;background:#fff!important;color:var(--ink)!important;border:2px solid var(--line)!important;box-shadow:0 4px 0 rgba(36,31,43,.055)!important;border-radius:18px!important;padding:12px 13px!important;min-height:67px!important}
+.config-menu-item:hover{background:#fff!important;border-color:var(--pink)!important}
+.config-menu-icon{width:42px;height:42px;flex:0 0 42px;border-radius:13px;background:var(--pink-50);display:flex;align-items:center;justify-content:center;font-size:22px}
+.config-menu-text{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.config-menu-text b{font-size:14px;color:var(--ink)!important}
+.config-menu-text small{font-size:11px;color:var(--muted)!important;font-weight:500}
+.config-menu-arrow{font-size:27px;line-height:1;color:var(--pink-700);font-weight:500}
+.config-detail{display:none}
+.config-detail.open{display:block}
+.config-back{background:#fff!important;color:var(--pink-700)!important;border:1px solid var(--line)!important;box-shadow:none!important;padding:8px 12px!important;margin:0 0 4px!important;font-size:12px!important}
+@media(max-width:600px){.config-menu-item{min-height:64px!important;padding:10px 11px!important}.config-menu-icon{width:40px;height:40px;flex-basis:40px}}
+</style>
+<style>
+.ticket-icon svg{width:30px;height:30px;display:block}
+.pedido-pdf .ticket-icon{display:inline-flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<div class="identity-overlay" id="identityOverlay" style="display:none">
+<div class="identity-box">
+<div class="identity-logo-preview" id="identityPreview">✦</div>
+<h1>Empecemos con tu negocio ✨</h1>
+<p>Personalizá la app con los datos de tu emprendimiento. Podés usarla sin registrarte o conectar una cuenta para que tus datos queden guardados y actualizados en la nube.</p>
+<div class="welcome-cloud">
+<div class="welcome-cloud-title">☁️ Guardá tu negocio siempre actualizado</div>
+<div class="welcome-cloud-text">Conectá Google y tus pedidos, costos, artículos y configuración quedan asociados a tu cuenta para recuperarlos desde otro dispositivo.</div>
+<button class="google-btn" onclick="cloudGoogleSignIn('welcome')" type="button"><span class="google-g">G</span> Continuar con Google</button>
+<div class="welcome-cloud-note">Podés conectarte con Google ahora o continuar sin cuenta.</div>
+</div>
+<label for="identityName">Nombre de tu negocio</label>
+<input id="identityName" maxlength="60" placeholder="Ej.: Cata Toppers" type="text"/>
+<label>Logo <span style="font-weight:500;color:#999">(opcional)</span></label>
+<button class="identity-logo-btn" onclick="document.getElementById('identityLogoFile').click()" type="button">🖼️ Elegir logo desde el celular</button>
+<input accept="image/*" id="identityLogoFile" onchange="previewIdentityLogo(this)" style="display:none" type="file"/>
+<div class="identity-actions">
+<button class="identity-skip" onclick="skipIdentitySetup()" type="button">Continuar sin cuenta</button>
+<button class="identity-start" onclick="saveIdentitySetup()" type="button">Guardar y comenzar</button>
+</div>
+</div>
+</div>
+<div class="account-overlay" id="accountOverlay" onclick="if(event.target===this)closeAccountPanel()"><div class="account-box"><h2>👤 Mi cuenta</h2><p>Acá podés modificar únicamente la identidad de tu negocio.</p><div class="account-logo-preview" id="accountLogoPreview">✦</div><label for="accountName">Nombre del negocio</label><input id="accountName" maxlength="60" placeholder="Ej.: Cata Toppers" type="text"/><label>Logo <span style="font-weight:500;color:#999">(opcional)</span></label><button class="account-logo-btn" onclick="document.getElementById('accountLogoFile').click()" type="button">🖼️ Cambiar logo</button><input accept="image/*" id="accountLogoFile" onchange="previewAccountLogo(this)" style="display:none" type="file"/><div class="account-actions"><button class="account-cancel" onclick="closeAccountPanel()" type="button">Cancelar</button><button class="account-save" onclick="saveAccountPanel()" type="button">💾 Guardar</button></div></div></div>
+<header>
+<div class="user-menu-wrap">
+<button aria-label="Abrir configuración de usuario" class="user-menu-btn" onclick="toggleUserMenu(event)" type="button"><svg aria-hidden="true" height="22" viewbox="0 0 24 24" width="22"><circle cx="12" cy="8" fill="currentColor" r="3.4"></circle><path d="M5.5 20c.7-4 2.8-6 6.5-6s5.8 2 6.5 6" fill="currentColor"></path></svg></button>
+<div class="user-menu-panel" id="userMenuPanel" onclick="event.stopPropagation()">
+<div class="user-menu-head">
+<div class="avatar"><svg aria-hidden="true" height="22" viewbox="0 0 24 24" width="22"><circle cx="12" cy="8" fill="currentColor" r="3.4"></circle><path d="M5.5 20c.7-4 2.8-6 6.5-6s5.8 2 6.5 6" fill="currentColor"></path></svg></div>
+<div><b>Mi usuario</b><small>Administrá tu aplicación</small></div>
+</div>
+<button class="user-menu-item" onclick="openAccountPanel()" type="button"><span class="user-menu-item-icon">👤</span><span><b>Mi cuenta</b><small>Nombre y logo</small></span><span class="user-menu-arrow">›</span></button>
+<button class="user-menu-item" onclick="openAppSettings()" type="button"><span class="user-menu-item-icon">⚙️</span><span><b>Configuración</b><small>Tema, guardado, datos y más</small></span><span class="user-menu-arrow">›</span></button>
+<button class="user-menu-item" onclick="openHelp()" type="button"><span class="user-menu-item-icon">❓</span><span><b>Ayuda</b><small>Guías, preguntas frecuentes y soporte</small></span><span class="user-menu-arrow">›</span></button>
+</div>
+</div>
+<div aria-label="Logo del negocio" class="logo business-logo-slot" id="businessLogoWrap">✦</div>
+<div class="business-title"><div class="brand" id="businessNameDisplay">Papelería creativa</div><div class="muted">Calculadora y gestión</div></div>
+</header>
+<main>
+<section class="page active" id="inicio">
+<div class="card" id="inicioPrioridades"></div>
+<div class="grid">
+<div class="stat acc-pink"><small>Ventas activas</small><strong id="sVentas">$0</strong></div>
+<div class="stat acc-sky"><small>Costos</small><strong id="sCostos">$0</strong></div>
+<div class="stat acc-green"><small>Ganancias</small><strong id="sGanancias">$0</strong></div>
+<div class="stat acc-ink"><small>Pedidos activos</small><strong id="sActivos">0</strong></div>
+</div>
+<div class="card">
+<div class="row" style="align-items:center;margin-bottom:6px"><h2 style="margin:0;font-size:15px" title="Se descuenta solo al guardar un pedido">📦 Stock de papeles</h2><button class="soft" onclick="go('costos')" style="padding:4px 11px;font-size:11.5px;white-space:nowrap">＋ Compra</button></div>
+<div id="inicioStock"></div>
+</div>
+<div class="card">
+<div class="row"><div><h2>📋 Pedidos registrados</h2><small>Hacé click en un pedido para editarlo.</small></div><button onclick="go('pedidos')">+ Pedido</button></div>
+<div id="inicioPedidos"></div>
+</div>
+</section>
+<section class="page" id="calculadora">
+<div class="card"><h2>🧮 Calculadora de Costos</h2><small>Calcula costo real y precio sugerido.</small>
+<div class="form">
+<div><label>Papel</label><select id="cPapel"></select></div>
+<div><label>Hojas</label><input id="cHojas" min="1" type="number" value="1"/></div>
+<div><label>Tiempo por hoja (min)</label><input id="cTiempo" min="0" type="number" value="0"/></div>
+<div><label>Horas adicionales</label><input id="cHoras" min="0" type="number" value="0"/></div>
+<div><label>Minutos adicionales</label><input id="cMinutos" min="0" type="number" value="0"/></div>
+<div><label>Recargo sobre el costo (%)</label><input id="cMargen" min="0" type="number" value="0"/></div>
+</div>
+<div class="result" id="calcOut"></div>
+</div>
+</section>
+<section class="page" id="nuevoPedido">
+<div class="card">
+<div class="row"><div><h2 id="pedidoTitulo">🏷️ Nuevo Pedido</h2><small>Armá el pedido del cliente.</small></div><button class="soft" onclick="limpiarForm()">Limpiar form</button></div>
+
+<div class="form"><div><label>Nombre del Cliente *</label><input id="pNombre"/></div><div><label>Teléfono</label><input id="pTelefono"/></div><div><label>Fecha de entrega *</label><input id="pEntrega" type="date"/></div></div>
+
+<h3>✨ Configurar artículo</h3><div id="artChoices"></div><div id="builder"></div>
+<div class="result"><h3 style="margin-top:0">🧾 Cotización de este artículo</h3><div id="quote"></div><div class="row"><b>Subtotal</b><span class="big" id="total">$0</span></div><label style="margin-top:12px">📝 Detalle / personalización de este artículo</label><textarea id="itemDetalle" placeholder="Ej: nombre 'Sofi', color dorado, motivo unicornio..." style="min-height:60px"></textarea><button class="yellow" onclick="addToCart()" style="width:100%;margin-top:10px;font-size:16px">➕ Añadir artículo al pedido</button></div>
+
+<div class="card"><h3 style="margin-top:0">📝 Detalles generales del pedido</h3><div class="form"><div><label>Estado de pedido</label><select id="pEstado"><option value="Pendiente">Pendiente</option><option value="Diseñado">Diseñado</option><option value="Entregado">Entregado</option></select></div><div><label>Temática</label><input id="pTematica" placeholder="Ej: Bautismo, Anime..."/></div></div><label>Notas:</label><textarea id="pDetalles" placeholder="Notas generales del pedido..."></textarea></div>
+
+<div class="card" style="border-color:var(--pink-600); background:var(--pink-50); margin-top:15px"><h3 style="margin-top:0; color:var(--pink-700)">🛒 Carrito del pedido</h3><div id="carritoLista"></div><div class="row" style="margin-top:10px; border-top:2px solid var(--pink-600); padding-top:10px"><b>GRAN TOTAL</b><span class="big" id="granTotal" style="color:var(--pink-700)">$0</span></div><div style="margin-top:12px"><label>💰 Seña / anticipo</label><input id="pSena" min="0" placeholder="$0" step="1" type="number"/></div><div id="pedidoSaldoResumen" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(211,42,139,.18);font-size:13px"></div></div>
+
+<div class="pedido-actions" style="margin-top:15px">
+<button class="pedido-action pedido-save" onclick="guardarPedido()" type="button"><span class="pedido-icon"><svg viewbox="0 0 24 24"><path d="M4 3h13l3 3v15H4z"></path><path d="M7 3v6h9V3M7 14h10v7H7z"></path></svg></span><span>Guardar<br/>Pedido</span></button>
+<button class="pedido-action pedido-pdf" id="btnSharePdf" type="button" onclick="compartirPDFActual()">
+  <span class="pedido-icon ticket-icon" aria-hidden="true">
+    <svg viewBox="0 0 64 64" role="img">
+      <path d="M14 10h36v12a6 6 0 0 0 0 12v12H14V34a6 6 0 0 0 0-12V10Z"
+            fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M22 20h20M22 27h14M22 39h20M22 46h14"
+            fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M48 17v4M48 43v4" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>
+  </span><span>Compartir<br>PDF</span>
+</button>
+<button class="pedido-action pedido-share" id="btnShare" onclick="compartirActual()" type="button"><span class="pedido-icon"><svg viewbox="0 0 24 24"><circle cx="18" cy="5" r="2.5"></circle><circle cx="6" cy="12" r="2.5"></circle><circle cx="18" cy="19" r="2.5"></circle><path d="M8.3 10.8 15.7 6.2M8.3 13.2l7.4 4.6"></path></svg></span><span>Compartir<br/>presupuesto</span></button>
+<button class="pedido-action pedido-delete" id="btnEliminarPedido" onclick="eliminarPedido()" style="display:none;" type="button"><span class="pedido-icon"><svg viewbox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"></path></svg></span><span>Eliminar<br/>Pedido</span></button>
+</div>
+</div>
+</section>
+<section class="page" id="pedidos"><div class="card"><div class="row"><div><h2>📅 Pedidos</h2><small>Primero aparecen los que requieren atención: pago pendiente o entrega pendiente.</small></div><button onclick="abrirPedido()">＋ Nuevo pedido</button></div><div id="borradorBanner"></div><input id="buscaPedido" oninput="renderOrders()" placeholder="🔍 Buscar por nombre, teléfono o Nº" style="margin:10px 0" type="search"/><div id="pedidosLista"></div></div></section>
+<section class="page" id="costos"><button class="soft" id="costConfigBack" onclick="go('ajustes');setTimeout(()=&gt;showConfigMenu(),0)" style="display:none;margin-bottom:8px" type="button">⚙️ Volver a configuración</button>
+<div class="actions" style="margin-bottom:10px"><button class="soft" onclick="go('calculadora')">🧮 Abrir calculadora de presupuesto</button></div>
+<div class="card costs-main-card">
+<div class="row costs-header" style="align-items:center">
+<div><h2>⚙️ Costos y precios</h2><small>Todo es editable. Tus 6 artículos principales se configuran en “Mis artículos”.</small></div>
+<div class="actions costs-header-actions" style="justify-content:flex-end">
+<button class="sky" onclick="nuevoPedido();go('nuevoPedido')" type="button">🛍️ Crear pedido</button>
+<button onclick="guardarCostos()">💾 Guardar</button>
+</div>
+</div>
+<div class="costs-accordion" style="margin-top:14px">
+<details open="">
+<summary><span>🧁 Mis artículos</span></summary>
+<div class="accordion-body">
+<div class="notice" style="margin-bottom:10px">✨ Elegí tus <b>6 productos principales</b>. Quedan siempre visibles en Nuevo pedido. Podés cambiar sus nombres, precios y materiales cuando quieras.</div>
+<div id="fixedArtEditor"></div>
+<div class="section-title" style="margin-top:16px">➕ Otros artículos</div>
+<small>Agregá todos los productos extra que necesites. Estos sí se pueden eliminar.</small>
+<div id="extraArtEditor"></div>
+<button class="soft" onclick="addArticle()" style="margin-top:8px">＋ Agregar otro artículo</button>
+</div>
+</details>
+<details>
+<summary><span>➕ Extras</span></summary>
+<div class="accordion-body">
+<div class="notice" style="margin-bottom:10px">✨ Estos son extras que podés ofrecer junto con tus artículos. Los primeros 4 vienen creados y podés cambiar sus nombres y precios. También podés agregar todos los extras que necesites.</div>
+<div id="extrasEditor"></div>
+<button class="soft" onclick="addExtra()" style="margin-top:8px">＋ Agregar extra</button>
+</div>
+</details>
+<details>
+<summary><span>📦 Costos reales</span></summary>
+<div class="accordion-body"><div class="notice" style="margin-bottom:10px">💡 Estos valores comienzan vacíos. La calculadora no usará costos predeterminados. Cargá solamente los costos reales de tu emprendimiento.</div>
+<div class="form">
+<div><label>Tinta $/litro</label><input class="cost" data-k="inkPrice" type="number"/></div>
+<div><label>Consumo tinta ml/hoja</label><input class="cost" data-k="inkMl" type="number"/></div>
+<div><label>Electricidad $/kWh</label><input class="cost" data-k="electricity" type="number"/></div>
+<div><label>Consumo impresora kW</label><input class="cost" data-k="printerKw" type="number"/></div>
+<div><label>Costo impresora</label><input class="cost" data-k="printerCost" type="number"/></div>
+<div><label>Vida útil en hojas</label><input class="cost" data-k="printerLife" type="number"/></div>
+<div><label>Otros $/hoja</label><input class="cost" data-k="other" type="number"/></div>
+<div><label>Valor hora de trabajo</label><input class="cost" data-k="hour" type="number"/></div>
+<div><label>Recargo predeterminado sobre el costo %</label><input class="cost" data-k="margin" type="number"/></div>
+<div><label>Tiempo prom. de impresión por hoja (min)</label><input class="cost" data-k="avgTimePerSheet" type="number"/></div>
+</div>
+</div>
+</details>
+<details>
+<summary><span>🖋️ Registro de compra de tinta</span></summary>
+<div class="accordion-body">
+<small>Cada compra actualiza el costo de tinta $/litro de referencia.</small>
+<div class="form">
+<div><label>Fecha</label><input id="inkBuyDate" type="date"/></div>
+<div><label>Precio pagado</label><input id="inkBuyPrice" placeholder="$" type="number"/></div>
+<div><label>Mililitros comprados</label><input id="inkBuyMl" placeholder="ml" type="number"/></div>
+</div>
+<button class="soft" onclick="addInkPurchase()">➕ Agregar compra</button>
+<div id="inkPurchaseList"></div>
+</div>
+</details>
+<details>
+<summary><span>📃 Papeles</span></summary>
+<div class="accordion-body">
+<div id="paperEditor"></div>
+<button class="soft" onclick="addPaper()">＋ Agregar papel</button>
+</div>
+</details>
+</div>
+</div>
+</section>
+<section class="page" id="balance">
+<div class="card">
+<h2>📊 Balance</h2><small>Resumen de gastos y ganancias del período. Por defecto muestra el mes corrido hasta hoy.</small>
+<div class="form">
+<div><label>Desde</label><input id="balDesde" onchange="renderBalance()" type="date"/></div>
+<div><label>Hasta</label><input id="balHasta" onchange="renderBalance()" type="date"/></div>
+</div>
+<div class="actions" style="margin-top:10px">
+<button class="soft" onclick="balRange('month')">Este mes</button>
+<button class="soft" onclick="balRange('lastmonth')">Mes anterior</button>
+<button class="soft" onclick="balRange('year')">Este año</button>
+<button class="soft" onclick="balRange('all')">Todo</button>
+</div>
+</div>
+<div class="grid">
+<div class="stat acc-pink"><small>Ingresos</small><strong id="balVentas">$0</strong></div>
+<div class="stat acc-sky"><small>Costos</small><strong id="balCostosStat">$0</strong></div>
+<div class="stat acc-green"><small>Ganancia</small><strong id="balGanancia">$0</strong></div>
+<div class="stat acc-yellow"><small>Gastado (compras)</small><strong id="balGastado">$0</strong></div>
+</div>
+<div class="card">
+<h3 style="margin-top:0">📈 Evolución en el período</h3>
+<div id="balChart" style="overflow-x:auto"></div>
+<div class="row" style="margin-top:8px;font-size:12px;color:var(--muted);justify-content:flex-start;gap:16px">
+<span><span style="color:var(--pink)">●</span> Ingresos</span><span><span style="color:var(--sky)">●</span> Costos</span><span><span style="color:var(--yellow)">●</span> Gasto</span>
+</div>
+</div>
+<div class="card" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;justify-content:center">
+<div id="balDonut"></div>
+<div id="balDonutLegend" style="font-size:13px"></div>
+</div>
+<div class="card">
+<h3 style="margin-top:0">🏷️ Pedidos por producto</h3><small>Cantidad, costo real y ganancia de cada producto en el período.</small>
+<div id="balProductos" style="margin-top:10px"></div>
+</div>
+<div class="result">
+<h3 style="margin-top:0">📋 Detalle del período</h3>
+<div id="balDetalle"></div>
+</div>
+</section>
+<section class="page" id="ajustes">
+<div class="card"><h2>⚙️ Configuración</h2><p class="config-intro">Elegí qué querés configurar. Cada opción se abre por separado para mantener esta pantalla simple y ordenada.</p><div class="config-menu" id="configMenu"><button class="config-menu-item" onclick="openConfigPanel('theme')" type="button"><span class="config-menu-icon">🎨</span><span class="config-menu-text"><b>Tema de la aplicación</b><small>Colores y apariencia</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openConfigPanel('autosave')" type="button"><span class="config-menu-icon">💾</span><span class="config-menu-text"><b>Guardado automático</b><small>Guardado en este dispositivo</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openConfigPanel('business')" type="button"><span class="config-menu-icon">🏪</span><span class="config-menu-text"><b>Mi negocio</b><small>Nombre y logo</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openConfigPanel('cloud')" type="button"><span class="config-menu-icon">☁️</span><span class="config-menu-text"><b>Cuenta y nube</b><small>Conectá Google para sincronizar tus datos</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openConfigPanel('excel')" type="button"><span class="config-menu-icon">📊</span><span class="config-menu-text"><b>Exportar datos</b><small>Descargá tus ventas y ganancias</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openConfigPanel('backup')" type="button"><span class="config-menu-icon">💾</span><span class="config-menu-text"><b>Copias de seguridad</b><small>Exportá o recuperá una copia</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openConfigPanel('orders-clean')" type="button"><span class="config-menu-icon">🧹</span><span class="config-menu-text"><b>Limpiar pedidos</b><small>Eliminar el historial de pedidos</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openConfigPanel('reset')" type="button"><span class="config-menu-icon">♻️</span><span class="config-menu-text"><b>Restablecer aplicación</b><small>Volver a la configuración inicial</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openCostConfig('articles')" type="button"><span class="config-menu-icon">🧁</span><span class="config-menu-text"><b>Mis artículos</b><small>Productos y precios</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openCostConfig('extras')" type="button"><span class="config-menu-icon">➕</span><span class="config-menu-text"><b>Extras</b><small>Metalizado, acetato, corte, laminado…</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openCostConfig('papers')" type="button"><span class="config-menu-icon">📃</span><span class="config-menu-text"><b>Mis papeles</b><small>Materiales y stock</small></span><span class="config-menu-arrow">›</span></button><button class="config-menu-item" onclick="openCostConfig('realcosts')" type="button"><span class="config-menu-icon">🧾</span><span class="config-menu-text"><b>Costos reales</b><small>Tinta, electricidad, trabajo y margen</small></span><span class="config-menu-arrow">›</span></button></div><div class="config-detail" data-config="theme" id="config-theme"><button class="config-back" onclick="showConfigMenu()" type="button">← Volver a configuración</button><div class="card theme-card" style="margin:10px 0 0">
+<h3 style="margin-top:0">🎨 Tema de la aplicación</h3>
+<small>El tema cambia toda la identidad de color de la app: botones, barra superior, navegación, detalles, estados y acentos.</small>
+<div class="theme-options" style="margin-top:12px">
+<button class="theme-option" data-theme="not" onclick="changeAppTheme('not')" type="button"><span class="theme-swatch theme-not"></span><span><b>Predeterminado</b><small>Magenta + celeste + amarillo</small></span></button>
+<button class="theme-option" data-theme="violeta" onclick="changeAppTheme('violeta')" type="button"><span class="theme-swatch theme-violeta"></span><span><b>Violeta</b><small>Violeta + detalles claros</small></span></button>
+<button class="theme-option" data-theme="menta" onclick="changeAppTheme('menta')" type="button"><span class="theme-swatch theme-menta"></span><span><b>Menta</b><small>Verde menta + violeta oscuro</small></span></button>
+<button class="theme-option" data-theme="verano" onclick="changeAppTheme('verano')" type="button"><span class="theme-swatch theme-verano"></span><span><b>Verano</b><small>Rosa + amarillo + lila</small></span></button>
+<button class="theme-option" data-theme="minimal" onclick="changeAppTheme('minimal')" type="button"><span class="theme-swatch theme-minimal"></span><span><b>Minimal</b><small>Escala de grises</small></span></button>
+</div>
+</div></div><div class="config-detail" data-config="autosave" id="config-autosave"><button class="config-back" onclick="showConfigMenu()" type="button">← Volver a configuración</button><div class="card" style="margin:10px 0 0">
+<div class="row"><div><h3 style="margin:0">💾 Guardado automático</h3><small>Guarda los cambios en este dispositivo automáticamente.</small></div><button class="toggle" id="autoSaveToggle" onclick="toggleAutoSave()" type="button"><i></i></button></div>
+</div></div><div class="config-detail" data-config="business" id="config-business"><button class="config-back" onclick="showConfigMenu()" type="button">← Volver a configuración</button><div class="card" style="margin:10px 0 0;background:#fff9fc;border-color:#ffd1eb">
+<h3 style="margin-top:0">🏪 Mi negocio</h3>
+<small>Configurá la identidad que va a mostrar la app. Podés cambiarla cuando quieras.</small>
+<div class="form" style="margin-top:10px">
+<div><label>Nombre del negocio</label><input id="settingsBusinessName" maxlength="60" placeholder="Ej.: Cata Toppers" type="text"/></div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap">
+<div class="identity-logo-preview" id="settingsLogoPreview" style="width:64px;height:64px;margin:0;border-radius:16px">✦</div>
+<div style="flex:1;min-width:190px">
+<label>Logo <span style="font-weight:500;color:#999">(opcional)</span></label>
+<input accept="image/*" id="settingsLogoFile" onchange="previewSettingsLogo(this)" type="file"/>
+<small style="display:block;margin-top:4px">Si ya tenés uno cargado, podés reemplazarlo.</small>
+</div>
+</div>
+<div class="actions" style="margin-top:10px"><button class="sky" onclick="saveBusinessSettings()" type="button">💾 Guardar identidad</button></div>
+</div></div><div class="config-detail" data-config="cloud" id="config-cloud"><button class="config-back" onclick="showConfigMenu()" type="button">← Volver a configuración</button><div class="card cloud-card" id="cloudCard">
+<h3 style="margin-top:0">☁️ Cuenta y nube</h3>
+<div id="cloudSignedOut">
+<small>Conectá tu cuenta de Google para recuperar pedidos, costos, artículos y configuración desde otro celular o computadora.</small>
+<div class="actions" style="margin-top:12px">
+<button class="google-btn" onclick="cloudGoogleSignIn('settings')" type="button"><span class="google-g">G</span>  Continuar con Google</button>
+</div>
+<div class="muted" id="cloudSetupHint" style="margin-top:8px"></div>
+</div>
+<div id="cloudSignedIn" style="display:none">
+<div class="row"><div><b id="cloudUserEmail"></b><small id="cloudStatus" style="display:block;margin-top:3px">Sincronización activa</small></div><button class="soft" onclick="cloudSignOut()" type="button">Cerrar sesión</button></div>
+<div class="cloud-sync-badge" style="margin-top:10px;padding:11px 12px;border-radius:14px;background:#eafaf3;color:#1f6b48;font-weight:800">☁️ Sincronización automática activa</div>
+<small style="display:block;margin-top:8px">Tus cambios se guardan en este dispositivo y, cuando estás conectado con Google, se sincronizan automáticamente con tu cuenta. También podés usar Copias de seguridad como respaldo independiente.</small>
+</div>
+</div></div><div class="config-detail" data-config="excel" id="config-excel"><button class="config-back" onclick="showConfigMenu()" type="button">← Volver a configuración</button><div class="card"><h3 style="margin-top:0">📊 Excel</h3><small>Exporta un archivo CSV compatible con Excel con el detalle de artículos vendidos, costos y ganancias.</small><br/><button class="sky" onclick="exportCSV()">📥 Exportar datos</button></div></div><div class="config-detail" data-config="backup" id="config-backup"><button class="config-back" onclick="showConfigMenu()" type="button">← Volver a configuración</button><div class="card"><h3 style="margin-top:0">💾 Copia de seguridad completa</h3><small>Exportá o restaurá TODOS los datos (pedidos, precios, stock, artículos) en un archivo. Útil si cambiás de celular y no querés cargar todo de nuevo.</small><br/>
+<div class="actions" style="margin-top:8px">
+<button class="sky" onclick="exportJSON()">📤 Exportar copia</button>
+<button class="soft" onclick="document.getElementById('importFile').click()">📥 Importar copia</button>
+</div>
+<input accept="application/json" id="importFile" onchange="importJSONFile(this)" style="display:none" type="file"/>
+</div></div><div class="config-detail" data-config="orders-clean" id="config-orders-clean"><button class="config-back" onclick="showConfigMenu()" type="button">← Volver a configuración</button><div class="card"><h3 style="margin-top:0">🧹 Limpiar Pedidos</h3><small>Borra el historial de pedidos pero mantiene todos tus precios y configuraciones.</small><br/><button class="yellow" onclick="resetPedidos()">Limpiar pedidos</button></div></div><div class="config-detail" data-config="reset" id="config-reset"><button class="config-back" onclick="showConfigMenu()" type="button">← Volver a configuración</button><div class="card"><h3 style="margin-top:0">♻️ Resetear</h3><small>Borra TODO (pedidos y precios) y vuelve a la configuración inicial de la app.</small><br/><button class="danger" onclick="resetApp()">Resetear app completa</button></div></div></div>
+</section>
+<section class="page" id="ayuda"><div class="card"><h2>❓ Ayuda</h2><small>Este será el centro de ayuda de la aplicación. Acá vamos a desarrollar las guías y recursos para que cualquier persona pueda aprender a usarla fácilmente.</small></div><div class="grid"><button class="card help-card" type="button"><div style="font-size:28px">🚀</div><b>Primeros pasos</b><small>Cómo configurar la app y empezar a trabajar.</small></button><button class="card help-card" type="button"><div style="font-size:28px">📦</div><b>Pedidos y artículos</b><small>Cómo crear presupuestos y gestionar pedidos.</small></button><button class="card help-card" type="button"><div style="font-size:28px">💰</div><b>Costos y calculadora</b><small>Cómo cargar costos reales y calcular precios.</small></button><button class="card help-card" type="button"><div style="font-size:28px">💾</div><b>Datos y copias</b><small>Cómo guardar, exportar y recuperar tu información.</small></button></div></section>
+</main>
+<nav><div class="navinner">
+<button class="active" data-page="inicio" onclick="go('inicio')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"></path></svg></span>Inicio</button>
+<button data-page="nuevoPedido" onclick="nuevoPedido();go('nuevoPedido')" type="button"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M12 5v14M5 12h14"></path></svg></span>Nuevo</button>
+<button data-page="pedidos" onclick="go('pedidos')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg></span>Pedidos</button>
+<button data-page="costos" onclick="go('costos')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M3 3h8l9.6 9.6a2 2 0 0 1 0 2.8l-5.2 5.2a2 2 0 0 1-2.8 0L3 11z"></path><circle cx="7.5" cy="7.5" r="1.2"></circle></svg></span>Costos</button>
+<button data-page="calculadora" onclick="go('calculadora')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><rect height="18" rx="2" width="14" x="5" y="3"></rect><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"></path></svg></span>Calculadora</button>
+<button data-page="balance" onclick="go('balance')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg></span>Balance</button>
+</div></nav>
+<style>
+.theme-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}.theme-option{display:flex;align-items:center;gap:9px;text-align:left;background:#fff!important;color:var(--ink)!important;box-shadow:none!important;border:2px solid var(--line);border-radius:16px!important;padding:10px!important}.theme-option.active{border-color:var(--pink)!important;background:var(--pink-50)!important}.theme-option small{display:block;color:var(--muted);font-size:10.5px;margin-top:2px}.theme-swatch{width:34px;height:34px;border-radius:11px;flex:0 0 auto;border:2px solid rgba(0,0,0,.08)}.theme-not{background:linear-gradient(135deg,#ff66c4 0 40%,#20bad5 40% 70%,#fdce43 70%)}.theme-violeta{background:linear-gradient(135deg,#9f70b0 0 55%,#eadff0 55%)}.theme-menta{background:linear-gradient(135deg,#d5e8c6 0 55%,#9f70b0 55%)}.theme-verano{background:linear-gradient(135deg,#fc94ec 0 45%,#e9b33e 45% 72%,#d8ceff 72%)}.theme-minimal{background:linear-gradient(135deg,#222 0 35%,#888 35% 65%,#ddd 65%)}
+@media(max-width:600px){.theme-options{grid-template-columns:1fr}}
+/* Colores dependientes del tema: todos los acentos principales se apoyan en variables. */
+header{border-image:linear-gradient(90deg,var(--pink),var(--sky),var(--yellow)) 1}
+.user-menu-btn,.user-menu-head .avatar{background:var(--pink);color:var(--on-pink)}
+.user-menu-panel,.account-box{border-color:var(--pink-50)}
+.user-menu-item:hover{background:var(--pink-50)}.user-menu-item-icon{background:var(--pink-50)}.user-menu-arrow{color:var(--pink-700)}
+.account-save{background:var(--pink);color:var(--on-pink)}
+.stat.acc-pink{background:var(--pink-50)}.stat.acc-sky{background:var(--sky-50)}.stat.acc-green{background:var(--yellow-50)}.stat.acc-ink{background:var(--pink-50);border-color:var(--pink)}
+button:not(.soft):not(.sky):not(.yellow):not(.danger):not(.paid-btn):not(.pending-btn){background:linear-gradient(135deg,var(--pink),var(--pink-600));color:var(--on-pink);box-shadow:0 4px 0 var(--pink-700)}
+button:not(.soft):not(.sky):not(.yellow):not(.danger):not(.paid-btn):not(.pending-btn):active{box-shadow:0 1px 0 var(--pink-700)}
+.sky{background:var(--sky-50);color:var(--sky-700)}.yellow{background:var(--yellow-50);color:var(--yellow-700)}
+.choice.active{border-color:var(--pink);background:var(--pink-50)}.order{border-left-color:var(--pink)!important}.order{box-shadow:0 4px 0 color-mix(in srgb,var(--pink) 18%,transparent)}
+nav{background:var(--pink)}
+nav::before{
+  filter:none!important;
+  background-color:var(--pink)!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 18' preserveAspectRatio='none'%3E%3Cpath d='M0 9 C15 0 25 0 40 9 S65 18 80 9 S105 0 120 9 V18 H0 Z' fill='currentColor'/%3E%3C/svg%3E")!important;
+  background-repeat:repeat-x!important;
+  background-size:120px 18px!important;
+  height:18px!important;
+  top:-17px!important;
+}
+nav button.active{color:var(--pink-700)!important}
+nav button.active span{color:var(--pink-700)!important}
+input:focus,select:focus,textarea:focus{border-color:var(--pink)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--pink) 18%,transparent)}
+.identity-start{background:var(--pink);color:var(--on-pink)}
+.pedido-save{background:var(--pink-600)!important}.pedido-save .pedido-icon{color:var(--pink-700)}
+.theme-option.active{border-color:var(--pink)!important;background:var(--pink-50)!important}
+
+/* ===== Ajustes visuales v8.8 ===== */
+.user-menu-item{
+  background:#fff!important;
+  color:var(--ink)!important;
+  box-shadow:none!important;
+  border:0!important;
+}
+.user-menu-item:hover{
+  background:#fff!important;
+}
+.user-menu-item-icon{
+  background:#fff!important;
+  color:var(--pink-700)!important;
+}
+.user-menu-item b,
+.user-menu-item small{
+  color:inherit!important;
+}
+.user-menu-item small{color:var(--muted)!important}
+.user-menu-arrow{color:var(--pink-700)!important}
+
+/* Ayuda: interfaz limpia, blanca con acentos pastel suaves. */
+.help-card{
+  border:2px solid var(--line)!important;
+  box-shadow:0 5px 0 rgba(36,31,43,.06)!important;
+  color:var(--ink)!important;
+}
+.help-card:nth-child(1){background:#fff0f8!important;border-color:#ffd5ec!important}
+.help-card:nth-child(2){background:#e9f9fc!important;border-color:#cdeff5!important}
+.help-card:nth-child(3){background:#fff9e6!important;border-color:#f5e6b6!important}
+.help-card:nth-child(4){background:#eeeaff!important;border-color:#ddd5ff!important}
+.help-card small{color:var(--muted)!important}
+.help-card b{color:var(--ink)!important}
+
+/* Mantener la navegación seleccionada como en la versión original: píldora blanca
+   sobre la barra de color, con icono y texto en color de contraste. */
+nav button.active{
+  background:#fff!important;
+  color:var(--pink-700)!important;
+}
+nav button.active span{
+  color:var(--pink-700)!important;
+}
+
+/* Las opciones del tema también se mantienen blancas, sin heredar botones rosas. */
+.theme-option{
+  background:#fff!important;
+  color:var(--ink)!important;
+}
+
+
+/* ===== v8.9 CORRECCIÓN VISUAL DEFINITIVA ===== */
+
+/* Barra inferior: onda real, continua y visible por encima de la barra. */
+nav{
+  position:fixed!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  background:var(--pink)!important;
+  border:0!important;
+  overflow:visible!important;
+  padding-top:4px!important;
+  z-index:30!important;
+}
+nav::before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:-16px!important;
+  height:18px!important;
+  background-color:transparent!important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 18' preserveAspectRatio='none'%3E%3Cpath d='M0 9 C13 0 27 0 40 9 S67 18 80 9 S107 0 120 9 S147 18 160 9 V18 H0 Z' fill='%23ff66c4'/%3E%3C/svg%3E")!important;
+  background-repeat:repeat-x!important;
+  background-size:160px 18px!important;
+  pointer-events:none!important;
+  z-index:31!important;
+}
+nav .navinner{position:relative!important;z-index:32!important}
+
+/* La sección seleccionada conserva la cápsula blanca ORIGINAL,
+   pero el icono y el texto contrastan en el color oscuro del tema. */
+nav button{
+  background:transparent!important;
+  color:rgba(255,255,255,.95)!important;
+}
+nav button span{color:inherit!important}
+nav button.active{
+  background:#fff!important;
+  color:var(--pink-700)!important;
+  border-radius:54px!important;
+}
+nav button.active span{
+  color:var(--pink-700)!important;
+}
+
+/* Íconos 30% más grandes. */
+nav span{
+  width:38px!important;
+  height:34px!important;
+  font-size:31px!important;
+  line-height:1!important;
+}
+
+/* Menú de usuario: COMPLETAMENTE blanco, sin tarjetas rosas. */
+.user-menu-panel{
+  background:#fff!important;
+  background-image:none!important;
+}
+.user-menu-panel .user-menu-item{
+  background:#fff!important;
+  background-image:none!important;
+  color:var(--ink)!important;
+  box-shadow:none!important;
+}
+.user-menu-panel .user-menu-item:hover,
+.user-menu-panel .user-menu-item:focus{
+  background:#fff!important;
+}
+.user-menu-panel .user-menu-item-icon{
+  background:#fff!important;
+  background-image:none!important;
+  color:var(--pink-700)!important;
+  border:1px solid var(--line)!important;
+}
+.user-menu-panel .user-menu-item b{color:var(--ink)!important}
+.user-menu-panel .user-menu-item small{color:var(--muted)!important}
+.user-menu-panel .user-menu-arrow{color:var(--pink-700)!important}
+
+/* Configuración: interfaz limpia. Las tarjetas NO son rosas. */
+#ajustes > .card,
+#ajustes .theme-card,
+#ajustes .theme-card + .card,
+#ajustes .theme-card ~ .card{
+  background:#fff!important;
+  background-image:none!important;
+  border-color:var(--line)!important;
+  box-shadow:0 5px 0 rgba(36,31,43,.055)!important;
+}
+
+/* Tarjeta de Mi negocio: también blanca, aunque tenga estilo inline. */
+#ajustes .card[style*="background:#fff9fc"]{
+  background:#fff!important;
+  border-color:var(--line)!important;
+}
+
+/* Opciones de tema: blancas; solo la selección lleva un pastel MUY suave. */
+#ajustes .theme-option{
+  background:#fff!important;
+  background-image:none!important;
+  color:var(--ink)!important;
+  border-color:var(--line)!important;
+  box-shadow:none!important;
+}
+#ajustes .theme-option.active{
+  background:var(--pink-50)!important;
+  border-color:var(--pink)!important;
+}
+
+/* Botones de Configuración: pasteles suaves, no rosa saturado. */
+#ajustes button.sky{
+  background:var(--sky-50)!important;
+  color:var(--sky-700)!important;
+  box-shadow:none!important;
+}
+#ajustes button.soft{
+  background:#f4f1f6!important;
+  color:#5e5664!important;
+  box-shadow:none!important;
+}
+#ajustes .toggle.on{
+  background:var(--pink)!important;
+}
+
+/* Ayuda: fondo blanco y tarjetas pastel suaves. */
+#ayuda > .card:first-child{
+  background:#fff!important;
+  border-color:var(--line)!important;
+  box-shadow:0 5px 0 rgba(36,31,43,.055)!important;
+}
+#ayuda .help-card{
+  box-shadow:0 5px 0 rgba(36,31,43,.055)!important;
+}
+
+/* En todos los temas, el contraste del activo se adapta mediante variables. */
+
+
+/* =========================================================
+   v9 — CORRECCIÓN VISUAL, SIN CAMBIAR FUNCIONALIDADES
+   ========================================================= */
+
+/* ---------- NAVEGACIÓN INFERIOR ---------- */
+nav{
+  background:var(--pink)!important;
+  border:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  height:auto!important;
+}
+nav .navinner{
+  position:relative!important;
+  z-index:2!important;
+  padding:3px 6px 5px!important;
+}
+nav button,
+nav button:not(.active){
+  background:transparent!important;
+  color:rgba(255,255,255,.96)!important;
+  box-shadow:none!important;
+  border:0!important;
+}
+nav button span{
+  color:rgba(255,255,255,.96)!important;
+  width:42px!important;
+  height:37px!important;
+  font-size:31px!important;
+  line-height:1!important;
+  margin:0 auto 1px!important;
+}
+nav button.active{
+  background:#fff!important;
+  color:var(--pink-700)!important;
+  box-shadow:none!important;
+  border-radius:52px!important;
+}
+nav button.active span{
+  color:var(--pink-700)!important;
+}
+
+/* Onda: se dibuja con CSS para que adopte automáticamente el color
+   del tema y no quede clavada en magenta. */
+nav::before{
+  content:""!important;
+  position:absolute!important;
+  display:block!important;
+  left:0!important;
+  right:0!important;
+  top:-17px!important;
+  height:18px!important;
+  background:
+    radial-gradient(
+      ellipse 30px 18px at 30px 18px,
+      var(--pink) 99%,
+      transparent 100%
+    ) repeat-x!important;
+  background-size:60px 18px!important;
+  background-color:transparent!important;
+  border:0!important;
+  filter:none!important;
+  z-index:1!important;
+  pointer-events:none!important;
+}
+nav::after{
+  display:none!important;
+}
+
+/* ---------- MENÚ DE USUARIO ---------- */
+.user-menu-panel{
+  background:#fff!important;
+  background-image:none!important;
+}
+button.user-menu-item{
+  width:100%!important;
+  background:#fff!important;
+  background-image:none!important;
+  color:var(--ink)!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+button.user-menu-item:hover,
+button.user-menu-item:focus,
+button.user-menu-item:active{
+  background:#fff!important;
+  color:var(--ink)!important;
+  box-shadow:none!important;
+}
+.user-menu-item-icon{
+  background:#fff!important;
+  color:var(--pink-700)!important;
+  border:1px solid var(--line)!important;
+}
+.user-menu-item b{color:var(--ink)!important}
+.user-menu-item small{color:var(--muted)!important}
+.user-menu-arrow{color:var(--pink-700)!important}
+
+/* ---------- CONFIGURACIÓN ---------- */
+/* Todas las tarjetas de Configuración son blancas.
+   El color del tema queda reservado para pequeños acentos. */
+#ajustes .card{
+  background:#fff!important;
+  background-image:none!important;
+  border-color:var(--line)!important;
+  box-shadow:0 4px 0 rgba(36,31,43,.055)!important;
+}
+#ajustes .theme-card{
+  background:#fff!important;
+}
+#ajustes .theme-option,
+button.theme-option{
+  background:#fff!important;
+  background-image:none!important;
+  color:var(--ink)!important;
+  border:2px solid var(--line)!important;
+  box-shadow:none!important;
+}
+#ajustes .theme-option.active,
+button.theme-option.active{
+  background:var(--pink-50)!important;
+  border-color:var(--pink)!important;
+  color:var(--ink)!important;
+}
+#ajustes .theme-option small{color:var(--muted)!important}
+
+/* Botones de acciones: pasteles suaves, nunca rosa saturado. */
+#ajustes button.sky{
+  background:var(--sky-50)!important;
+  color:var(--sky-700)!important;
+  box-shadow:none!important;
+}
+#ajustes button.soft{
+  background:#f3f1f4!important;
+  color:#5e5664!important;
+  box-shadow:none!important;
+}
+#ajustes button.yellow{
+  background:var(--yellow-50)!important;
+  color:var(--yellow-700)!important;
+  box-shadow:none!important;
+}
+#ajustes button.danger{
+  background:var(--red-50,#fdeaf0)!important;
+  color:var(--red-700,#a22b46)!important;
+  box-shadow:none!important;
+}
+#ajustes .toggle.on{
+  background:var(--pink)!important;
+}
+
+/* ---------- AYUDA ---------- */
+#ayuda > .card:first-child{
+  background:#fff!important;
+  border-color:var(--line)!important;
+  box-shadow:0 4px 0 rgba(36,31,43,.055)!important;
+}
+#ayuda button.help-card,
+#ayuda .help-card{
+  text-align:left!important;
+  color:var(--ink)!important;
+  box-shadow:0 4px 0 rgba(36,31,43,.055)!important;
+  border-width:2px!important;
+}
+#ayuda button.help-card:nth-child(1){
+  background:#fff0f8!important;
+  border-color:#ffd5ec!important;
+}
+#ayuda button.help-card:nth-child(2){
+  background:#e9f9fc!important;
+  border-color:#cdeff5!important;
+}
+#ayuda button.help-card:nth-child(3){
+  background:#fff9e6!important;
+  border-color:#f5e6b6!important;
+}
+#ayuda button.help-card:nth-child(4){
+  background:#eeeaff!important;
+  border-color:#ddd5ff!important;
+}
+#ayuda button.help-card:hover,
+#ayuda button.help-card:focus,
+#ayuda button.help-card:active{
+  color:var(--ink)!important;
+}
+#ayuda button.help-card b{color:var(--ink)!important}
+#ayuda button.help-card small{color:var(--muted)!important}
+
+
+/* v9.1 — cambios solicitados */
+.user-menu-panel{background:#fff!important;background-image:none!important}
+.user-menu-panel button,.user-menu-panel .user-menu-item,button.user-menu-item{
+  background:#fff!important;background-image:none!important;color:var(--ink)!important;
+  border:1px solid #eee8ed!important;box-shadow:0 2px 0 rgba(36,31,43,.035)!important
+}
+.user-menu-panel button:hover,.user-menu-panel button:focus,.user-menu-panel button:active,
+.user-menu-panel .user-menu-item:hover{background:var(--pink-50)!important;color:var(--ink)!important}
+.user-menu-panel .user-menu-item-icon{background:var(--pink-50)!important;color:var(--pink-700)!important;border:0!important}
+.user-menu-panel .user-menu-item b{color:var(--ink)!important}
+.user-menu-panel .user-menu-item small{color:var(--muted)!important}
+.user-menu-panel .user-menu-arrow{color:var(--pink-700)!important}
+
+#ayuda .help-card,#ayuda button.help-card{
+  color:var(--ink)!important;box-shadow:0 3px 0 rgba(36,31,43,.04)!important;border:1px solid!important
+}
+#ayuda button.help-card:nth-of-type(1),#ayuda .help-card:nth-of-type(1){background:#fff8fc!important;border-color:#f7ddeb!important}
+#ayuda button.help-card:nth-of-type(2),#ayuda .help-card:nth-of-type(2){background:#f5fcfd!important;border-color:#dceff2!important}
+#ayuda button.help-card:nth-of-type(3),#ayuda .help-card:nth-of-type(3){background:#fffdf4!important;border-color:#f2e9c9!important}
+#ayuda button.help-card:nth-of-type(4),#ayuda .help-card:nth-of-type(4){background:#faf9ff!important;border-color:#e6e1f4!important}
+#ayuda button.help-card:hover,#ayuda button.help-card:focus,#ayuda button.help-card:active{color:var(--ink)!important}
+
+nav{overflow:visible!important}
+nav button{background:transparent!important;color:rgba(255,255,255,.96)!important;box-shadow:none!important;border:0!important}
+nav button span{
+  width:42px!important;height:42px!important;font-size:31px!important;line-height:1!important;
+  margin:0 auto!important;display:flex!important;align-items:center!important;justify-content:center!important
+}
+nav button.active{background:transparent!important;color:#fff!important;box-shadow:none!important}
+nav button.active span{
+  width:46px!important;height:46px!important;border-radius:50%!important;background:#fff!important;
+  color:var(--pink-700)!important;font-size:31px!important;box-shadow:none!important
+}
+
+
+/* ===== v9.2 — menú de usuario/Ayuda claros + barra inferior ===== */
+html body .user-menu-panel{background:#fff!important;background-image:none!important}
+html body .user-menu-panel button.user-menu-item{
+  background:#fff!important;background-image:none!important;color:var(--ink)!important;
+  border:1px solid #f1e6ee!important;border-radius:16px!important;
+  box-shadow:0 2px 0 rgba(36,31,43,.04)!important;margin:0 0 6px!important
+}
+html body .user-menu-panel button.user-menu-item:hover,
+html body .user-menu-panel button.user-menu-item:focus,
+html body .user-menu-panel button.user-menu-item:active{background:#fff7fb!important;color:var(--ink)!important}
+html body .user-menu-panel .user-menu-item-icon{background:var(--pink-50)!important;border:0!important;color:var(--pink-700)!important}
+html body .user-menu-panel .user-menu-item b{color:var(--ink)!important}
+html body .user-menu-panel .user-menu-item small{color:var(--muted)!important}
+html body .user-menu-panel .user-menu-arrow{color:var(--pink-700)!important}
+
+html body #ayuda button.help-card{
+  background-image:none!important;color:var(--ink)!important;text-align:left!important;
+  border:1px solid #f1e6ee!important;box-shadow:0 3px 0 rgba(36,31,43,.04)!important
+}
+html body #ayuda button.help-card:nth-of-type(1){background:#fff8fc!important;border-color:#f7ddeb!important}
+html body #ayuda button.help-card:nth-of-type(2){background:#f5fcfd!important;border-color:#dceff2!important}
+html body #ayuda button.help-card:nth-of-type(3){background:#fffdf4!important;border-color:#f2e9c9!important}
+html body #ayuda button.help-card:nth-of-type(4){background:#faf9ff!important;border-color:#e6e1f4!important}
+html body #ayuda button.help-card b{color:var(--ink)!important}
+html body #ayuda button.help-card small{color:var(--muted)!important}
+
+/* Barra inferior: íconos +30% (19px → 25px), la barra NO cambia de alto */
+html body nav button{background:transparent!important;box-shadow:none!important;border:0!important;color:rgba(255,255,255,.96)!important}
+html body nav button.active{background:transparent!important;color:#fff!important}
+html body nav button span{
+  position:relative!important;z-index:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  width:34px!important;height:27px!important;margin:0 auto 2px!important;
+  font-size:25px!important;line-height:1!important;color:rgba(255,255,255,.96)!important;background:none!important;border-radius:0!important
+}
+/* círculo blanco detrás del ícono seleccionado (no ocupa espacio, no agranda la barra) */
+html body nav button.active span::before{
+  content:'';position:absolute;left:50%;top:50%;width:35px;height:35px;border-radius:50%;
+  background:#fff;transform:translate(-50%,-52%);z-index:-1
+}
+html body nav button.active span{color:var(--pink-700)!important}
+
+/* ===== v9.3 ===== */
+.nx-ov{position:fixed;inset:0;background:rgba(36,31,43,.45);z-index:10001;display:flex;align-items:flex-end;justify-content:center}
+.nx-sheet{background:#fff;width:min(100%,520px);border-radius:26px 26px 0 0;padding:18px 18px 24px;max-height:85vh;overflow:auto}
+.nx-sheet h3{margin:0 0 10px}.nx-sheet ol{padding-left:20px;margin:0 0 14px;line-height:1.5}.nx-sheet li{margin:6px 0}
+.nx-btns{display:flex;gap:8px}.nx-btns button{flex:1}
+.nx-toast{position:fixed;left:50%;bottom:112px;transform:translateX(-50%);background:#241f2b;color:#fff;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:700;z-index:10002;display:flex;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.nx-toast button{background:none!important;box-shadow:none!important;color:#ffd1eb!important;padding:0!important;font-size:13px!important;text-decoration:underline}
+.nx-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px}
+.nx-chips button.nx-chip{flex:none;background:#fff!important;color:var(--ink)!important;border:1px solid #f1e6ee!important;box-shadow:none!important;padding:6px 12px!important;font-size:12px!important}
+.nx-chips button.nx-chip.on{background:var(--pink-50)!important;border-color:var(--pink)!important;color:var(--pink-700)!important}
+.nx-step{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #f4eaf1}.nx-step b{flex:1}
+.nx-step span.d{width:24px;height:24px;border-radius:50%;background:var(--pink-50);color:var(--pink-700);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex:none}
+.nx-step.ok span.d{background:#d9f5e4;color:#1d7a46}
+.nx-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.nx-sum div{border-radius:16px;padding:10px 6px;text-align:center;background:var(--pink-50)}.nx-sum small{display:block;color:var(--muted);font-size:11px}.nx-sum b{font-size:16px}
+.nx-sum div.g{background:#d9f5e4}.nx-sum div.g b{color:#1d7a46}
+.nx-empty{text-align:center;padding:18px 8px}.nx-empty p{margin:0 0 10px;color:var(--muted)}
+
+/* ===== v9.4 — barra inferior: ondeado y altura del primer código ===== */
+html body nav::before{display:none!important;content:none!important}
+html body nav::after{display:block!important;content:""!important;position:absolute!important;left:0!important;right:0!important;top:-16px!important;height:18px!important;
+  background:var(--pink)!important;background-image:none!important;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 18' preserveAspectRatio='none'%3E%3Cpath d='M0 9 C13 0 27 0 40 9 S67 18 80 9 S107 0 120 9 S147 18 160 9 V18 H0 Z' fill='black'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 18' preserveAspectRatio='none'%3E%3Cpath d='M0 9 C13 0 27 0 40 9 S67 18 80 9 S107 0 120 9 S147 18 160 9 V18 H0 Z' fill='black'/%3E%3C/svg%3E");-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x;
+  -webkit-mask-size:160px 18px;mask-size:160px 18px;pointer-events:none!important;z-index:31!important}
+html body nav{padding-top:4px!important;height:auto!important}
+html body nav .navinner{padding:3px!important}
+html body nav button{padding:5px 2px 6px!important}
+html body nav button span,html body nav button.active span{
+  width:34px!important;height:27px!important;margin:0 auto 2px!important;font-size:25px!important;
+  background:none!important;border-radius:0!important;box-shadow:none!important}
+html body nav button.active span::before{width:33px;height:33px;transform:translate(-50%,-56%)}
+/* los botones de función del pedido quedan siempre por encima de la barra */
+html body main{padding-bottom:135px!important}
+.cloud-card{border-color:#cdeff5!important;background:#fff!important}.cloud-card h3{color:var(--ink)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const NOTFOME_CLOUD_CONFIG = {
+  // Completá estos dos valores una sola vez antes de publicar la app.
+  url: '',
+  anonKey: ''
+};
+</script>
+<script>
+const KEY='NOT_GESTION_ADAPTABLE_2026_V8';
+const APP_VERSION='10.0.0';
+const DATA_VERSION=2;
+function normalizeDb(raw){
+  const base=JSON.parse(JSON.stringify(initial));
+  const d=(raw&&typeof raw==='object')?raw:{};
+  const out=Object.assign(base,d);
+  out.prices=Object.assign({},base.prices,d.prices||{});
+  out.costs=Object.assign({},base.costs,d.costs||{});
+  out.settings=Object.assign({},base.settings,d.settings||{});
+  out.identity=Object.assign({},base.identity,d.identity||{});
+  out.orders=Array.isArray(d.orders)?d.orders:[];
+  out.articles=Array.isArray(d.articles)?d.articles:base.articles;
+  out.extras=Array.isArray(d.extras)?d.extras:base.extras;
+  out.papers=Array.isArray(d.papers)?d.papers:base.papers;
+  out.inkPurchases=Array.isArray(d.inkPurchases)?d.inkPurchases:[];
+  out.freeArticleCatalog=Array.isArray(d.freeArticleCatalog)?d.freeArticleCatalog:[];
+  out.lastOrderNumber=Number(d.lastOrderNumber)||0;
+  out.schemaVersion=DATA_VERSION;
+  out.appVersion=APP_VERSION;
+  return out;
+}
+function backupBeforeMigration(raw){
+  try{localStorage.setItem('NOT_PREVIOUS_VERSION_BACKUP',JSON.stringify({savedAt:new Date().toISOString(),appVersion:APP_VERSION,data:raw}));}
+  catch(e){console.warn('No se pudo crear backup previo a actualización',e);}
+}
+const initial={
+  prices:{A:3500,B:5500,mult6:1,mult10:1.4,simple:1,threeD:2.5,metalNames:400,metalPhrases:600,metalFigures:850,metalSheetCost:1300,metalAcetateCost:2100,premium:7000,layer:2000,acetate:1000},
+  articles:[
+    {name:'Producto 1',price:0,materialCost:0,desc:'',fixed:true},
+    {name:'Producto 2',price:0,materialCost:0,desc:'',fixed:true},
+    {name:'Producto 3',price:0,materialCost:0,desc:'',fixed:true},
+    {name:'Producto 4',price:0,materialCost:0,desc:'',fixed:true},
+    {name:'Producto 5',price:0,materialCost:0,desc:'',fixed:true},
+    {name:'Producto 6',price:0,materialCost:0,desc:'',fixed:true}
+  ],
+  extras:[
+    {name:'Capa metalizada✨',price:0,fixed:true},
+    {name:'Acetato💎',price:0,fixed:true},
+    {name:'Corte✂️',price:0,fixed:true},
+    {name:'Laminado/Plastificado💎',price:0,fixed:true}
+  ],
+  papers:[
+    {id:1,name:'Papel Glossy 180g',packPrice:0,packQty:1,stock:0,purchases:[],fixed:true,defaultKey:'glossy'},
+    {id:2,name:'Stickers',packPrice:0,packQty:1,stock:0,purchases:[],fixed:true,defaultKey:'stickers'}
+  ],
+  costs:{inkPrice:0,inkMl:0,electricity:0,printerKw:0,printerCost:0,printerLife:0,other:0,hour:0,margin:0,avgTimePerSheet:0},
+  orders:[],
+  inkPurchases:[],
+};
+let __rawDb=null;
+try{__rawDb=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){__rawDb=null}
+if(__rawDb && Number(__rawDb.schemaVersion||1)<DATA_VERSION) backupBeforeMigration(__rawDb);
+let db=normalizeDb(__rawDb||initial);
+// Identidad configurable del negocio. No se mezclan datos con la versión personal.
+db.identity = Object.assign({name:'',logo:'',onboardingDone:false}, db.identity||{});
+db.settings = Object.assign({theme:'not',autoSave:true}, db.settings||{});
+
+// Configuración inicial limpia: ningún costo se inventa ni se arrastra desde otra versión.
+db.costs=Object.assign({inkPrice:0,inkMl:0,electricity:0,printerKw:0,printerCost:0,printerLife:0,other:0,hour:0,margin:0,avgTimePerSheet:0},db.costs||{});
+db.papers=Array.isArray(db.papers)?db.papers:[];
+// Papeles predeterminados: siempre existen, pero sus nombres y precios son editables.
+// Si la versión anterior tenía la base vacía, se recuperan automáticamente.
+const __defaultPapers=[
+  {id:1,name:'Papel Glossy 180g',packPrice:0,packQty:1,stock:0,purchases:[],fixed:true,defaultKey:'glossy'},
+  {id:2,name:'Stickers',packPrice:0,packQty:1,stock:0,purchases:[],fixed:true,defaultKey:'stickers'}
+];
+__defaultPapers.forEach(dp=>{
+  let existing=db.papers.find(p=>p.defaultKey===dp.defaultKey);
+  if(!existing && db.papers.length===0) { existing={...dp}; db.papers.push(existing); }
+  if(existing){ existing.fixed=true; existing.defaultKey=dp.defaultKey; existing.id=Number(existing.id)||dp.id; }
+});
+// Compatibilidad con versiones anteriores que ya tenían esos nombres pero no la marca de predeterminado.
+if(!db.papers.some(p=>p.defaultKey==='glossy')){ const p=db.papers.find(p=>String(p.name).toLowerCase().trim()==='papel glossy 180g'); if(p){p.defaultKey='glossy';p.fixed=true;} }
+if(!db.papers.some(p=>p.defaultKey==='stickers')){ const p=db.papers.find(p=>String(p.name).toLowerCase().trim()==='stickers'); if(p){p.defaultKey='stickers';p.fixed=true;} }
+// Si falta alguno de los dos predeterminados, agregarlo sin tocar los papeles personalizados.
+__defaultPapers.forEach(dp=>{ if(!db.papers.some(p=>p.defaultKey===dp.defaultKey)){ db.papers.unshift({...dp}); }});
+db.papers.forEach((p,i)=>{p.id=Number(p.id)||i+1;p.name=p.name||('Papel '+(i+1));p.packPrice=Number(p.packPrice)||0;p.packQty=Math.max(1,Number(p.packQty)||1);p.stock=Number(p.stock)||0;p.purchases=Array.isArray(p.purchases)?p.purchases:[];});
+db.prices=Object.assign({metalSheetCost:0,metalAcetateCost:0},db.prices||{});
+db.articles=(db.articles||[]).map(a=>Object.assign({materialCost:0,costMode:'paper',sheetsPerUnit:1},a));
+while(db.articles.length<6){ const i=db.articles.length+1; db.articles.push({name:'Producto '+i,price:0,materialCost:0,desc:'',fixed:true,costMode:'paper',sheetsPerUnit:1,paperId:null}); }
+db.articles=db.articles.map((a,i)=>Object.assign({name:'Producto '+(i+1),price:0,materialCost:0,desc:'',fixed:i<6,costMode:'paper',sheetsPerUnit:1,paperId:null},a));
+const __defaultExtras=[{name:'Capa metalizada✨',price:0,fixed:true},{name:'Acetato💎',price:0,fixed:true},{name:'Corte✂️',price:0,fixed:true},{name:'Laminado/Plastificado💎',price:0,fixed:true}];
+db.extras=Array.isArray(db.extras)?db.extras:[];
+__defaultExtras.forEach((e,i)=>{if(!db.extras[i]) db.extras[i]={...e}; else {db.extras[i]=Object.assign(e,db.extras[i]);db.extras[i].fixed=true;}});
+// Compatibilidad: artículos anteriores usan papel como fuente de costo por defecto.
+db.articles.forEach(a=>{ if(a.costMode!=='paper' && a.costMode!=='material') a.costMode='paper'; a.sheetsPerUnit=Math.max(0,Number(a.sheetsPerUnit)||1); if(!Object.prototype.hasOwnProperty.call(a,'paperId')) a.paperId=null; });
+// Los primeros 6 son los artículos principales: se pueden editar, pero no eliminar.
+db.articles.forEach((a,i)=>{ if(i<6) a.fixed=true; });
+// Los dos papeles predeterminados son editables y se mantienen disponibles para todos los artículos.
+const __glossy=db.papers.find(p=>p.defaultKey==='glossy')||null;
+const __sticker=db.papers.find(p=>p.defaultKey==='stickers')||null;
+db.orders=(db.orders||[]).map(o=>Object.assign({cost:0,materialSheets:0,paid:false,sena:0},o));
+db.orders.forEach(o=>{ if(!Array.isArray(o.payments)){ o.payments=[]; const d=new Date().toISOString().slice(0,10); const se=Number(o.sena)||0; if(se>0) o.payments.push({date:d,amount:se,method:'Seña'}); if(o.paid&&(Number(o.total)||0)>se) o.payments.push({date:d,amount:round2((Number(o.total)||0)-se),method:'Saldo'}); syncPay(o);} if(!o.snap) snapConsumo(o); });
+db.papers=db.papers||[];
+db.inkPurchases=db.inkPurchases||[];
+db.freeArticleCatalog=db.freeArticleCatalog||[];
+db.costs.avgTimePerSheet=(typeof db.costs.avgTimePerSheet==='number')?db.costs.avgTimePerSheet:5;
+delete db.prices.costStickerSheet;
+// Los artículos principales son configurables por cada emprendimiento.
+// Migración: id estable, stock y compras por papel
+let __maxPaperId=0;
+db.papers.forEach(p=>{ if(p.id) __maxPaperId=Math.max(__maxPaperId,p.id); });
+db.papers.forEach(p=>{
+  if(!p.id){ __maxPaperId++; p.id=__maxPaperId; }
+  if(typeof p.stock!=='number') p.stock=0;
+  if(!Array.isArray(p.purchases)) p.purchases=[];
+});
+if(typeof db.nextPaperId!=='number') db.nextPaperId=__maxPaperId+1;
+// No se vinculan artículos a un papel hasta que el usuario lo seleccione.
+
+// Migración para asignar números a pedidos viejos si no los tienen
+if (typeof db.lastOrderNumber === 'undefined') {
+    db.lastOrderNumber = 0;
+    db.orders.forEach(o => {
+        db.lastOrderNumber++;
+        if(!o.orderNumber) o.orderNumber = db.lastOrderNumber;
+    });
+}
+db.orders.forEach(o=>{ if(!o.registeredISO) o.registeredISO = parseRegistered(o.registered) || new Date().toISOString().slice(0,10); });
+
+let editId=null, selected=null;
+let currentCart=[]; 
+let topper={type:'A',mode:'6',qty:6,sheets:1,style:'simple',premium:false,premiumColor:'dorado',layer:false,acetate:false,paperId:null};
+let metal={type:'names',size:'10',custom:10};
+let freeArt={name:'',price:0,pricePerSheet:0,sheets:1,paperId:null};
+
+const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:2}).format(Number(n)||0);
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+function save(force=false){ if(!force && db.settings?.autoSave===false) return; db.schemaVersion=DATA_VERSION; db.appVersion=APP_VERSION; db.dataUpdatedAt=new Date().toISOString(); localStorage.setItem(KEY,JSON.stringify(db)); scheduleSync(); scheduleCloudSync(); }
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+/* ===== FASE 2 · CUENTA + NUBE (Supabase) ===== */
+let cloudClient=null, cloudTimer=null, cloudBusy=false;
+const CLOUD_KEY='NOTFOME_CLOUD_CONFIG_2026';
+function cloudConfig(){
+  let saved={}; try{saved=JSON.parse(localStorage.getItem(CLOUD_KEY)||'{}')}catch(e){}
+  return {url:(NOTFOME_CLOUD_CONFIG.url||saved.url||'').trim(),anonKey:(NOTFOME_CLOUD_CONFIG.anonKey||saved.anonKey||'').trim()};
+}
+function cloudReady(){return !!(cloudConfig().url&&cloudConfig().anonKey&&window.supabase);}
+function initCloud(){
+  if(!cloudReady()) return null;
+  if(!cloudClient){ const c=cloudConfig(); cloudClient=window.supabase.createClient(c.url,c.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}); cloudClient.auth.onAuthStateChange((event,session)=>{ setTimeout(()=>cloudApplySession(session,event),0); }); }
+  return cloudClient;
+}
+async function cloudApplySession(session,event){
+  const out=$('cloudSignedOut'), inn=$('cloudSignedIn');
+  if(!out||!inn) return;
+  if(session?.user){
+    out.style.display='none'; inn.style.display='block';
+    if($('cloudUserEmail')) $('cloudUserEmail').textContent=session.user.email||'Cuenta conectada';
+    if(event!=='SIGNED_OUT') await cloudInitialSync();
+    if($('identityOverlay')?.style.display==='flex') closeIdentitySetup();
+  }else{ out.style.display='block'; inn.style.display='none'; if($('cloudSetupHint')) $('cloudSetupHint').textContent=cloudReady()?'':'La nube todavía no está conectada en esta versión.'; }
+}
+async function cloudSession(){const c=initCloud(); if(!c)return null; const r=await c.auth.getSession(); return r.data?.session||null;}
+function cloudPayload(){ return {data:db, client_updated_at:db.dataUpdatedAt||new Date().toISOString()}; }
+function cloudSetStatus(msg){if($('cloudStatus')) $('cloudStatus').textContent=msg;}
+function scheduleCloudSync(){
+  if(!cloudReady()) return;
+  clearTimeout(cloudTimer); cloudTimer=setTimeout(()=>cloudPush(false),1500);
+}
+async function cloudGoogleSignIn(source='settings'){
+  const c=initCloud();
+  if(!c){alert('La nube todavía no está configurada.');return;}
+  const redirectTo = location.origin + location.pathname;
+  const r=await c.auth.signInWithOAuth({provider:'google',options:{redirectTo}});
+  if(r.error){alert('No se pudo iniciar con Google: '+r.error.message);return;}
+}
+async function cloudSignOut(){const c=initCloud(); if(c) await c.auth.signOut();}
+async function cloudInitialSync(){
+  const c=initCloud(); if(!c)return; const session=await cloudSession(); if(!session)return;
+  cloudSetStatus('Comprobando datos en la nube…');
+  const r=await c.from('notfome_user_data').select('data,updated_at').eq('user_id',session.user.id).maybeSingle();
+  if(r.error){cloudSetStatus('Cuenta conectada · falta configurar la base de datos'); console.warn(r.error); return;}
+  if(!r.data){ await cloudPush(false); return; }
+  const remote=r.data.data||{};
+  const remoteAt=new Date(r.data.updated_at||0).getTime();
+  const localAt=new Date(db.dataUpdatedAt||0).getTime();
+  if(remoteAt > localAt){
+    backupBeforeMigration(db);
+    db=normalizeDb(remote); db.dataUpdatedAt=r.data.updated_at||new Date().toISOString(); db.cloudLastSyncedAt=r.data.updated_at;
+    localStorage.setItem(KEY,JSON.stringify(db)); renderAll(); loadBusinessSettings(); renderBusinessIdentity();
+    cloudSetStatus('✅ Datos actualizados desde la nube');
+  }else if(localAt > remoteAt){
+    await cloudPush(false);
+  }else{
+    db.cloudLastSyncedAt=r.data.updated_at||new Date().toISOString();
+    localStorage.setItem(KEY,JSON.stringify(db));
+    cloudSetStatus('✅ Sincronizado · tus datos están actualizados');
+  }
+}
+async function cloudPush(manual){
+  if(cloudBusy)return; const c=initCloud(); if(!c)return; const session=await cloudSession(); if(!session)return;
+  cloudBusy=true; cloudSetStatus('☁️ Guardando…');
+  try{
+    const check=await c.from('notfome_user_data').select('updated_at').eq('user_id',session.user.id).maybeSingle();
+    if(check.error) throw check.error;
+    const remoteAt=check.data?new Date(check.data.updated_at||0).getTime():0;
+    const lastSynced=new Date(db.cloudLastSyncedAt||0).getTime();
+    if(remoteAt && lastSynced && remoteAt>lastSynced){
+      cloudSetStatus('⚠️ Hay cambios más nuevos en la nube');
+      if(manual && await askOk('Hay cambios más nuevos en la nube. Si guardás este dispositivo, vas a reemplazarlos. ¿Continuar?')){}
+      else {cloudBusy=false; return;}
+    }
+    const now=new Date().toISOString(); db.dataUpdatedAt=now;
+    const payload={user_id:session.user.id,data:db,updated_at:now};
+    const up=await c.from('notfome_user_data').upsert(payload,{onConflict:'user_id'});
+    if(up.error) throw up.error;
+    db.cloudLastSyncedAt=now; localStorage.setItem(KEY,JSON.stringify(db)); cloudSetStatus('✅ Sincronizado · '+new Date(now).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+    if(manual) alert('✅ Tus datos quedaron guardados en la nube.');
+  }catch(e){
+    console.error('Cloud sync',e); cloudSetStatus('❌ No se pudo sincronizar'); if(manual) alert('No se pudo guardar en la nube: '+(e.message||e));
+  }finally{cloudBusy=false;}
+}
+async function cloudPull(manual){
+  const c=initCloud(); if(!c)return; const session=await cloudSession(); if(!session)return;
+  try{const r=await c.from('notfome_user_data').select('data,updated_at').eq('user_id',session.user.id).maybeSingle(); if(r.error)throw r.error; if(!r.data){alert('Todavía no hay datos guardados en la nube.');return;} if(manual && !await askOk('Esto reemplazará los datos de este dispositivo por la copia de la nube. Antes se hará un backup local. ¿Continuar?'))return; backupBeforeMigration(db); db=normalizeDb(r.data.data||{}); db.dataUpdatedAt=r.data.updated_at||new Date().toISOString(); db.cloudLastSyncedAt=db.dataUpdatedAt; localStorage.setItem(KEY,JSON.stringify(db)); renderAll(); loadBusinessSettings(); renderBusinessIdentity(); cloudSetStatus('✅ Datos descargados desde la nube'); if(manual)alert('✅ Datos de la nube cargados en este dispositivo.');}catch(e){alert('No se pudo descargar la nube: '+(e.message||e));}}
+setTimeout(()=>{try{initCloud(); cloudApplySession((cloudClient&&null)||null,'INIT'); if(cloudReady()&&cloudClient) cloudClient.auth.getSession().then(x=>cloudApplySession(x.data.session,'INIT'));}catch(e){console.warn(e)}},100);
+
+
+function go(page){ const target=$(page); if(!target) return; document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); target.classList.add('active'); document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page)); if(page==='ajustes') showConfigMenu(); renderAll(); window.scrollTo(0,0); }
+
+function nuevoPedido(){
+    editId=null; selected=null; currentCart=[];
+    topper={type:'A',mode:'6',qty:6,sheets:1,style:'simple',premium:false,premiumColor:'dorado',layer:false,acetate:false,paperId:null};
+    metal={type:'names',size:'10',custom:10};
+    freeArt={name:'',price:0,pricePerSheet:0,sheets:1,paperId:null};
+    ['pNombre','pTelefono','pEntrega','pTematica','pDetalles'].forEach(x=>$(x).value='');
+    $('pEstado').value = 'Pendiente';
+    $('pedidoTitulo').textContent='🏷️ Nuevo Pedido';
+    if($('btnEliminarPedido')) $('btnEliminarPedido').style.display='none';
+    if($('btnShare')) $('btnShare').style.display='inline-block';
+    renderCarrito();
+    renderAll();
+}
+
+function unitPaper(p){return p?Number(p.packPrice||0)/Math.max(1,Number(p.packQty)||1):0}
+function round2(n){return Math.round(n*100)/100}
+function costBreakdown(paper, sheets){
+  sheets = Number(sheets)||0;
+  const papelC = paper?unitPaper(paper)*sheets:0;
+  const tintaC = (db.costs.inkPrice||0)/1000*(db.costs.inkMl||0)*sheets;
+  const t = db.costs.avgTimePerSheet||0;
+  const elecC = (db.costs.electricity||0)*(db.costs.printerKw||0)/60*t*sheets;
+  const desgasteC = db.costs.printerLife?(db.costs.printerCost||0)/db.costs.printerLife*sheets:0;
+  const otrosC = (db.costs.other||0)*sheets;
+  // La mano de obra NO forma parte del costo real de impresión por hoja.
+  // Se conserva el valor hora para otros cálculos, pero no se suma aquí.
+  const parts=[['Papel',papelC],['Tinta',tintaC],['Electricidad',elecC],['Desgaste',desgasteC],['Otros',otrosC]];
+  const total=parts.reduce((a,x)=>a+(Number(x[1])||0),0);
+  return {parts, total};
+}
+function parseRegistered(s){
+  if(!s) return null;
+  const parts=String(s).split('/');
+  if(parts.length!==3) return null;
+  return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+}
+
+/* --- PAGOS: o.payments es la fuente de verdad; o.sena y o.paid se derivan --- */
+function snapConsumo(o){
+  let h=0;(o.items||[]).forEach(it=>{h+=Number(it.quote&&it.quote.materialSheets)||0;});
+  const t=db.costs.avgTimePerSheet||0, ml=h*(db.costs.inkMl||0), kwh=h*((db.costs.printerKw||0)/60*t);
+  o.snap={hojas:h,inkMl:ml,inkCost:ml/1000*(db.costs.inkPrice||0),kwh:kwh,luzCost:kwh*(db.costs.electricity||0)};
+}
+function uiModal(html,read){return new Promise(res=>{
+  const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;background:rgba(36,31,43,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px';
+  o.innerHTML='<div style="background:#fff;border:3px solid #ffd9f0;border-radius:24px;padding:18px;width:100%;max-width:360px;box-shadow:0 8px 0 rgba(255,102,196,.2)">'+html+'<div class="actions" style="margin-top:14px"><button type="button" class="soft" data-k="0" style="flex:1">Cancelar</button><button type="button" data-k="1" style="flex:1">Aceptar</button></div></div>';
+  document.body.appendChild(o);
+  const done=v=>{o.remove();res(v);};
+  o.querySelector('[data-k="0"]').onclick=()=>done(null);
+  o.querySelector('[data-k="1"]').onclick=()=>done(read?read(o):true);
+  o.onclick=e=>{if(e.target===o)done(null);};
+});}
+async function askOk(msg){return !!(await uiModal('<div style="white-space:pre-line;font-size:15px;font-weight:600">'+esc(msg)+'</div>'));}
+function askPago(saldo){return uiModal('<div style="font-weight:800;font-size:18px;margin-bottom:6px">💵 Registrar cobro</div><small>Saldo pendiente: <b>'+money(saldo)+'</b></small><label style="margin-top:10px">Importe cobrado</label><input id="pgMonto" type="number" inputmode="decimal" min="0" step="any" value="'+(saldo||'')+'"><label style="margin-top:8px">Medio de pago</label><select id="pgMedio"><option>Efectivo</option><option>Transferencia</option><option>Mercado Pago</option><option>Otro</option></select>',o=>({amount:round2(Number(o.querySelector('#pgMonto').value)),method:o.querySelector('#pgMedio').value}));}
+window.alert=function(m){let t=document.getElementById('toastBox');if(!t){t=document.createElement('div');t.id='toastBox';t.style.cssText='position:fixed;left:12px;right:12px;bottom:84px;z-index:300;background:#241f2b;color:#fff;border-radius:18px;padding:12px 14px;font-weight:700;text-align:center;font-size:14px';document.body.appendChild(t);}t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>{t.style.display='none';},3200);};
+function paidTotal(o){return round2((o.payments||[]).reduce((a,p)=>a+(Number(p.amount)||0),0));}
+function syncPay(o){o.payments=o.payments||[];o.sena=paidTotal(o);o.paid=(Number(o.total)||0)>0&&o.sena>=(Number(o.total)||0);}
+function saldoDe(o){return Math.max(0,round2((Number(o.total)||0)-paidTotal(o)));}
+function stockFaltante(newItems,oldItems){
+  const need={};
+  const add=(items,k)=>(items||[]).forEach(i=>{const sh=Number(i.quote&&i.quote.materialSheets)||0;if(i.paperId!=null&&sh>0)need[i.paperId]=(need[i.paperId]||0)+k*sh;});
+  add(newItems,1);add(oldItems,-1);
+  const out=[];
+  Object.keys(need).forEach(id=>{const p=db.papers.find(x=>String(x.id)===String(id));if(p&&need[id]>0&&round2((p.stock||0)-need[id])<0)out.push(`${p.name}: quedaría en ${round2((p.stock||0)-need[id])} hojas`);});
+  return out;
+}
+async function registrarPago(id){
+  const o=db.orders.find(x=>Number(x.id)===Number(id));if(!o)return;
+  const saldo=saldoDe(o);
+  const r=await askPago(saldo); if(!r) return;
+  if(!(r.amount>0)){alert('Ingresá un importe mayor a 0.');return;}
+  if(r.amount>saldo&&!(await askOk('El importe supera el saldo ('+money(saldo)+'). ¿Registrarlo igual?')))return;
+  o.payments=o.payments||[];
+  o.payments.push({date:new Date().toISOString().slice(0,10),amount:r.amount,method:r.method||'Efectivo'});
+  syncPay(o);save();renderAll();
+}
+async function borrarPago(id,i){
+  const o=db.orders.find(x=>Number(x.id)===Number(id));if(!o||!o.payments||!o.payments[i])return;
+  if(!await askOk('¿Borrar este pago de '+money(o.payments[i].amount)+'?'))return;
+  o.payments.splice(i,1);syncPay(o);save();renderAll();
+}
+function adjustStock(items, sign){
+  (items||[]).forEach(item=>{
+    const pid = item.paperId;
+    const sheets = Number(item.quote && item.quote.materialSheets) || 0;
+    if(pid!=null && sheets>0){
+      const paper = db.papers.find(p=>p.id===pid);
+      if(paper) paper.stock = round2((paper.stock||0) + sign*sheets);
+    }
+  });
+}
+
+function addPurchase(i){
+  const paper = db.papers[i]; if(!paper) return;
+  const date = $('buyDate_'+i).value || new Date().toISOString().slice(0,10);
+  const price = +$('buyPrice_'+i).value || 0;
+  const qty = +$('buyQty_'+i).value || 0;
+  if(qty<=0){alert('Ingresá la cantidad de hojas compradas.');return;}
+  paper.purchases = paper.purchases || [];
+  paper.purchases.unshift({date, price, qty});
+  paper.stock = round2((paper.stock||0) + qty);
+  paper.packPrice = price; paper.packQty = qty; // el costo de referencia pasa a ser el de la última compra
+  save(); renderAll();
+}
+async function deletePaperPurchase(pi, ji){
+  const paper = db.papers[pi]; if(!paper || !paper.purchases || !paper.purchases[ji]) return;
+  if(!await askOk('¿Eliminar esta compra? Se descontará del stock lo que había sumado.')) return;
+  const c = paper.purchases[ji];
+  paper.stock = round2((paper.stock||0) - (Number(c.qty)||0));
+  paper.purchases.splice(ji,1);
+  save(); renderAll();
+}
+function addInkPurchase(){
+  const date = $('inkBuyDate').value || new Date().toISOString().slice(0,10);
+  const price = +$('inkBuyPrice').value || 0;
+  const ml = +$('inkBuyMl').value || 0;
+  if(ml<=0){alert('Ingresá los mililitros comprados.');return;}
+  db.inkPurchases = db.inkPurchases||[];
+  db.inkPurchases.unshift({date, price, ml});
+  db.costs.inkPrice = round2(price/ml*1000); // costo de referencia $/litro según última compra
+  $('inkBuyPrice').value=''; $('inkBuyMl').value='';
+  save(); renderAll();
+  alert('Compra de tinta registrada.');
+}
+async function deleteInkPurchase(j){
+  if(!await askOk('¿Eliminar esta compra de tinta?')) return;
+  db.inkPurchases.splice(j,1); save(); renderAll();
+}
+function renderInkPurchases(){
+  if(!$('inkPurchaseList')) return;
+  if($('inkBuyDate') && !$('inkBuyDate').value) $('inkBuyDate').value=new Date().toISOString().slice(0,10);
+  const list = db.inkPurchases||[];
+  $('inkPurchaseList').innerHTML = list.length ? `<div style="margin-top:10px;font-size:12px;color:var(--muted)">${list.map((c,j)=>`<div class="row" style="padding:4px 0"><span>📅 ${c.date.split('-').reverse().join('/')} · ${c.ml} ml · ${money(c.price)}</span><button class="danger" style="padding:3px 8px;font-size:10px" onclick="deleteInkPurchase(${j})">✕</button></div>`).join('')}</div>` : '<div class="empty">Sin compras registradas.</div>';
+}
+function calc(){
+  const cp=$('cPapel');
+  const sel=cp ? cp.value : '';
+  const p=sel!=='' ? (db.papers[Number(sel)]||null) : null;
+  const q=Math.max(1,Number($('cHojas')?.value)||1);
+  const t=Math.max(0,Number($('cTiempo')?.value)||0);
+  const h=Math.max(0,Number($('cHoras')?.value)||0);
+  const m=Math.max(0,Number($('cMinutos')?.value)||0);
+  const mg=Math.max(0,Number($('cMargen')?.value)||0);
+  const configured = !!(p && unitPaper(p)>0) || Number(db.costs.inkPrice)>0 || Number(db.costs.electricity)>0 || Number(db.costs.printerCost)>0 || Number(db.costs.other)>0 || Number(db.costs.hour)>0;
+  const parts=[
+    ['Papel',unitPaper(p)*q],
+    ['Tinta',(Number(db.costs.inkPrice)||0)/1000*(Number(db.costs.inkMl)||0)*q],
+    ['Electricidad',(Number(db.costs.electricity)||0)*(Number(db.costs.printerKw)||0)/60*t*q],
+    ['Desgaste',db.costs.printerLife?(Number(db.costs.printerCost)||0)/Number(db.costs.printerLife)*q:0],
+    ['Otros',(Number(db.costs.other)||0)*q],
+    ['Mano de obra',(Number(db.costs.hour)||0)*(h+m/60)]
+  ];
+  const c=parts.reduce((a,x)=>a+(Number(x[1])||0),0);
+  const v=c*(1+mg/100);
+  const out=$('calcOut');
+  if(!out)return;
+  out.innerHTML=`${!configured?'<div class="notice" style="margin-bottom:10px">⚠️ Todavía no configuraste los costos reales. Cargá los valores en <b>Costos → Costos reales</b> y el precio de tus papeles en <b>Costos → Papeles</b>. Hasta entonces no se mostrará ningún costo inventado.</div>':''}<div class="cost-detail-box"><h3 style="margin:0 0 8px">🧾 Detalle de costos</h3><div style="font-size:12px;color:var(--muted);margin-bottom:6px">${p?esc(p.name):'Sin papel configurado'} · ${q} hoja(s)</div>${parts.map(x=>`<div class="row line"><span>${x[0]}</span><b>${money(x[1])}</b></div>`).join('')}<div class="row" style="border-top:2px solid var(--line);padding-top:10px;margin-top:4px"><b>COSTO REAL</b><b>${money(c)}</b></div></div><div class="row" style="margin-top:10px"><span>Precio sugerido</span><b class="big">${money(v)}</b></div><div class="row"><span>Ganancia</span><b>${money(v-c)}</b></div>`;
+}
+
+function renderPriceInputs(){
+ // Esta versión ya no depende de los controles antiguos de Toppers.
+ // Si quedan elementos heredados, se ignoran; lo importante es renderizar
+ // siempre Mis artículos, Extras, Costos reales y Papeles.
+ document.querySelectorAll('.cost').forEach(i=>{ const v=Number(db.costs?.[i.dataset.k]); i.value=(Number.isFinite(v)&&v!==0)?v:''; });
+ const articleCard=(a,i,locked)=>`<div class="card article-config-card ${locked?'article-fixed':''}">
+  <div class="row" style="margin-bottom:6px"><b>${locked?'📌 Artículo principal '+(i+1):'Artículo extra'}</b>${locked?'<small style="color:var(--pink-700)">Siempre visible</small>':''}</div>
+  <div class="form">
+    <div><label>Nombre del artículo</label><input class="an" data-i="${i}" value="${esc(a.name)}"></div>
+    <div><label>Precio unitario</label><input class="ap" data-i="${i}" type="number" value="${a.price}"></div>
+    <div><label>Descripción</label><input class="ad" data-i="${i}" value="${esc(a.desc)}"></div>
+    <div><label>¿Cómo calcular el costo?</label><select class="acmode" data-i="${i}"><option value="paper" ${a.costMode==='paper'?'selected':''}>📄 Por papel asociado</option><option value="material" ${a.costMode==='material'?'selected':''}>📦 Costo de material</option></select></div>
+    <div><label>Papel asociado</label><select class="apap" data-i="${i}" ${a.costMode==='material'?'disabled':''}><option value="">${db.papers.length?'Ninguno — elegí un papel':'No hay papeles configurados'}</option>${db.papers.map(p=>`<option value="${p.id}" ${a.paperId===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>
+    <div><label>Hojas por unidad</label><input class="asheets" data-i="${i}" type="number" min="0" step="0.01" value="${Number(a.sheetsPerUnit||1)}" ${a.costMode==='material'?'disabled':''}></div>
+    <div><label>Costo de material por unidad</label><input class="ac" data-i="${i}" type="number" min="0" value="${a.materialCost||0}" ${a.costMode==='paper'?'disabled':''}></div>
+  </div>
+  <small style="display:block;margin-top:8px;color:var(--muted)">${a.costMode==='paper'?'El costo se calcula con el papel elegido × hojas por unidad, más tinta, electricidad, desgaste y otros costos.':'Se usa el costo de material que cargues por unidad y no se descuenta papel.'}</small>
+  ${locked?'':'<br><button class="danger" onclick="deleteArticle('+i+')">Eliminar artículo</button>'}
+</div>`;
+$('fixedArtEditor').innerHTML=db.articles.slice(0,6).map((a,i)=>articleCard(a,i,true)).join('');
+$('extraArtEditor').innerHTML=db.articles.slice(6).map((a,j)=>articleCard(a,j+6,false)).join('');
+ const extraCard=(e,i,locked)=>`<div class="card article-config-card ${locked?'article-fixed':''}">
+  <div class="row" style="margin-bottom:6px"><b>${locked?'📌 Extra predeterminado '+(i+1):'Extra adicional'}</b>${locked?'<small style="color:var(--pink-700)">Siempre disponible</small>':''}</div>
+  <div class="form">
+    <div><label>Nombre del extra</label><input class="en" data-i="${i}" value="${esc(e.name)}"></div>
+    <div><label>Precio del extra</label><input class="ep" data-i="${i}" type="number" min="0" value="${Number(e.price||0)}"></div>
+  </div>
+  ${locked?'':'<br><button class="danger" onclick="deleteExtra('+i+')">Eliminar extra</button>'}
+ </div>`;
+ $('extrasEditor').innerHTML=db.extras.map((e,i)=>extraCard(e,i,!!e.fixed)).join('');
+ document.querySelectorAll('.acmode').forEach(sel=>sel.addEventListener('change',()=>{
+  const i=+sel.dataset.i; const mode=sel.value==='material'?'material':'paper';
+  db.articles[i].costMode=mode;
+  const card=sel.closest('.article-config-card');
+  if(card){ const paper=card.querySelector('.apap'); const sheets=card.querySelector('.asheets'); const material=card.querySelector('.ac');
+    if(paper) paper.disabled=mode==='material'; if(sheets) sheets.disabled=mode==='material'; if(material) material.disabled=mode==='paper';
+  }
+}));
+ $('paperEditor').innerHTML=db.papers.length ? db.papers.map((p,i)=>`<div class="card">
+   <div class="form">
+     <div><label>Papel ${p.fixed?'📌 Predeterminado':''}</label><input class="pn" data-i="${i}" value="${esc(p.name)}"></div>
+     <div><label>Precio paquete (referencia)</label><input class="pp" data-i="${i}" type="number" value="${p.packPrice}"></div>
+     <div><label>Hojas por paquete</label><input class="pq" data-i="${i}" type="number" value="${p.packQty}"></div>
+     <div><label>📦 Stock actual (hojas)</label><input class="pst" data-i="${i}" type="number" value="${p.stock||0}"></div>
+   </div>
+   <div class="section-title" style="margin-top:14px;font-size:13px">🧾 Registrar compra</div>
+   <div class="form">
+     <div><label>Fecha</label><input id="buyDate_${i}" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+     <div><label>Precio pagado</label><input id="buyPrice_${i}" type="number" placeholder="$"></div>
+     <div><label>Hojas compradas</label><input id="buyQty_${i}" type="number" placeholder="0"></div>
+   </div>
+   <button class="soft" style="margin-top:8px" onclick="addPurchase(${i})">➕ Agregar compra</button>
+   ${(p.purchases&&p.purchases.length)?`<div style="margin-top:10px;font-size:12px;color:var(--muted)">${p.purchases.map((c,j)=>`<div class="row" style="padding:4px 0"><span>📅 ${c.date.split('-').reverse().join('/')} · ${c.qty} hojas · ${money(c.price)}</span><button class="danger" style="padding:3px 8px;font-size:10px" onclick="deletePaperPurchase(${i},${j})">✕</button></div>`).join('')}</div>`:''}
+   <br>${p.fixed?'<small style="display:block;margin-top:10px;color:var(--muted)">📌 Este papel es predeterminado. Podés cambiar su nombre, precio y stock, pero permanece disponible.</small>':`<button class="danger" style="margin-top:10px" onclick="deletePaper(${i})">Eliminar papel</button>`}
+ </div>`).join('') : '<div class="empty">No hay papeles configurados. Agregá uno para que aparezca en la calculadora y pueda asociarse a tus artículos.</div>';
+}
+function guardarCostos(){
+  db.articles.forEach((a,i)=>a.fixed=i<6);
+  // Costos reales
+  document.querySelectorAll('.cost').forEach(i=>db.costs[i.dataset.k]=Number(i.value)||0);
+  // Artículos principales y adicionales
+  document.querySelectorAll('.an').forEach(i=>{ if(db.articles[i.dataset.i]) db.articles[i.dataset.i].name=i.value.trim()||('Producto '+(Number(i.dataset.i)+1)); });
+  document.querySelectorAll('.ap').forEach(i=>{ if(db.articles[i.dataset.i]) db.articles[i.dataset.i].price=Number(i.value)||0; });
+  document.querySelectorAll('.ac').forEach(i=>{ if(db.articles[i.dataset.i]) db.articles[i.dataset.i].materialCost=Number(i.value)||0; });
+  document.querySelectorAll('.ad').forEach(i=>{ if(db.articles[i.dataset.i]) db.articles[i.dataset.i].desc=i.value; });
+  document.querySelectorAll('.apap').forEach(i=>{ if(db.articles[i.dataset.i]) db.articles[i.dataset.i].paperId=i.value!==''?Number(i.value):null; });
+  document.querySelectorAll('.acmode').forEach(i=>{ if(db.articles[i.dataset.i]) db.articles[i.dataset.i].costMode=i.value==='material'?'material':'paper'; });
+  document.querySelectorAll('.asheets').forEach(i=>{ if(db.articles[i.dataset.i]) db.articles[i.dataset.i].sheetsPerUnit=Math.max(0,Number(i.value)||1); });
+  // Extras
+  document.querySelectorAll('.en').forEach(i=>{ if(db.extras[i.dataset.i]) db.extras[i.dataset.i].name=i.value.trim()||'Nuevo extra'; });
+  document.querySelectorAll('.ep').forEach(i=>{ if(db.extras[i.dataset.i]) db.extras[i.dataset.i].price=Number(i.value)||0; });
+  // Papeles
+  document.querySelectorAll('.pn').forEach(i=>{ if(db.papers[i.dataset.i]) db.papers[i.dataset.i].name=i.value.trim()||'Nuevo papel'; });
+  document.querySelectorAll('.pp').forEach(i=>{ if(db.papers[i.dataset.i]) db.papers[i.dataset.i].packPrice=Number(i.value)||0; });
+  document.querySelectorAll('.pq').forEach(i=>{ if(db.papers[i.dataset.i]) db.papers[i.dataset.i].packQty=Math.max(1,Number(i.value)||1); });
+  document.querySelectorAll('.pst').forEach(i=>{ if(db.papers[i.dataset.i]) db.papers[i.dataset.i].stock=Number(i.value)||0; });
+  save();
+  renderAll();
+  alert('Configuración guardada.');
+}
+
+function addExtra(){db.extras.push({name:'Nuevo extra',price:0,fixed:false});save();renderAll();go('costos');}
+async function deleteExtra(i){if(i<4)return;if(await askOk('¿Seguro que querés eliminar este extra?')){db.extras.splice(i,1);save();renderAll()}}
+
+function addArticle(){db.articles.push({name:'Nuevo artículo',price:0,materialCost:0,desc:'',paperId:null,costMode:'paper',sheetsPerUnit:1,fixed:false});save();renderAll();go('costos');}
+async function deleteArticle(i){if(await askOk('¿Seguro que querés eliminar este artículo?')){db.articles.splice(i,1);save();renderAll()}}
+function addPaper(){if(typeof db.nextPaperId!=='number') db.nextPaperId=(db.papers.reduce((m,p)=>Math.max(m,Number(p.id)||0),0)+1); db.papers.push({id:db.nextPaperId++,name:'Nuevo papel',packPrice:0,packQty:1,stock:0,purchases:[],fixed:false}); save(); renderAll(); go('costos');}
+async function deletePaper(i){
+  if(db.papers[i]?.fixed){ alert('Este papel es predeterminado y no se puede eliminar. Podés modificar su nombre, precio y stock.'); return; }
+  if(await askOk('¿Seguro que querés eliminar este papel? Los artículos o toppers que lo tenían asignado van a dejar de descontar stock.')){db.papers.splice(i,1);save();renderAll()}
+}
+
+function renderChoices(){
+ const principales=db.articles.slice(0,6);
+ const extras=db.articles.slice(6);
+ $('artChoices').innerHTML=`<div class="card" style="margin-top:0">
+   <h3 style="margin-top:0">Artículo:</h3>
+   <small style="display:block;margin-bottom:8px">Tus 6 productos principales quedan siempre disponibles. También podés crear uno nuevo.</small>
+   <div class="cols">
+    ${principales.map((a,i)=>`<div class="choice ${selected==='article:'+i?'active':''}" onclick="selectProduct('article:${i}')"><div><b>📌 ${esc(a.name||'Producto '+(i+1))}</b><small>${money(a.price)}</small></div></div>`).join('')}
+    ${extras.map((a,j)=>{const i=j+6;return `<div class="choice ${selected==='article:'+i?'active':''}" onclick="selectProduct('article:${i}')"><div><b>${esc(a.name||'Artículo extra')}</b><small>${money(a.price)}</small></div></div>`}).join('')}
+    <div class="choice ${selected==='free'?'active':''}" onclick="selectProduct('free')"><div><b>✏️ Artículo nuevo</b><small>Solo para este pedido</small></div></div>
+   </div>
+ </div>`;
+}
+function selectProduct(x){selected=x;renderChoices();renderBuilder()}
+
+function topperSheets(){
+  if(topper.mode==='6') return 1;
+  if(topper.mode==='10') return 1.4;
+  const q=Math.max(1,Number(topper.qty)||1);
+  return Math.max(1,Math.ceil(q/6));
+}
+function topperQuote(){
+ const sheets=topperSheets(),base=sheets*(topper.type==='A'?db.prices.A:db.prices.B);
+ const paperSel=db.papers.find(p=>p.id===topper.paperId);
+ const cb=costBreakdown(paperSel,sheets);
+ let total=base,cost=cb.total;
+ let lines=[['Base A4',`${sheets.toFixed(2)} hojas`,base]];
+ if(topper.style==='3d'){const add=base*(db.prices.threeD-1);total+=add;lines.push(['Topper 3D',`×${db.prices.threeD}`,add])}
+ if(topper.type==='B'&&topper.premium){const v=db.prices.premium;total+=v;lines.push(['Premium',`Adicional`,v])}
+ if(topper.type==='B'&&topper.layer){const v=db.prices.layer;total+=v;lines.push(['Capa extra',`Adicional`,v])}
+ if(topper.type==='B'&&topper.acetate){total+=db.prices.acetate;lines.push(['Acetato','Parte transparente',db.prices.acetate])}
+ return {total,cost,costParts:cb.parts,materialSheets:sheets,lines,quantity:topper.mode==='exact'?topper.qty:topper.mode==='6'?6:10}
+}
+function renderBuilder(){
+ if(!selected){$('builder').innerHTML='<div class="notice">Seleccioná un artículo de arriba.</div>';updateQuote();return}
+ if(selected==='topper'){
+  $('builder').innerHTML=`
+  <div class="card compact-builder">
+    <h3 style="margin-top:0">📄 Papel</h3>
+    <div class="option-row paper-row">${db.papers.map(p=>`<div class="choice compact-choice ${topper.paperId===p.id?'active':''}" onclick="setTop('paperId',${p.id})"><b>${esc(p.name)}</b></div>`).join('')}</div>
+
+    <h3>🪄 Diseño</h3>
+    <div class="option-row design-row">
+      <div class="choice compact-choice ${topper.type==='A'?'active':''}" onclick="setTop('type','A')"><b>Diseño listo ✅</b></div>
+      <div class="choice compact-choice ${topper.type==='B'?'active':''}" onclick="setTop('type','B')"><b>Personalizado 🪄</b></div>
+    </div>
+    <div class="sheet-control">
+      <div><span class="sheet-label">Hojas utilizadas</span><span class="sheet-sub">Solo registra el consumo real.</span></div>
+      <div class="sheet-actions"><button class="soft" type="button" onclick="changeTopSheets(-1)">−</button><input type="number" min="1" step="1" value="${topper.sheets}" oninput="topper.sheets=Math.max(1,+this.value||1);updateQuote()"><button class="soft" type="button" onclick="changeTopSheets(1)">+</button></div>
+    </div>
+
+    <h3>✅ Cantidad</h3>
+    <div class="option-row quantity-row">
+      <div class="choice compact-choice ${topper.mode==='6'?'active':''}" onclick="setTop('mode','6')"><b>Hasta 6u</b></div>
+      <div class="choice compact-choice ${topper.mode==='10'?'active':''}" onclick="setTop('mode','10')"><b>Hasta 10u</b></div>
+      <div class="choice compact-choice ${topper.mode==='exact'?'active':''}" onclick="setTop('mode','exact')"><b>Cantidad</b></div>
+    </div>
+    ${topper.mode==='exact'?`<div class="exact-quantity"><label>Cantidad exacta</label><input type="number" min="1" value="${topper.qty}" oninput="topper.qty=+this.value||1;updateQuote()"></div>`:''}
+
+    <h3>⭐ Estilo Topper</h3>
+    <div class="option-row style-row">
+      <div class="choice compact-choice ${topper.style==='simple'?'active':''}" onclick="setTop('style','simple')"><b>Simple</b></div>
+      <div class="choice compact-choice ${topper.style==='3d'?'active':''}" onclick="setTop('style','3d')"><b>Topper 3D</b></div>
+    </div>
+
+    ${topper.type==='B'?`<div class="card-inner-extra">
+      <h3 style="margin-top:14px">Extras y decoraciones</h3>
+      <div class="option-row extras-row">
+        <div class="choice compact-choice ${topper.premium?'active':''}" onclick="topper.premium=!topper.premium;renderBuilder()"><b>✨ Premium</b></div>
+        <div class="choice compact-choice ${topper.layer?'active':''}" onclick="topper.layer=!topper.layer;renderBuilder()"><b>➕ Capa extra</b></div>
+        <div class="choice compact-choice ${topper.acetate?'active':''}" onclick="topper.acetate=!topper.acetate;renderBuilder()"><b>🔹 Acetato</b></div>
+      </div>
+    </div>`:''}
+  </div>`;
+ }else if(selected==='metal'){
+  const rate=metal.type==='names'?db.prices.metalNames:metal.type==='phrases'?db.prices.metalPhrases:db.prices.metalFigures;
+  $('builder').innerHTML=`<div class="card"><h3 style="margin-top:0">✨ Metalizado</h3>
+  <div class="cols"><div class="choice ${metal.type==='names'?'active':''}" onclick="metal.type='names';renderBuilder()">Nombres</div><div class="choice ${metal.type==='phrases'?'active':''}" onclick="metal.type='phrases';renderBuilder()">Frases</div><div class="choice ${metal.type==='figures'?'active':''}" onclick="metal.type='figures';renderBuilder()">Figuras</div></div>
+  <h3>📏 Medida</h3><div class="cols">${['10','12','15'].map(x=>`<div class="choice ${metal.size===x?'active':''}" onclick="metal.size='${x}';renderBuilder()"><b>${x}cm</b></div>`).join('')}<div class="choice ${metal.size==='custom'?'active':''}" onclick="metal.size='custom';renderBuilder()"><b>Otra</b></div></div>${metal.size==='custom'?`<label>Centímetros</label><input type="number" min="1" value="${metal.custom}" oninput="metal.custom=+this.value||1;updateQuote()">`:''}</div>`;
+ }else if(selected==='free'){
+  $('builder').innerHTML=`<div class="card"><h3 style="margin-top:0">✏️ Artículo nuevo</h3><small>Para pedidos personalizados. Si ya escribiste este nombre antes, te va a aparecer como sugerencia.</small>
+  <div class="form" style="margin-top:10px">
+  <div><label>Nombre del artículo</label><input id="freeName" list="freeArticleList" value="${esc(freeArt.name)}" placeholder="Ej: Vela personalizada"><datalist id="freeArticleList">${(db.freeArticleCatalog||[]).map(c=>`<option value="${esc(c.name)}">`).join('')}</datalist></div>
+  <div><label>Precio</label><input id="freePrice" type="number" min="0" value="${freeArt.price||0}" placeholder="Precio fijo del artículo completo"></div>
+  <div><label>Precio por hoja</label><input id="freePricePerSheet" type="number" min="0" value="${freeArt.pricePerSheet||0}" placeholder="Se multiplica × hojas usadas"></div>
+  <div><label>Hojas usadas</label><input id="freeSheets" type="number" min="0" step="0.5" value="${freeArt.sheets}"></div>
+  <div><label>Tipo de papel</label><select id="freePaper"><option value="">Ninguno</option>${db.papers.map(p=>`<option value="${p.id}" ${freeArt.paperId===p.id?'selected':''}>${esc(p.name)} · Stock: ${p.stock||0}</option>`).join('')}</select></div>
+  </div>
+  <small style="display:block;margin-top:8px">Si cargás "Precio por hoja", ese manda y se multiplica por las hojas usadas. Si lo dejás en blanco, se cobra el "Precio" fijo tal cual, sin importar cuántas hojas use.</small>
+  </div>`;
+  $('freeName').addEventListener('input', updateFree);
+  $('freeName').addEventListener('change', onFreeNameChange);
+  ['freePrice','freePricePerSheet','freeSheets','freePaper'].forEach(id=>$(id).addEventListener('input',updateFree));
+ }else{
+  const a=db.articles[+selected.split(':')[1]]; $('builder').innerHTML=`<div class="card"><div class="form"><div><label>Cantidad</label><input id="artQty" type="number" min="1" value="${currentQty()}"></div></div><small>${esc(a.desc||'')}</small><div class="notice" style="margin-top:10px">${a.costMode==='paper'?`📄 Este artículo consume <b>${Number(a.sheetsPerUnit||1)}</b> hoja(s) de <b>${esc(db.papers.find(p=>p.id===a.paperId)?.name||'papel no seleccionado')}</b> por unidad.`:`📦 Este artículo usa un costo de material fijo de <b>${money(a.materialCost||0)}</b> por unidad.`}</div></div>`;
+  $('artQty').addEventListener('input',updateQuote)
+ }
+ updateQuote()
+}
+function onFreeNameChange(){
+ const typed=($('freeName').value||'').trim();
+ const match=(db.freeArticleCatalog||[]).find(c=>c.name.toLowerCase()===typed.toLowerCase());
+ if(match){
+   freeArt={name:match.name, price:match.price||0, pricePerSheet:match.pricePerSheet||0, sheets:match.sheets||1, paperId:(match.paperId!=null && db.papers.some(p=>p.id===match.paperId))?match.paperId:null};
+   renderBuilder();
+ } else {
+   updateFree();
+ }
+}
+function freeRate(){ return freeArt.pricePerSheet||0; }
+function freeTotal(){ const r=freeRate(); return r>0 ? round2(r*(freeArt.sheets||0)) : (freeArt.price||0); }
+function updateFree(){
+ freeArt.name=$('freeName').value;
+ freeArt.price=+$('freePrice').value||0;
+ freeArt.pricePerSheet=+$('freePricePerSheet').value||0;
+ freeArt.sheets=+$('freeSheets').value||0;
+ freeArt.paperId=$('freePaper').value?+$('freePaper').value:null;
+ updateQuote();
+}
+function setTop(k,v){topper[k]=v;renderBuilder()}
+function changeTopSheets(delta){
+  topper.sheets=Math.max(1,(Number(topper.sheets)||1)+delta);
+  renderBuilder();
+}
+function currentQty(){return Number(window.currentArticleQty||1)}
+function currentQuote(){
+ if(selected==='topper')return topperQuote();
+ if(selected==='metal'){
+  const cm=Math.max(1,Number(metal.size==='custom'?metal.custom:metal.size)||1);
+  const r=metal.type==='names'?db.prices.metalNames:metal.type==='phrases'?db.prices.metalPhrases:db.prices.metalFigures;
+  // Costo real por medida: una hoja A3 rinde 12 cuadrados de 10x10 cm.
+  // Por eso 10 cm = 1 cuadrado, 12 cm = 1,2 cuadrados y 15 cm = 1,5 cuadrados.
+  const metalSquares=cm/10;
+  const metalSheetUnit=(db.prices.metalSheetCost||0)/12;
+  const acetateUnit=(db.prices.metalAcetateCost||0)/24;
+  const cost=(metalSheetUnit+acetateUnit)*metalSquares;
+  return {total:cm*r,cost,materialSheets:metalSquares,lines:[['Metalizado',`${cm} cm`,cm*r]],quantity:1}
+ }
+ if(selected==='free'){
+  const paper=db.papers.find(p=>p.id===freeArt.paperId);
+  const cb=costBreakdown(paper,freeArt.sheets);
+  const rateUsada = freeRate();
+  const total = freeTotal();
+  const detTxt = rateUsada>0 ? `${freeArt.sheets} hojas × ${money(rateUsada)}${paper?' · '+esc(paper.name):''}` : (paper?`${freeArt.sheets} hojas · ${esc(paper.name)} (precio fijo)`:`Precio fijo`);
+  return {total, cost:cb.total, costParts:cb.parts, materialSheets:freeArt.sheets, lines:[[freeArt.name||'Artículo nuevo', detTxt, total]], quantity:1};
+ }
+ if(selected&&selected.startsWith('article:')){
+  const a=db.articles[+selected.split(':')[1]];
+  const q=Number($('artQty')?.value||window.currentArticleQty||1);
+  window.currentArticleQty=q;
+  const paper=db.papers.find(p=>p.id===a.paperId);
+  const sheetsPerUnit=Math.max(0,Number(a.sheetsPerUnit)||1);
+  let cb, materialSheets=0, detail;
+  if(a.costMode==='material'){
+    const materialTotal=Number(a.materialCost||0)*q;
+    cb={parts:[['Material',materialTotal]],total:materialTotal};
+    detail=`${q} unidad(es) · costo material fijo`;
+  }else{
+    materialSheets=sheetsPerUnit*q;
+    cb=paper ? costBreakdown(paper,materialSheets) : {parts:[['Material',Number(a.materialCost||0)*materialSheets],],total:Number(a.materialCost||0)*materialSheets};
+    detail=`${q} unidad(es) · ${sheetsPerUnit} hoja(s)/unidad${paper?' · '+paper.name:''}`;
+  }
+  return {total:a.price*q,cost:cb.total,costParts:cb.parts,materialSheets,lines:[[a.name,detail,a.price*q]],quantity:q}
+ }
+ return {total:0,lines:[]}
+}
+function updateQuote(){
+ const q=currentQuote();
+ const quoteName = selected==='topper' ? 'Set Topper' : selected==='metal' ? 'Topper Metalizado' : selected==='free' ? (freeArt.name||'Artículo nuevo') : (selected&&selected.startsWith('article:') ? (db.articles[+selected.split(':')[1]]?.name||'Artículo') : 'Artículo');
+ if(q.lines.length){
+   const sheets = Number(q.materialSheets||0);
+   const costDetail=(q.costParts||[]).map(x=>`<div class="row" style="padding:4px 0"><span>${esc(x[0])}</span><b>${money(x[1])}</b></div>`).join('');
+   const adminDetails = `
+     <div class="admin-quote-detail">
+       <div style="font-weight:800;margin-bottom:5px">🧾 Detalle de costos</div>
+       ${costDetail||'<div class="empty">Sin detalle de costos.</div>'}
+       <div class="row" style="border-top:1px solid var(--line);padding-top:7px;margin-top:4px"><span><b>Costo real</b></span><b>${money(q.cost||0)}</b></div>
+       ${sheets>0?`<div class="row"><span>Hojas utilizadas</span><b>${Number.isInteger(sheets)?sheets:sheets.toFixed(2)}</b></div>`:''}
+     </div>`;
+   $('quote').innerHTML=`<div class="row line"><span>${esc(quoteName)}</span><b>${money(q.total)}</b></div>${adminDetails}`;
+ }else{
+   $('quote').innerHTML='<div class="empty">Seleccioná un artículo.</div>';
+ }
+ $('total').textContent=money(q.total);
+}
+
+/* --- CARRITO --- */
+function addToCart(){
+  if(!selected){alert('Configurá un artículo primero.');return;}
+  if(selected==='free' && !freeArt.name.trim()){alert('Poné un nombre para el artículo libre.');return;}
+  const q = currentQuote();
+  let itemName = "Extra", paperId = null;
+  if(selected === 'topper'){ itemName = "Set Topper"; paperId = topper.paperId; }
+  if(selected === 'metal') itemName = "Topper Metal";
+  if(selected==='free'){ itemName = freeArt.name.trim(); paperId = freeArt.paperId; }
+  if(selected.startsWith('article:')){ const a = db.articles[+selected.split(':')[1]]; itemName = a.name; paperId = (typeof a.paperId!=='undefined')?a.paperId:null; }
+  const detail = ($('itemDetalle').value||'').trim();
+
+  currentCart.push({name: itemName, type: selected, paperId, detail, topper: selected==='topper'?clone(topper):null, metal: selected==='metal'?clone(metal):null, quote: q});
+  if(selected==='free'){
+    const nm=freeArt.name.trim();
+    const entry={name:nm, price:freeArt.price, pricePerSheet:freeArt.pricePerSheet||0, sheets:freeArt.sheets, paperId:freeArt.paperId};
+    db.freeArticleCatalog=db.freeArticleCatalog||[];
+    const idx=db.freeArticleCatalog.findIndex(c=>c.name.toLowerCase()===nm.toLowerCase());
+    if(idx>=0) db.freeArticleCatalog[idx]=entry; else db.freeArticleCatalog.push(entry);
+    save();
+    freeArt={name:'',price:0,pricePerSheet:0,sheets:1,paperId:null};
+  }
+  $('itemDetalle').value='';
+  renderCarrito(); selected=null; renderChoices(); renderBuilder();
+}
+
+function removeFromCart(index){currentCart.splice(index, 1); renderCarrito();}
+
+function renderCarrito(){
+  let gt = 0;
+  $('carritoLista').innerHTML = currentCart.map((item, i) => {
+    gt += Number(item.quote?.total)||0;
+    return `<div class="row line">
+      <div style="font-size:14px; width:100%"><b style="color:var(--pink-700)">${esc(item.name)}</b>
+      ${item.detail?`<br><span style="color:var(--muted)">📝 ${esc(item.detail)}</span>`:''}
+      </div><div style="text-align:right;white-space:nowrap"><b class="big">${money(item.quote?.total||0)}</b> <button class="cart-remove" type="button" aria-label="Eliminar artículo" onclick="removeFromCart(${i})"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    </div>`;
+  }).join('') || '<div class="empty">Carrito vacío.</div>';
+  $('granTotal').textContent = money(gt);
+  const __ed=editId?db.orders.find(o=>Number(o.id)===Number(editId)):null;
+  if($('pSena')) $('pSena').readOnly=!!__ed;
+  const sena = Math.min(__ed?paidTotal(__ed):Math.max(0, Number($('pSena')?.value) || 0), gt);
+  const resta = Math.max(0, gt - sena);
+  let saldoBox = $('pedidoSaldoResumen');
+  if(!saldoBox){
+    saldoBox = document.createElement('div');
+    saldoBox.id = 'pedidoSaldoResumen';
+    $('granTotal').closest('.card').appendChild(saldoBox);
+  }
+  saldoBox.innerHTML = `<div class="row" style="margin:4px 0"><span>Seña</span><b>${money(sena)}</b></div><div class="row" style="margin:4px 0"><span>Resta</span><b style="color:var(--pink-700)">${money(resta)}</b></div>`;
+}
+
+function loadOrder(id){
+  const o=db.orders.find(x=>Number(x.id)===Number(id));
+  if(!o)return;
+  editId=Number(id);
+  $('pNombre').value=o.client||'';
+  $('pTelefono').value=o.phone||'';
+  $('pEntrega').value=o.delivery||'';
+  $('pEstado').value=o.status||'Pendiente';
+  $('pSena').value=Number(o.sena||0)||'';
+  $('pTematica').value=o.tematica||'';
+  $('pDetalles').value=o.details||'';
+  currentCart=o.items?clone(o.items):[];
+  $('pedidoTitulo').textContent='✏️ Editar pedido #'+String(o.orderNumber||0).padStart(2,'0');
+  if($('btnEliminarPedido')) $('btnEliminarPedido').style.display='inline-block';
+  if($('btnShare')) $('btnShare').style.display='inline-block';
+  renderCarrito();
+  renderChoices();
+  renderBuilder();
+  updateQuote();
+  go('nuevoPedido');
+}
+
+/* --- SYNC A GOOGLE SHEETS (una sola dirección: app -> Sheets, vía Apps Script) --- */
+let __syncTimer=null;
+
+
+let __guardando=false;
+async function guardarPedido(){
+  if(__guardando) return;
+  if(!$('pNombre').value.trim()||!$('pEntrega').value){alert('Completá nombre y entrega.');return;}
+  if(currentCart.length===0){alert('Agregá algo al carrito.');return;}
+  const gt=currentCart.reduce((s,i)=>s+(Number(i.quote?.total)||0),0);
+  const gc=currentCart.reduce((s,i)=>s+(Number(i.quote?.cost)||0),0);
+  const data={
+    client:$('pNombre').value.trim(),phone:$('pTelefono').value.trim(),delivery:$('pEntrega').value,
+    status:$('pEstado').value,paid:(db.orders.find(o=>Number(o.id)===Number(editId))?.paid||false),
+    sena:Math.max(0,Number($('pSena').value)||0),
+    tematica:$('pTematica').value.trim(),details:$('pDetalles').value.trim(),sena:Math.max(0,Number($('pSena').value)||0),items:clone(currentCart),
+    total:gt,cost:gc,article:`Varios (${currentCart.length})`
+  };
+  const prev=editId?db.orders.find(o=>Number(o.id)===Number(editId)):null;
+  const falta=stockFaltante(data.items,prev?prev.items:[]);
+  if(falta.length&&!await askOk('⚠️ Stock insuficiente:\n'+falta.join('\n')+'\n\n¿Guardar igual?'))return;
+  const pagado=prev?paidTotal(prev):data.sena;
+  if(data.status==='Entregado'&&gt-pagado>0&&!await askOk('Este pedido tiene un saldo de '+money(gt-pagado)+'. ¿Marcarlo como Entregado igual?'))return;
+  if(editId){delete data.sena;delete data.paid;}else{data.payments=data.sena>0?[{date:new Date().toISOString().slice(0,10),amount:data.sena,method:'Seña'}]:[];}
+  let savedOrder;
+  if(editId){
+    const existing=db.orders.find(o=>Number(o.id)===Number(editId));
+    if(existing){
+      adjustStock(existing.items, +1); // devuelve el stock que había consumido la versión anterior
+      Object.assign(existing,data);
+      adjustStock(existing.items, -1); // descuenta el stock según el carrito actualizado
+      syncPay(existing);
+      if(!existing.snap||existing.snap.hojas!==(existing.items||[]).reduce((a,i)=>a+(Number(i.quote&&i.quote.materialSheets)||0),0)) snapConsumo(existing);
+      savedOrder=existing;
+    }
+  }else{
+    db.lastOrderNumber++;
+    const nuevo={...data,id:Date.now(),orderNumber:db.lastOrderNumber,registered:new Date().toLocaleDateString('es-AR')};
+    syncPay(nuevo);snapConsumo(nuevo);
+    db.orders.push(nuevo);
+    adjustStock(nuevo.items, -1);
+    savedOrder=nuevo;
+  }
+  __guardando=true; setTimeout(()=>{__guardando=false},1500);
+  save();alert('Pedido guardado.');
+  nuevoPedido();go('inicio');
+}
+
+async function duplicarPedido(id){
+  const o=db.orders.find(x=>Number(x.id)===Number(id)); if(!o) return;
+  if(!await askOk('¿Duplicar el pedido #'+String(o.orderNumber||0).padStart(2,'0')+'? Se crea uno nuevo y se descuenta el stock.')) return;
+  const falta=stockFaltante(o.items,[]);
+  if(falta.length&&!await askOk('⚠️ Stock insuficiente:\n'+falta.join('\n')+'\n\n¿Duplicar igual?'))return;
+  db.lastOrderNumber++;
+  const n={...clone(o),id:Date.now(),orderNumber:db.lastOrderNumber,status:'Pendiente',paid:false,sena:0,payments:[],delivery:'',registered:new Date().toLocaleDateString('es-AR')};
+  db.orders.push(n); adjustStock(n.items,-1); save();
+  loadOrder(n.id);
+}
+async function eliminarPedido(){
+  if(await askOk('¿Seguro que querés eliminar este pedido completo?')){
+    const o=db.orders.find(o=>Number(o.id)===Number(editId));
+    if(o) adjustStock(o.items, +1); // restaura el stock que tenía reservado
+    db.orders=db.orders.filter(o=>Number(o.id)!==Number(editId));
+    save();alert('Pedido eliminado correctamente.');nuevoPedido();go('inicio');
+  }
+}
+
+function togglePagado(id){
+  const o=db.orders.find(x=>Number(x.id)===Number(id));
+  if(!o)return;
+  o.paid=!Boolean(o.paid);
+  save();
+  renderAll();
+}
+
+async function toggleEntregado(id){
+  const o=db.orders.find(x=>Number(x.id)===Number(id));
+  if(!o)return;
+  if(o.status!=='Entregado'&&saldoDe(o)>0&&!await askOk('Tiene un saldo pendiente de '+money(saldoDe(o))+'. ¿Marcar como Entregado igual?'))return;
+  o.status=(o.status==='Entregado'?'Pendiente':'Entregado');
+  save();
+  renderAll();
+}
+
+function textOrder(o){
+  const negocio=String(db.identity?.name||'').trim() || 'Papelería creativa';
+  const itemsText=(o.items||[]).map((item,i)=>{
+    const emoji=item.type==='topper'?'🎂':item.type==='metal'?'✨':'🏷️';
+    const precio=Number(item.quote?.total||0);
+    const detalle=(item.detail||'').trim();
+    return `${emoji} *${String(item.name||'Artículo')}*\n• Precio: *${money(precio)}*${detalle?`\n📝: ${detalle}`:''}`;
+  }).join('\n\n');
+  const total=Number(o.total||0);
+  const sena=Math.min(Math.max(0,Number(o.sena)||0),total);
+  const resta=Math.max(0,total-sena);
+  const senaLine=sena>0?`Seña: *${money(sena)}*\n`:'';
+  return `✨ *${negocio} - Presupuesto*\n\n*Pedido:* #${String(o.orderNumber||0).padStart(2,'0')}\n*Cliente:* ${o.client||''}\n*Entrega:* ${o.delivery?o.delivery.split('-').reverse().join('/'):'A confirmar'}\n\n${itemsText}\n\n🧾 *TOTAL:* *${money(total)}*\n${senaLine}Resta: *${money(resta)}*\nGracias por elegir ${negocio} 💖`;
+}
+
+/* PDF de presupuesto: genera un PDF local sin depender de servicios externos. */
+function pdfEscape(s){
+  return String(s)
+    .replace(/\\/g,'\\\\')
+    .replace(/\(/g,'\\(')
+    .replace(/\)/g,'\\)');
+}
+function pdfLatin1(s){
+  // PDF estándar Helvetica usa WinAnsi/Latin-1. Reemplazamos emojis por símbolos
+  // legibles para que el PDF no dependa de fuentes externas.
+  return String(s)
+    .replace(/[✨💖🧾🎂🏷️💎✂️📄🛒💵]/g,'')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/ñ/g,'n').replace(/Ñ/g,'N');
+}
+function crearPDFPresupuesto(o){
+  const negocio=String(db.identity?.name||'').trim() || 'Papeleria creativa';
+  const clean=(v)=>pdfLatin1(String(v ?? ''));
+  const total=Number(o.total||0);
+  const sena=Math.min(Math.max(0,Number(o.sena)||0),total);
+  const resta=Math.max(0,total-sena);
+
+  const items=(o.items||[]).map(item=>({
+    name:clean(item.name||'Articulo'),
+    price:money(Number(item.quote?.total||0)),
+    detail:clean((item.detail||'').trim())
+  }));
+
+  /* A4 vertical.
+     Estructura basada en el PDF de referencia que subiste:
+     - ticket principal grande y centrado
+     - perforaciones arriba
+     - perforaciones/separación en el medio
+     - pequeño ticket inferior con el agradecimiento
+  */
+  const W=595, H=842;
+  const ticketX=88, ticketW=419;
+  const bodyTop=790, bodyBottom=188;
+  const footerTop=188, footerBottom=70;
+  const innerX=ticketX+35, innerRight=ticketX+ticketW-35;
+
+  const esc=(v)=>pdfEscape(v);
+  const c=[];
+
+  // Helpers PDF.
+  const text=(x,y,size,str,bold=false)=>{
+    c.push('BT');
+    c.push(`/F${bold?2:1} ${size} Tf`);
+    c.push('0 0 0 rg');
+    c.push(`1 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)} Tm`);
+    c.push(`(${esc(str)}) Tj`);
+    c.push('ET');
+  };
+
+  const fillRect=(x,y,w,h,r,g,b)=>{
+    c.push(`${r} ${g} ${b} rg`);
+    c.push(`${x} ${y} ${w} ${h} re f`);
+  };
+
+  // Ticket principal: gris MUY suave, como la referencia.
+  fillRect(ticketX,bodyBottom,ticketW,bodyTop-bodyBottom,0.975,0.975,0.975);
+
+  // Ticket inferior.
+  fillRect(ticketX,footerBottom,ticketW,footerTop-footerBottom,0.975,0.975,0.975);
+
+  // Borde lateral sutil. Solo líneas verticales; no se dibujan diagonales.
+  c.push('0.90 0.89 0.92 RG');
+  c.push('0.8 w');
+  c.push(`${ticketX} ${bodyBottom} m ${ticketX} ${bodyTop} l S`);
+  c.push(`${ticketX+ticketW} ${bodyBottom} m ${ticketX+ticketW} ${bodyTop} l S`);
+  c.push(`${ticketX} ${footerBottom} m ${ticketX} ${footerTop} l S`);
+  c.push(`${ticketX+ticketW} ${footerBottom} m ${ticketX+ticketW} ${footerTop} l S`);
+
+  // Perforaciones: círculos BLANCOS que "muerden" los bordes,
+  // en vez de quedar como una línea de círculos dibujados.
+  function notches(y, upward){
+    const r=6.2, step=22;
+    const k=0.55228475;
+    for(let x=ticketX+4;x<=ticketX+ticketW-4;x+=step){
+      const cx=x, cy=y;
+      // círculo Bézier.
+      c.push('1 1 1 rg');
+      c.push(
+        `${(cx+r).toFixed(1)} ${cy.toFixed(1)} m `+
+        `${(cx+r).toFixed(1)} ${(cy+k*r).toFixed(1)} ${(cx+k*r).toFixed(1)} ${(cy+r).toFixed(1)} ${cx.toFixed(1)} ${(cy+r).toFixed(1)} c `+
+        `${(cx-k*r).toFixed(1)} ${(cy+r).toFixed(1)} ${(cx-r).toFixed(1)} ${(cy+k*r).toFixed(1)} ${(cx-r).toFixed(1)} ${cy.toFixed(1)} c `+
+        `${(cx-r).toFixed(1)} ${(cy-k*r).toFixed(1)} ${(cx-k*r).toFixed(1)} ${(cy-r).toFixed(1)} ${cx.toFixed(1)} ${(cy-r).toFixed(1)} c `+
+        `${(cx+k*r).toFixed(1)} ${(cy-r).toFixed(1)} ${(cx+r).toFixed(1)} ${(cy-k*r).toFixed(1)} ${(cx+r).toFixed(1)} ${cy.toFixed(1)} c f`
+      );
+    }
+  }
+  notches(bodyTop,false);
+  notches(bodyBottom,true);
+  notches(footerBottom,false);
+
+  // Encabezado.
+  text(innerX,bodyTop-55,17,clean(negocio)+' - Presupuesto',true);
+
+  text(innerX,bodyTop-100,11,'Pedido: #'+String(o.orderNumber||0).padStart(2,'0'),false);
+  text(innerX,bodyTop-120,11,'Cliente: '+clean(o.client||''),false);
+  text(innerX,bodyTop-140,11,'Entrega: '+(o.delivery?o.delivery.split('-').reverse().join('/'):'A confirmar'),false);
+
+  let y=bodyTop-178;
+
+  // Productos.
+  items.forEach((item)=>{
+    text(innerX,y,12,item.name,true);
+    y-=19;
+    text(innerX,y,10,'Precio: '+item.price,false);
+    y-=17;
+
+    if(item.detail){
+      let d=item.detail;
+      let first=true;
+      while(d.length>58){
+        let cut=d.lastIndexOf(' ',58);
+        if(cut<15) cut=58;
+        text(innerX,y,9,(first?'Detalle: ':'')+d.slice(0,cut),false);
+        d=d.slice(cut+1);
+        y-=14;
+        first=false;
+      }
+      if(d){
+        text(innerX,y,9,(first?'Detalle: ':'')+d,false);
+        y-=14;
+      }
+    }
+    y-=16;
+  });
+
+  // Temática y notas, solo si existen.
+  if(String(o.tematica||'').trim()){
+    text(innerX,y,9,'Tematica: '+clean(o.tematica),false);
+    y-=16;
+  }
+  if(String(o.details||'').trim()){
+    let d=clean(o.details.trim());
+    while(d.length>58){
+      let cut=d.lastIndexOf(' ',58);
+      if(cut<15) cut=58;
+      text(innerX,y,9,'Notas: '+d.slice(0,cut),false);
+      d=d.slice(cut+1);
+      y-=14;
+    }
+    if(d){ text(innerX,y,9,'Notas: '+d,false); y-=16; }
+  }
+
+  // Totales siempre abajo del ticket principal, independientemente
+  // de cuántos productos haya.
+  const totalsY=bodyBottom+92;
+  c.push('0.90 0.78 0.88 RG');
+  c.push('1.1 w');
+  c.push(`${innerX} ${totalsY+61} m ${innerRight} ${totalsY+61} l S`);
+
+  text(innerX,totalsY+37,13,'TOTAL: '+money(total),true);
+  text(innerX,totalsY+14,11,'Seña: '+money(sena),true);
+  text(innerX,totalsY-8,11,'Resta: '+money(resta),true);
+
+  // Ticket inferior: mensaje centrado.
+  const footerText='Gracias por elegir '+clean(negocio);
+  const approxWidth=footerText.length*5.2;
+  const footerX=Math.max(ticketX+25, ticketX+(ticketW-approxWidth)/2);
+  text(footerX,footerBottom+62,10,footerText,false);
+
+  // Texto técnico discreto debajo, dentro del pie.
+  const technical='Presupuesto generado desde la aplicacion';
+  const techX=ticketX+(ticketW-technical.length*4.1)/2;
+  c.push('BT');
+  c.push('/F1 7 Tf');
+  c.push('0.48 0.48 0.48 rg');
+  c.push(`1 0 0 1 ${techX.toFixed(1)} ${footerBottom+39} Tm`);
+  c.push(`(${esc(technical)}) Tj`);
+  c.push('ET');
+
+  const stream=c.join('\n');
+  const objects=[];
+  const addObj=s=>{objects.push(s);return objects.length;};
+  const catalog=addObj('<< /Type /Catalog /Pages 2 0 R >>');
+  objects[1]='';
+  const font=addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+  const fontBold=addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+  const content=addObj('<< /Length '+stream.length+' >>\nstream\n'+stream+'\nendstream');
+  const page=addObj('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+W+' '+H+'] /Resources << /Font << /F1 '+font+' 0 R /F2 '+fontBold+' 0 R >> >> /Contents '+content+' 0 R >>');
+  objects[1]='<< /Type /Pages /Kids ['+page+' 0 R] /Count 1 >>';
+
+  let pdf='%PDF-1.4\n%\xE2\xE3\xCF\xD3\n';
+  const offsets=[0];
+  objects.forEach((obj,i)=>{
+    offsets[i+1]=pdf.length;
+    pdf+=(i+1)+' 0 obj\n'+obj+'\nendobj\n';
+  });
+  const xref=pdf.length;
+  pdf+='xref\n0 '+(objects.length+1)+'\n';
+  pdf+='0000000000 65535 f \n';
+  for(let i=1;i<=objects.length;i++){
+    pdf+=String(offsets[i]).padStart(10,'0')+' 00000 n \n';
+  }
+  pdf+='trailer\n<< /Size '+(objects.length+1)+' /Root '+catalog+' 0 R >>\nstartxref\n'+xref+'\n%%EOF';
+
+  return new Blob([new Uint8Array([...pdf].map(ch=>ch.charCodeAt(0)&255))],{type:'application/pdf'});
+}
+async function compartirPDF(o){
+  if(!o)return;
+  const negocio=String(db.identity?.name||'').trim() || 'Papeleria creativa';
+  const fileName=(negocio+' - Presupuesto #'+String(o.orderNumber||0).padStart(2,'0'))
+    .replace(/[\\/:*?"<>|]/g,'-')+'.pdf';
+  const blob=crearPDFPresupuesto(o);
+  const file=new File([blob],fileName,{type:'application/pdf'});
+
+  // En Android/Chrome compatible: abre la hoja de compartir del sistema.
+  if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+    try{
+      await navigator.share({title:negocio+' - Presupuesto',files:[file]});
+      return;
+    }catch(e){
+      if(e && e.name==='AbortError') return;
+    }
+  }
+
+  // Si el navegador no permite compartir archivos, lo descarga para que
+  // la persona pueda abrirlo y compartirlo desde el celular.
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=fileName;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  alert('El PDF se generó. Si tu navegador no permite compartir archivos directamente, quedó descargado para que puedas compartirlo.');
+}
+
+function compartirPDFActual(){
+  if(editId){
+    const o=db.orders.find(x=>Number(x.id)===Number(editId));
+    if(o){compartirPDF(o);return;}
+  }
+  if(currentCart.length===0){
+    alert('Agregá un artículo al pedido primero.');
+    return;
+  }
+  const temp={
+    orderNumber:0,
+    client:$('pNombre')?.value.trim()||'',
+    phone:$('pTelefono')?.value.trim()||'',
+    delivery:$('pEntrega')?.value||'',
+    tematica:$('pTematica')?.value.trim()||'',
+    details:$('pDetalles')?.value.trim()||'',
+    items:clone(currentCart),
+    sena:Math.max(0,Number($('pSena')?.value)||0),
+    total:currentCart.reduce((s,i)=>s+(Number(i.quote?.total)||0),0)
+  };
+  compartirPDF(temp);
+}
+
+function share(o){
+  if(!o)return;
+  const text=textOrder(o);
+  const url='https://wa.me/?text='+encodeURIComponent(text);
+  window.open(url,'_blank');
+}
+
+function compartirActual(){
+  if(editId){
+    const o=db.orders.find(x=>Number(x.id)===Number(editId));
+    if(o){share(o);return;}
+  }
+  if(currentCart.length===0){alert('Agregá un artículo al pedido primero.');return;}
+  const temp={
+    orderNumber:0,client:$('pNombre').value.trim(),phone:$('pTelefono').value.trim(),
+    delivery:$('pEntrega').value,tematica:$('pTematica').value.trim(),details:$('pDetalles').value.trim(),items:clone(currentCart),
+    sena:Math.max(0,Number($('pSena').value)||0),
+    total:currentCart.reduce((s,i)=>s+(Number(i.quote?.total)||0),0)
+  };
+  share(temp);
+}
+
+function hayBorrador(){return !!(editId||currentCart.length||($('pNombre')&&$('pNombre').value.trim()));}
+function abrirPedido(){ if(!hayBorrador()) nuevoPedido(); go('nuevoPedido'); }
+async function descartarBorrador(){ if(await askOk('¿Descartar el pedido en curso? Se pierde lo que cargaste.')){ nuevoPedido(); renderOrders(); } }
+function renderOrders(){
+  const bb=$('borradorBanner');
+  if(bb) bb.innerHTML=hayBorrador()?`<div style="background:var(--yellow-50);border:2px dashed var(--yellow);border-radius:18px;padding:10px 12px;margin:8px 0"><b>📝 Pedido en curso</b>${$('pNombre').value.trim()?' · '+esc($('pNombre').value.trim()):''} · ${currentCart.length} artículo${currentCart.length===1?'':'s'}<div class="actions" style="margin-top:8px"><button type="button" onclick="go('nuevoPedido')">Continuar</button><button type="button" class="soft" onclick="descartarBorrador()">Descartar</button></div></div>`:'';
+  const q=(($('buscaPedido')||{}).value||'').trim().toLowerCase();
+  const arr=db.orders.filter(o=>!q||[o.client,o.phone,String(o.orderNumber)].join(' ').toLowerCase().includes(q)).sort((a,b)=>{
+    const ea=a.status==='Entregado', eb=b.status==='Entregado';
+    if(ea!==eb) return ea?1:-1;
+    return String(a.delivery||'9999').localeCompare(String(b.delivery||'9999'))||(a.orderNumber||0)-(b.orderNumber||0);
+  });
+  $('pedidosLista').innerHTML=arr.length?arr.map(o=>{
+    const m0=n=>money(n).replace(/,00$/,'');
+    const ent=o.status==='Entregado';
+    return `
+    <div class="order${ent?' order-entregado':''}">
+      <div class="row" style="gap:8px;align-items:baseline">
+        <b style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">#${String(o.orderNumber||0).padStart(2,'0')} · ${esc(o.client||'')}</b>
+        <b style="white-space:nowrap">${m0(o.total||0)}</b>
+      </div>
+      <div class="row" style="gap:8px;margin-top:1px;flex-wrap:wrap">
+        <small style="white-space:nowrap">📅 ${o.delivery?o.delivery.split('-').reverse().join('/'):'A confirmar'}</small>
+        <small>Cobrado ${m0(paidTotal(o))} · Saldo ${m0(saldoDe(o))}</small>
+      </div>
+      <div class="actions" style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:nowrap">
+        <button type="button" onclick="loadOrder(${o.id})">✏️ Editar</button>
+        <button type="button" class="${o.paid?'paid-btn':'pending-btn'}" onclick="registrarPago(${o.id})">${o.paid?'✓ Pagado':'💵 Cobrar'}</button>
+        <button type="button" class="${ent?'paid-btn':'pending-btn'}" onclick="toggleEntregado(${o.id})">${ent?'✓ Entregado':'Pendiente'}</button>
+        <button type="button" class="sky" aria-label="Compartir" style="width:30px;height:30px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;margin-left:auto" onclick="share(db.orders.find(x=>Number(x.id)===Number(${o.id})))"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button>
+      </div>
+      ${(o.payments||[]).length?`<details style="margin-top:4px;font-size:12px"><summary style="cursor:pointer;color:var(--muted)">Pagos (${o.payments.length})</summary>${o.payments.map((p,i)=>`<div class="row" style="margin:2px 0"><span>${esc((p.date||'').split('-').reverse().join('/'))} · ${esc(p.method||'')}</span><span><b>${money(p.amount)}</b> <a href="#" onclick="borrarPago(${o.id},${i});return false" style="color:#b4233c;text-decoration:none">✕</a></span></div>`).join('')}</details>`:''}
+    </div>`;}).join(''):'<div class="empty">No hay pedidos.</div>';
+}
+
+function renderInicio(){
+ const activeOrders = db.orders.filter(o=>!['Entregado','Cancelado'].includes(o.status));
+ const ventas = activeOrders.reduce((a,o)=>a+(Number(o.total)||0),0);
+ const cost = activeOrders.reduce((a,o)=>a+(Number(o.cost)||0),0);
+ 
+ $('sVentas').textContent=money(ventas);$('sCostos').textContent=money(cost);$('sGanancias').textContent=money(ventas-cost);$('sActivos').textContent=activeOrders.length;
+ 
+ $('inicioStock').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">${db.papers.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;background:${(p.stock||0)<STOCK_BAJO?'#ffe0ea':'#dff6fa'};border-radius:14px;padding:6px 10px;font-size:12px"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</span><b style="white-space:nowrap;font-size:13px">${p.stock||0} h</b></div>`).join('')}</div>`;
+ 
+ const arr=[...db.orders].sort((a,b)=>{const ea=a.status==='Entregado',eb=b.status==='Entregado';if(ea!==eb)return ea?1:-1;return String(a.delivery||'9999').localeCompare(String(b.delivery||'9999'))||(a.orderNumber||0)-(b.orderNumber||0);});
+ $('inicioPedidos').innerHTML=arr.length?arr.map(o=>`<div class="order${o.status==='Entregado'?' order-entregado':''}" onclick="loadOrder(${o.id})"><div class="row"><div><b>#${String(o.orderNumber||0).padStart(2,'0')} · ${esc(o.client)}</b><br><small>📅 ${o.delivery.split('-').reverse().join('/')} · 📌 ${o.status}</small></div><b>${money(o.total)}</b></div></div>`).join(''):'<div class="empty">Todavía no hay pedidos.</div>';
+ renderPrioridades();
+}
+const STOCK_BAJO=20; // hojas; por debajo de esto se marca como stock bajo
+function renderPrioridades(){
+ const box=$('inicioPrioridades'); if(!box) return;
+ const d=new Date(); const iso=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
+ const hoy=iso(d); const lim=new Date(d); lim.setDate(lim.getDate()+7); const en7=iso(lim);
+ const vivos=db.orders.filter(o=>!['Entregado','Cancelado'].includes(o.status));
+ const atrasados=vivos.filter(o=>o.delivery&&o.delivery<hoy);
+ const proximos=vivos.filter(o=>o.delivery&&o.delivery>=hoy&&o.delivery<=en7);
+ const senas=vivos.filter(o=>paidTotal(o)===0&&(Number(o.total)||0)>0);
+ const porCobrar=db.orders.filter(o=>o.status!=='Cancelado').reduce((a,o)=>a+saldoDe(o),0);
+ const bajo=db.papers.filter(p=>(p.stock||0)<STOCK_BAJO);
+ const fila=o=>`<div class="row" style="margin:3px 0;cursor:pointer" onclick="loadOrder(${o.id})"><span>#${String(o.orderNumber||0).padStart(2,'0')} · ${esc(o.client||'')}</span><small>${o.delivery.split('-').reverse().join('/')}</small></div>`;
+ const porFecha=(a,b)=>String(a.delivery).localeCompare(String(b.delivery))||(a.orderNumber||0)-(b.orderNumber||0);
+ const bloque=(t,arr,cnt)=>arr.length?`<div style="margin-top:10px"><b>${t}${cnt===false?'':' ('+arr.length+')'}</b>${[...arr].sort(porFecha).map(fila).join('')}</div>`:'';
+ box.innerHTML=`<h2 style="margin:0 0 6px">📌 Pedidos a entregar</h2>
+  <div class="row line"><span>💵 Por cobrar</span><b>${money(porCobrar)}</b></div>
+  ${bajo.length?`<div class="row line"><span>📦 Stock bajo</span><b style="color:#b4233c">${bajo.map(p=>esc(p.name)+': '+(p.stock||0)).join(' · ')}</b></div>`:''}
+  ${bloque('⚠️ Atrasados',atrasados)}${bloque('🗓️ Próximo:',proximos,false)}${bloque('🪙 Sin seña',senas)}
+  ${!atrasados.length&&!proximos.length&&!senas.length&&!bajo.length&&!porCobrar?'<div class="empty">Todo al día 🎉</div>':''}`;
+}
+
+function exportCSV(){
+ const hoy = new Date().toLocaleDateString('es-AR');
+ const rows=[];
+
+ rows.push(['COSTOS DE REFERENCIA · al '+hoy]);
+ rows.push(['Papel','Costo por hoja','Stock actual']);
+ db.papers.forEach(p=>rows.push([p.name, round2(unitPaper(p)), p.stock||0]));
+ rows.push([]);
+ rows.push(['Tinta $/litro', db.costs.inkPrice||0]);
+ rows.push(['Consumo tinta ml/hoja', db.costs.inkMl||0]);
+ rows.push(['Electricidad $/kWh', db.costs.electricity||0]);
+ rows.push(['Consumo impresora kW', db.costs.printerKw||0]);
+ rows.push(['Costo impresora', db.costs.printerCost||0]);
+ rows.push(['Vida útil en hojas', db.costs.printerLife||0]);
+ rows.push(['Otros $/hoja', db.costs.other||0]);
+ rows.push(['Tiempo prom. impresión por hoja (min)', db.costs.avgTimePerSheet||0]);
+ rows.push(['Valor hora de trabajo', db.costs.hour||0]);
+ rows.push(['Margen predeterminado %', db.costs.margin||0]);
+ rows.push(['Costo hoja A3 Metalizado', db.prices.metalSheetCost||0]);
+ rows.push(['Costo acetato 60x80cm', db.prices.metalAcetateCost||0]);
+ rows.push([]);
+
+ rows.push(['ARTÍCULOS VENDIDOS']);
+ rows.push(['Artículo','Cliente','Pedido','Fecha entrega','Fecha registrado','Estado','Cantidad','Precio','Costo real','Ganancia','% Ganancia','Detalle']);
+ db.orders.forEach(o=>{
+   (o.items||[]).forEach(it=>{
+     const price = Number(it.quote && it.quote.total) || 0;
+     const cost = Number(it.quote && it.quote.cost) || 0;
+     const profit = price - cost;
+     const pct = price>0 ? round2(profit/price*100) : 0;
+     rows.push([it.name, o.client, '#'+String(o.orderNumber||0).padStart(2,'0'), o.delivery, o.registered, o.status, (it.quote&&it.quote.quantity)||1, round2(price), round2(cost), round2(profit), pct, it.detail||'']);
+   });
+ });
+ rows.push([]);
+
+ rows.push(['RESUMEN DE PEDIDOS']);
+ rows.push(['ID Pedido','Fecha entrega','Cliente','Estado','Total','Costo','Ganancia']);
+ db.orders.forEach(o=>rows.push(['#'+String(o.orderNumber||0).padStart(2,'0'), o.delivery, o.client, o.status, round2(o.total), round2(o.cost), round2((o.total||0)-(o.cost||0))]));
+
+ const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\r\n');
+ const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NOT_datos_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+async function resetPedidos(){if(await askOk('¿Borrar historial de pedidos?')){db.orders=[];save();renderAll();alert('Borrados.');}}
+async function resetApp(){if(await askOk('¿Borrar TODO?')){localStorage.removeItem(KEY);location.reload()}}
+function exportJSON(){
+ const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NOT_backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();
+}
+function importJSONFile(input){
+ const file=input.files[0]; if(!file) return;
+ const reader=new FileReader();
+ reader.onload=async function(e){
+   try{
+     const data=JSON.parse(e.target.result);
+     if(!data||typeof data!=='object'||!Array.isArray(data.papers)||!Array.isArray(data.orders)||!Array.isArray(data.articles)) throw new Error('Formato inválido');
+     if(!await askOk('Esto va a REEMPLAZAR todos los datos actuales (pedidos, precios, stock) con los del archivo. ¿Continuar?')) return;
+     backupBeforeMigration(db);
+     db=normalizeDb(data); save(true); renderAll();
+     alert('Datos importados correctamente.');
+   }catch(err){
+     alert('No se pudo leer el archivo. Asegurate de que sea un backup válido de NOT.');
+   }
+ };
+ reader.readAsText(file);
+ input.value='';
+}
+
+/* --- BALANCE --- */
+function getOrdersInRange(from, to){
+  return db.orders.filter(o=>{
+    const d = o.registeredISO || parseRegistered(o.registered);
+    return d && d>=from && d<=to;
+  });
+}
+function computeBalance(from, to){
+  const orders = getOrdersInRange(from, to);
+  const ventas = orders.reduce((a,o)=>a+(Number(o.total)||0),0);
+  const costos = orders.reduce((a,o)=>a+(Number(o.cost)||0),0);
+  const ganancia = ventas - costos;
+  let hojas = 0;
+  orders.forEach(o=>(o.items||[]).forEach(it=>{ hojas += Number(it.quote && it.quote.materialSheets) || 0; }));
+  // Consumo de tinta y luz: se toma de la foto guardada en cada pedido (no cambia si después cambian los precios)
+  let inkMl=0,inkCost=0,kwh=0,luzCost=0;
+  orders.forEach(o=>{ if(!o.snap) snapConsumo(o); inkMl+=o.snap.inkMl; inkCost+=o.snap.inkCost; kwh+=o.snap.kwh; luzCost+=o.snap.luzCost; });
+  let cobrado=0; const porMedio={};
+  db.orders.forEach(o=>(o.payments||[]).forEach(p=>{ if(p.date>=from&&p.date<=to){ const a=Number(p.amount)||0; cobrado+=a; const k=(['Seña','Saldo',''].includes(p.method||'')?'Sin especificar':p.method); porMedio[k]=(porMedio[k]||0)+a; } }));
+  const porCobrar=orders.reduce((a,o)=>a+saldoDe(o),0);
+  let gastado = 0;
+  db.papers.forEach(p=>(p.purchases||[]).forEach(c=>{ if(c.date>=from && c.date<=to) gastado += Number(c.price)||0; }));
+  (db.inkPurchases||[]).forEach(c=>{ if(c.date>=from && c.date<=to) gastado += Number(c.price)||0; });
+  return {ventas, costos, ganancia, hojas, inkMl, inkCost, kwh, luzCost, gastado, cobrado, porMedio, porCobrar, orders};
+}
+function dailySeries(from, to, orders){
+  const days=[]; let d=new Date(from+'T00:00:00'); const end=new Date(to+'T00:00:00');
+  if(isNaN(d)||isNaN(end)||d>end) return [];
+  while(d<=end){ days.push({date:d.toISOString().slice(0,10), ventas:0, costos:0, gasto:0}); d.setDate(d.getDate()+1); }
+  const map={}; days.forEach(x=>map[x.date]=x);
+  orders.forEach(o=>{ const key=o.registeredISO||parseRegistered(o.registered); if(map[key]){ map[key].ventas+=Number(o.total)||0; map[key].costos+=Number(o.cost)||0; } });
+  db.papers.forEach(p=>(p.purchases||[]).forEach(c=>{ if(map[c.date]) map[c.date].gasto += Number(c.price)||0; }));
+  (db.inkPurchases||[]).forEach(c=>{ if(map[c.date]) map[c.date].gasto += Number(c.price)||0; });
+  return days;
+}
+function bucketize(days, maxBuckets){
+  maxBuckets = maxBuckets||16;
+  if(!days.length) return [];
+  if(days.length<=maxBuckets) return days.map(x=>({label:x.date.slice(8,10)+'/'+x.date.slice(5,7), ventas:x.ventas, costos:x.costos, gasto:x.gasto}));
+  const size = Math.ceil(days.length/maxBuckets), out=[];
+  for(let i=0;i<days.length;i+=size){
+    const chunk = days.slice(i, i+size);
+    out.push({label: chunk[0].date.slice(8,10)+'/'+chunk[0].date.slice(5,7), ventas: chunk.reduce((a,x)=>a+x.ventas,0), costos: chunk.reduce((a,x)=>a+x.costos,0), gasto: chunk.reduce((a,x)=>a+(x.gasto||0),0)});
+  }
+  return out;
+}
+function svgBarChart(buckets){
+  const w = Math.max(340, buckets.length*54), h=190, pad=8, bottom=26;
+  const maxVal = Math.max(1, ...buckets.map(b=>Math.max(b.ventas,b.costos,b.gasto||0)));
+  const bw = (w-pad)/buckets.length;
+  const gw = bw/3;
+  let bars='', labels='';
+  const step = Math.max(1, Math.ceil(buckets.length/8));
+  buckets.forEach((b,i)=>{
+    const x = pad + i*bw;
+    const gH = (b.ventas/maxVal)*(h-pad-bottom);
+    const cH = (b.costos/maxVal)*(h-pad-bottom);
+    const sH = ((b.gasto||0)/maxVal)*(h-pad-bottom);
+    const baseY = h-bottom;
+    bars += `<rect x="${x+1}" y="${baseY-gH}" width="${gw-2}" height="${gH}" fill="var(--pink)" rx="3"></rect>`;
+    bars += `<rect x="${x+gw+1}" y="${baseY-cH}" width="${gw-2}" height="${cH}" fill="var(--sky)" rx="3"></rect>`;
+    bars += `<rect x="${x+gw*2+1}" y="${baseY-sH}" width="${gw-2}" height="${sH}" fill="var(--yellow)" rx="3"></rect>`;
+    if(i%step===0){ labels += `<text x="${x+bw/2}" y="${h-6}" font-size="9" fill="#8b8391" text-anchor="middle">${esc(b.label)}</text>`; }
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:190px;display:block;min-width:${w}px" preserveAspectRatio="xMinYMid meet">
+    <line x1="${pad}" y1="${h-bottom}" x2="${w}" y2="${h-bottom}" stroke="#ece5ea" stroke-width="1"></line>
+    ${bars}${labels}
+  </svg>`;
+}
+function computeProductCounts(orders){
+  const map = {};
+  orders.forEach(o=>(o.items||[]).forEach(it=>{
+    const key = it.name || 'Otro';
+    const qty = Number(it.quote && it.quote.quantity) || 1;
+    const revenue = Number(it.quote && it.quote.total) || 0;
+    const cost = Number(it.quote && it.quote.cost) || 0;
+    if(!map[key]) map[key] = {name:key, count:0, revenue:0, cost:0};
+    map[key].count += qty; map[key].revenue += revenue; map[key].cost += cost;
+  }));
+  return Object.values(map).sort((a,b)=>b.revenue-a.revenue).map(p=>({...p, profit:p.revenue-p.cost}));
+}
+function renderProductBars(products){
+  if(!products.length) return '<div class="empty">Sin pedidos en este período.</div>';
+  const colors=['var(--pink)','var(--sky)','var(--yellow)','#a78bda','#7fd9a5','#f2a154'];
+  const max = Math.max(...products.map(p=>p.count));
+  return products.map((p,i)=>`<div style="margin:12px 0;padding-bottom:11px;border-bottom:1px solid var(--line)">
+    <div class="row" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">${esc(p.name)}</span><b style="font-size:13px">${p.count} u.</b></div>
+    <div style="background:#eee9ed;border-radius:8px;height:10px;overflow:hidden;margin-bottom:7px"><div style="width:${Math.max(4,(p.count/max)*100)}%;height:100%;background:${colors[i%colors.length]};border-radius:8px"></div></div>
+    <div class="row" style="font-size:11.5px;color:var(--muted)"><span>Costo real: ${money(p.cost)}</span><span>Ganancia: ${money(p.profit)}</span></div>
+  </div>`).join('');
+}
+function balRange(kind){
+  const now = new Date(); let from, to = new Date();
+  if(kind==='month'){ from = new Date(now.getFullYear(), now.getMonth(), 1); }
+  else if(kind==='lastmonth'){ from = new Date(now.getFullYear(), now.getMonth()-1, 1); to = new Date(now.getFullYear(), now.getMonth(), 0); }
+  else if(kind==='year'){ from = new Date(now.getFullYear(), 0, 1); }
+  else if(kind==='all'){
+    const dates = db.orders.map(o=>o.registeredISO||parseRegistered(o.registered)).filter(Boolean).sort();
+    from = dates.length ? new Date(dates[0]+'T00:00:00') : new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+  $('balDesde').value = from.toISOString().slice(0,10);
+  $('balHasta').value = to.toISOString().slice(0,10);
+  renderBalance();
+}
+function renderBalance(){
+  if(!$('balDesde')) return;
+  if(!$('balDesde').value){ const now=new Date(); $('balDesde').value = new Date(now.getFullYear(),now.getMonth(),1).toISOString().slice(0,10); }
+  if(!$('balHasta').value){ $('balHasta').value = new Date().toISOString().slice(0,10); }
+  const from = $('balDesde').value, to = $('balHasta').value;
+  const b = computeBalance(from, to);
+  $('balVentas').textContent = money(b.ventas);
+  $('balCostosStat').textContent = money(b.costos);
+  $('balGanancia').textContent = money(b.ganancia);
+  $('balGastado').textContent = money(b.gastado);
+
+  const buckets = bucketize(dailySeries(from, to, b.orders));
+  $('balChart').innerHTML = buckets.length ? svgBarChart(buckets) : '<div class="empty">Sin datos en este período.</div>';
+
+  const pctCostos = b.ventas>0 ? Math.min(100, (b.costos/b.ventas)*100) : 0;
+  $('balDonut').innerHTML = `<div style="width:130px;height:130px;border-radius:50%;background:conic-gradient(var(--sky) 0% ${pctCostos}%, var(--pink) ${pctCostos}% 100%);display:flex;align-items:center;justify-content:center"><div style="width:80px;height:80px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:12px;text-align:center;padding:4px;color:var(--ink)">${b.ventas>0?Math.round(100-pctCostos)+'%<br>ganancia':'—'}</div></div>`;
+  $('balDonutLegend').innerHTML = `<div style="margin-bottom:6px"><span style="color:var(--sky)">●</span> Costos: ${money(b.costos)}</div><div><span style="color:var(--pink)">●</span> Ganancia: ${money(b.ganancia)}</div>`;
+
+  const products = computeProductCounts(b.orders);
+  $('balProductos').innerHTML = renderProductBars(products);
+
+  $('balDetalle').innerHTML = `
+    <div class="row line"><span>💵 Cobrado en el período</span><b>${money(b.cobrado)}</b></div>
+    ${Object.entries(b.porMedio).map(([k,v])=>`<div class="row line" style="padding-left:16px"><small>↳ ${esc(k)}</small><b>${money(v)}</b></div>`).join('')}
+    <div class="row line"><span>⏳ Por cobrar (pedidos del período)</span><b>${money(b.porCobrar)}</b></div>
+    <div class="row line"><span>🏦 Cobrado − compras (flujo de caja)</span><b>${money(b.cobrado-b.gastado)}</b></div>
+    <div class="row line"><span>💸 Dinero gastado (compras)</span><b>${money(b.gastado)}</b></div>
+    <div class="row line"><span>🧾 Costos de producción</span><b>${money(b.costos)}</b></div>
+    <div class="row line"><span>📈 Ganancia estimada (ventas − costos)</span><b>${money(b.ganancia)}</b></div>
+    <div class="row line"><span>📄 Hojas consumidas</span><b>${b.hojas.toFixed(2)} hojas</b></div>
+    <div class="row line"><span>🖋️ Tinta consumida</span><b>${b.inkMl.toFixed(1)} ml (${money(b.inkCost)})</b></div>
+    <div class="row line"><span>💡 Luz consumida</span><b>${b.kwh.toFixed(2)} kWh (${money(b.luzCost)})</b></div>
+  `;
+}
+
+function showIdentitySetup(){
+  const ov=$('identityOverlay'); if(!ov) return;
+  ov.style.display='flex'; document.body.classList.add('identity-lock');
+  $('identityName').value=db.identity?.name||'';
+  const prev=$('identityPreview');
+  if(db.identity?.logo){prev.innerHTML=`<img src="${db.identity.logo}" alt="Logo">`;}else{prev.textContent='✦';}
+}
+function closeIdentitySetup(){
+  const ov=$('identityOverlay'); if(ov) ov.style.display='none';
+  document.body.classList.remove('identity-lock');
+}
+function previewIdentityLogo(input){
+  const file=input.files&&input.files[0]; if(!file) return;
+  if(!file.type.startsWith('image/')){alert('Elegí una imagen.');return;}
+  const reader=new FileReader();
+  reader.onload=()=>{const prev=$('identityPreview'); if(prev) prev.innerHTML=`<img src="${reader.result}" alt="Logo">`; input.dataset.logo=reader.result;};
+  reader.readAsDataURL(file);
+}
+function saveIdentitySetup(){
+  try{
+    const name=($('identityName')?.value||'').trim();
+    const input=$('identityLogoFile');
+    db.identity=db.identity||{};
+    db.identity.name=name;
+    if(input?.dataset.logo) db.identity.logo=input.dataset.logo;
+    db.identity.onboardingDone=true;
+    // Cerramos primero para que un error de almacenamiento/renderizado nunca deje bloqueada la app.
+    closeIdentitySetup();
+    try{ save(); }catch(e){ console.error('No se pudo guardar la identidad:',e); }
+    try{ renderBusinessIdentity(); }catch(e){ console.error('No se pudo actualizar la identidad visual:',e); }
+  }catch(e){
+    console.error('Error en la configuración inicial:',e);
+    closeIdentitySetup();
+  }
+}
+function skipIdentitySetup(){
+  try{
+    db.identity=db.identity||{};
+    db.identity.onboardingDone=true;
+    // El botón Omitir siempre debe permitir entrar a la aplicación, incluso si el almacenamiento falla.
+    closeIdentitySetup();
+    try{ save(); }catch(e){ console.error('No se pudo guardar la configuración inicial:',e); }
+    try{ renderBusinessIdentity(); }catch(e){ console.error('No se pudo actualizar la identidad visual:',e); }
+  }catch(e){
+    console.error('Error al omitir la configuración inicial:',e);
+    closeIdentitySetup();
+  }
+}
+function renderBusinessIdentity(){
+  const name=(db.identity?.name||'').trim()||'Papelería creativa';
+  const nameEl=$('businessNameDisplay'); if(nameEl) nameEl.textContent=name;
+  const wrap=$('businessLogoWrap');
+  if(wrap){
+    if(db.identity?.logo){wrap.innerHTML=`<img src="${db.identity.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`;}
+    else {wrap.textContent='✦';}
+  }
+}
+
+function loadBusinessSettings(){
+  const n=$('settingsBusinessName'); if(n) n.value=db.identity?.name||'';
+  const prev=$('settingsLogoPreview');
+  if(prev){
+    if(db.identity?.logo) prev.innerHTML=`<img src="${db.identity.logo}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`;
+    else prev.textContent='✦';
+  }
+}
+function previewSettingsLogo(input){
+  const file=input.files&&input.files[0]; if(!file) return;
+  if(!file.type.startsWith('image/')){alert('Elegí una imagen.');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    input.dataset.logo=reader.result;
+    const prev=$('settingsLogoPreview');
+    if(prev) prev.innerHTML=`<img src="${reader.result}" alt="Logo" style="width:100%;height:100%;object-fit:contain">`;
+  };
+  reader.readAsDataURL(file);
+}
+function saveBusinessSettings(){
+  db.identity=db.identity||{};
+  db.identity.name=($('settingsBusinessName')?.value||'').trim();
+  const input=$('settingsLogoFile');
+  if(input?.dataset.logo) db.identity.logo=input.dataset.logo;
+  db.identity.onboardingDone=true;
+  save();
+  renderBusinessIdentity();
+  loadBusinessSettings();
+  alert('Identidad guardada.');
+}
+
+function toggleUserMenu(e){ if(e) e.stopPropagation(); const p=$('userMenuPanel'); if(!p) return; p.classList.toggle('open'); }
+function closeUserMenu(){ const p=$('userMenuPanel'); if(p) p.classList.remove('open'); }
+function openAccountPanel(){ closeUserMenu(); loadAccountPanel(); const o=$('accountOverlay'); if(o) o.classList.add('open'); }
+function closeAccountPanel(){ const o=$('accountOverlay'); if(o) o.classList.remove('open'); }
+function loadAccountPanel(){ const n=$('accountName'); if(n) n.value=db.identity?.name||''; const p=$('accountLogoPreview'); if(p){ if(db.identity?.logo) p.innerHTML=`<img src="${db.identity.logo}" alt="Logo">`; else p.textContent='✦'; } }
+function previewAccountLogo(input){ const file=input.files&&input.files[0]; if(!file) return; if(!file.type.startsWith('image/')){alert('Elegí una imagen.');input.value='';return;} const reader=new FileReader(); reader.onload=()=>{ input.dataset.logo=reader.result; const p=$('accountLogoPreview'); if(p) p.innerHTML=`<img src="${reader.result}" alt="Logo">`; }; reader.readAsDataURL(file); }
+function saveAccountPanel(){ db.identity=db.identity||{}; db.identity.name=($('accountName')?.value||'').trim(); const input=$('accountLogoFile'); if(input?.dataset.logo) db.identity.logo=input.dataset.logo; db.identity.onboardingDone=true; save(); renderBusinessIdentity(); loadBusinessSettings(); closeAccountPanel(); alert('Mi cuenta actualizada.'); }
+function showConfigMenu(){
+  const menu=document.getElementById('configMenu');
+  if(menu) menu.style.display='grid';
+  document.querySelectorAll('#ajustes .config-detail').forEach(x=>x.classList.remove('open'));
+  window.scrollTo(0,0);
+}
+function openConfigPanel(key){
+  const menu=document.getElementById('configMenu');
+  if(menu) menu.style.display='none';
+  document.querySelectorAll('#ajustes .config-detail').forEach(x=>x.classList.toggle('open',x.dataset.config===key));
+  loadUserMenuSettings();
+  window.scrollTo(0,0);
+}
+function openCostConfig(target){
+  go('costos');
+  setTimeout(()=>{
+    const map={articles:0,extras:1,realcosts:2,papers:4};
+    const sec=document.querySelectorAll('#costos .costs-accordion details')[map[target]];
+    if(sec){
+      document.querySelectorAll('#costos .costs-accordion details').forEach(d=>d.removeAttribute('open'));
+      sec.setAttribute('open','');
+    }
+    const back=document.getElementById('costConfigBack');
+    if(back) back.style.display='block';
+  },0);
+}
+function openAppSettings(){ closeUserMenu(); go('ajustes'); }
+function openHelp(){ closeUserMenu(); go('ayuda'); }
+function openBusinessSettings(){ openAccountPanel(); }
+function loadUserMenuSettings(){
+  const t=$('themeSelect'); if(t) t.value=db.settings?.theme||'not';
+  const b=$('autoSaveToggle'); if(b){ const on=db.settings?.autoSave!==false; b.classList.toggle('on',on); }
+}
+function applyTheme(theme){
+  const themes={
+    not:{pink:'#ff66c4',pink600:'#ee4fae',pink700:'#b3277e',pink50:'#ffeaf7',sky:'#20bad5',sky700:'#0f7284',sky50:'#dff6fa',yellow:'#fdce43',yellow700:'#6b4c06',yellow50:'#fff4c9',onPink:'#fff'},
+    violeta:{pink:'#9f70b0',pink600:'#875a9a',pink700:'#684478',pink50:'#eadff0',sky:'#c9a9d5',sky700:'#6f4c78',sky50:'#f4edf6',yellow:'#e6cf91',yellow700:'#6b5b25',yellow50:'#faf3dc',onPink:'#fff'},
+    menta:{pink:'#d5e8c6',pink600:'#bfd7ae',pink700:'#9f70b0',pink50:'#edf5e8',sky:'#b9ddd0',sky700:'#526e63',sky50:'#edf7f3',yellow:'#e9d9a6',yellow700:'#665a31',yellow50:'#faf6e6',onPink:'#5b4969'},
+    verano:{pink:'#fc94ec',pink600:'#e77ad5',pink700:'#9b4e8d',pink50:'#ffe5f9',sky:'#e9b33e',sky700:'#76571a',sky50:'#fff3d7',yellow:'#d8ceff',yellow700:'#5c4c89',yellow50:'#eeeaff',onPink:'#5b3155'},
+    minimal:{pink:'#555',pink600:'#444',pink700:'#222',pink50:'#eeeeee',sky:'#888',sky700:'#444',sky50:'#eeeeee',yellow:'#bdbdbd',yellow700:'#444',yellow50:'#eeeeee',onPink:'#fff'}
+  };
+  const c=themes[theme]||themes.not; const r=document.documentElement.style;
+  r.setProperty('--pink',c.pink);r.setProperty('--pink-600',c.pink600);r.setProperty('--pink-700',c.pink700);r.setProperty('--pink-50',c.pink50);
+  r.setProperty('--sky',c.sky);r.setProperty('--sky-700',c.sky700);r.setProperty('--sky-50',c.sky50);r.setProperty('--yellow',c.yellow);r.setProperty('--yellow-700',c.yellow700);r.setProperty('--yellow-50',c.yellow50);r.setProperty('--on-pink',c.onPink);
+  const meta=document.querySelector('meta[name="theme-color"]'); if(meta) meta.setAttribute('content',c.pink);
+  document.querySelectorAll('.theme-option').forEach(el=>el.classList.toggle('active',el.dataset.theme===theme));
+}
+function changeAppTheme(theme){ db.settings=db.settings||{}; db.settings.theme=theme||'not'; applyTheme(db.settings.theme); save(); loadUserMenuSettings(); }
+function toggleAutoSave(){ db.settings=db.settings||{}; db.settings.autoSave=db.settings.autoSave===false; const on=db.settings.autoSave; if(on) save(); else localStorage.setItem(KEY,JSON.stringify(db)); loadUserMenuSettings(); }
+document.addEventListener('click',()=>closeUserMenu());
+
+function renderAll(){
+  applyTheme(db.settings?.theme||'not');
+  const jobs=[
+    ['inicio',renderInicio],['pedidos',renderOrders],['choices',renderChoices],['builder',renderBuilder],
+    ['costos',renderPriceInputs],['tinta',renderInkPurchases],['calculadora',calc],
+  ];
+  const cp=$('cPapel');
+  if(cp) cp.innerHTML=db.papers.length ? db.papers.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('') : '<option value="">Sin papeles configurados</option>';
+  jobs.forEach(([name,fn])=>{try{fn()}catch(e){console.error('Render '+name,e)}});
+  if($('balDesde')){try{renderBalance()}catch(e){console.error('Render balance',e)}}
+}
+
+['cHojas','cTiempo','cHoras','cMinutos','cMargen'].forEach(id=>$(id).addEventListener('input',calc)); $('cPapel').addEventListener('change',calc);
+if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
+if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
+renderAll();
+renderBusinessIdentity();
+loadBusinessSettings();
+if(!db.identity?.onboardingDone){ setTimeout(showIdentitySetup,120); }
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+<script>
+(function(){
+const ov=(h)=>{const o=document.createElement('div');o.className='nx-ov';o.innerHTML='<div class="nx-sheet">'+h+'</div>';o.onclick=e=>{if(e.target===o)o.remove()};document.body.appendChild(o);return o};
+let tt;const toast=(m,undo)=>{document.querySelectorAll('.nx-toast').forEach(x=>x.remove());const t=document.createElement('div');t.className='nx-toast';t.innerHTML='<span>'+m+'</span>';if(undo){const b=document.createElement('button');b.textContent='Deshacer';b.onclick=()=>{undo();t.remove()};t.appendChild(b)}document.body.appendChild(t);clearTimeout(tt);tt=setTimeout(()=>t.remove(),undo?9000:1600)};
+/* 5. aviso de guardado */
+const t0=Date.now(),_si=Storage.prototype.setItem;
+Storage.prototype.setItem=function(k,v){_si.call(this,k,v);if(k===KEY&&Date.now()-t0>2500)toast('✓ Guardado')};
+/* 5. deshacer al eliminar pedido */
+const _el=eliminarPedido;
+eliminarPedido=async function(){const snap=JSON.stringify(db),n=db.orders.length;await _el.apply(this,arguments);
+ if(db.orders.length<n)toast('Pedido eliminado',()=>{db=JSON.parse(snap);save();renderOrders();renderInicio();toast('✓ Pedido recuperado')})};
+/* 5. recordatorio de copia */
+const _ex=exportJSON;exportJSON=function(){localStorage.setItem('NOT_LAST_BACKUP',String(Date.now()));return _ex.apply(this,arguments);};
+/* 1. guías de Ayuda */
+const G=[['🚀 Primeros pasos',['Tocá tu ícono de usuario (arriba a la izquierda) → <b>Mi cuenta</b> y poné nombre y logo.','En <b>Costos</b> cargá el precio de tus papeles y tus costos reales.','Con <b>＋ Nuevo</b> creá tu primer pedido.','Seguilo desde <b>Pedidos</b>.'],'Ir a Costos',"go('costos')"],
+['📦 Pedidos y artículos',['En <b>＋ Nuevo</b> poné nombre del cliente y fecha de entrega.','Elegí el artículo, configuralo y sumalo al carrito.','Guardá el pedido: aparece en <b>Pedidos</b>.','Tocá <b>Cobrar</b> cuando recibas un pago y <b>Entregado</b> al terminar.'],'Crear pedido',"nuevoPedido();go('nuevoPedido')"],
+['💰 Costos y calculadora',['En <b>Costos → Papeles</b> cargá lo que te cuesta cada papel.','En <b>Costos reales</b> cargá tinta, electricidad, desgaste y tu hora de trabajo.','En <b>Calculadora</b> elegí papel, hojas, tiempo y recargo.','Mirá el <b>precio sugerido</b> y tu ganancia.'],'Abrir calculadora',"go('calculadora')"],
+['💾 Datos y copias',['Todo se guarda solo en este dispositivo.','Menú de usuario → <b>Configuración</b> → exportá una copia cada tanto.','Para recuperar tu información, usá <b>Importar</b> con ese archivo.','Si cambiás de celular, importá la copia allí.'],'Ir a Configuración',"openAppSettings()"]];
+document.querySelectorAll('#ayuda button.help-card').forEach((b,i)=>{const g=G[i];if(!g)return;b.onclick=()=>{const o=ov('<h3>'+g[0]+'</h3><ol>'+g[1].map(x=>'<li>'+x+'</li>').join('')+'</ol><div class="nx-btns"><button class="soft" type="button" onclick="this.closest(\'.nx-ov\').remove()">Cerrar</button><button type="button" onclick="this.closest(\'.nx-ov\').remove();'+g[3]+'">'+g[2]+'</button></div>')}});
+/* 4. filtros en Pedidos */
+let pf='all';const F={all:()=>1,cobro:o=>!o.paid&&o.status!=='Cancelado',entrega:o=>o.status!=='Entregado'&&o.status!=='Cancelado',ent:o=>o.status==='Entregado'};
+const bs=document.getElementById('buscaPedido');
+if(bs){const c=document.createElement('div');c.className='nx-chips';[['all','Todos'],['cobro','💵 Cobro pendiente'],['entrega','📦 Entrega pendiente'],['ent','✓ Entregados']].forEach(([k,l])=>{const b=document.createElement('button');b.type='button';b.className='nx-chip'+(k===pf?' on':'');b.textContent=l;b.onclick=()=>{pf=k;c.querySelectorAll('.nx-chip').forEach(x=>x.classList.toggle('on',x===b));renderOrders()};c.appendChild(b)});bs.after(c)}
+const _ro=renderOrders;
+renderOrders=function(){const real=db.orders;db.orders=real.filter(F[pf]);try{_ro.apply(this,arguments)}finally{db.orders=real}
+ const L=document.getElementById('pedidosLista');
+ if(L&&!real.length)L.innerHTML='<div class="nx-empty"><p>Todavía no hay pedidos.</p><button type="button" onclick="nuevoPedido();go(\'nuevoPedido\')">＋ Crear el primero</button></div>'};
+/* 3. primeros pasos + recordatorio de copia en Inicio */
+const ini=document.getElementById('inicio');
+const W=document.createElement('div');W.id='nxWelcome';ini.insertBefore(W,ini.firstChild);
+const _ri=renderInicio;
+renderInicio=function(){_ri.apply(this,arguments);
+ const cd=db.costs||{},costsOk=['inkPrice','electricity','printerCost','other','hour'].some(k=>Number(cd[k])>0),ordOk=db.orders.length>0;
+ let h='';
+ if(!(db.settings&&db.settings.hideWelcome)&&!(costsOk&&ordOk)){
+  const st=(ok,n,t,a)=>'<div class="nx-step'+(ok?' ok':'')+'"><span class="d">'+(ok?'✓':n)+'</span><b>'+t+'</b>'+(ok?'':'<button type="button" class="soft" onclick="'+a+'">Ir</button>')+'</div>';
+  h+='<div class="card"><div class="row"><h3 style="margin:0">👋 Empecemos en 3 pasos</h3><button type="button" class="soft" onclick="db.settings=db.settings||{};db.settings.hideWelcome=true;save();renderInicio()">Ocultar</button></div>'+st(false,1,'Poné tu nombre y logo','openAccountPanel()')+st(costsOk,2,'Cargá tus costos','go(\'costos\')')+st(ordOk,3,'Creá tu primer pedido','nuevoPedido();go(\'nuevoPedido\')')+'</div>'}
+ const lb=Number(localStorage.getItem('NOT_LAST_BACKUP')||0);
+ if(ordOk&&Date.now()-lb>30*864e5)h+='<div class="card" style="background:var(--yellow-50)"><div class="row"><span>💾 Hace más de 30 días que no exportás una copia.</span><button type="button" onclick="exportJSON();renderInicio()">Exportar ahora</button></div></div>';
+ W.innerHTML=h;
+ const ip=document.getElementById('inicioPedidos');if(ip&&!db.orders.length)ip.innerHTML='<div class="nx-empty"><p>Todavía no hay pedidos.</p><button type="button" onclick="nuevoPedido();go(\'nuevoPedido\')">＋ Crear el primero</button></div>'};
+/* 8. resumen visible en Calculadora */
+const _c=calc;
+calc=function(){_c.apply(this,arguments);const o=document.getElementById('calcOut');if(!o)return;const bx=o.querySelector('.cost-detail-box'),big=o.querySelector('.big');if(!bx||!big)return;
+ const cost=bx.querySelector(':scope > .row:last-child b:last-child'),gan=o.lastElementChild&&o.lastElementChild.querySelector('b');if(!cost||!gan)return;
+ const d=document.createElement('div');d.className='nx-sum';d.innerHTML='<div><small>Costo</small><b>'+cost.textContent+'</b></div><div><small>Precio sugerido</small><b>'+big.textContent+'</b></div><div class="g"><small>Ganancia</small><b>'+gan.textContent+'</b></div>';o.insertBefore(d,o.firstChild)};
+renderInicio();renderOrders();
+})();
+</script>
+</body>
+</html>
