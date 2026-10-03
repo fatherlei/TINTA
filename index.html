@@ -1356,6 +1356,7 @@ async function cloudApplySession(session,event){
   }
 }
   async function checkTintaLicense(){
+  async function checkTintaLicense(){
   const c=initCloud();
   if(!c) return false;
 
@@ -1371,13 +1372,58 @@ async function cloudApplySession(session,event){
     return false;
   }
 
+  const lock=document.getElementById('tintaLicenseLock');
+
   if(!data || data.status!=='active'){
-    alert('🔒 Esta cuenta todavía no tiene una licencia activa de TINTA.');
+    if(!lock){
+      const overlay=document.createElement('div');
+      overlay.id='tintaLicenseLock';
+      overlay.style.cssText=`
+        position:fixed;
+        inset:0;
+        z-index:999999;
+        background:rgba(255,255,255,.97);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:24px;
+        text-align:center;
+        font-family:Arial,sans-serif;
+      `;
+
+      overlay.innerHTML=`
+        <div style="max-width:420px;">
+          <div style="font-size:52px;margin-bottom:14px;">🔒</div>
+          <h2 style="margin:0 0 10px;color:#222;">TINTA está bloqueada</h2>
+          <p style="margin:0 0 20px;color:#666;line-height:1.5;">
+            Esta cuenta de Google no tiene una licencia activa de TINTA.
+          </p>
+          <button onclick="location.reload()" style="
+            border:0;
+            border-radius:12px;
+            padding:12px 20px;
+            font-weight:700;
+            background:#ff3b91;
+            color:white;
+            cursor:pointer;
+          ">
+            Volver a intentar
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+    }
+
     return false;
   }
 
-  return true;
+  if(lock){
+    lock.remove();
   }
+
+  return true;
+}
 async function cloudSession(){const c=initCloud(); if(!c)return null; const r=await c.auth.getSession(); return r.data?.session||null;}
 function cloudPayload(){ return {data:db, client_updated_at:db.dataUpdatedAt||new Date().toISOString()}; }
 function cloudSetStatus(msg){if($('cloudStatus')) $('cloudStatus').textContent=msg;}
