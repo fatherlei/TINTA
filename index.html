@@ -1322,10 +1322,37 @@ async function cloudApplySession(session,event){
   if(session?.user){
     out.style.display='none'; inn.style.display='block';
     if($('cloudUserEmail')) $('cloudUserEmail').textContent=session.user.email||'Cuenta conectada';
-    if(event!=='SIGNED_OUT') await cloudInitialSync();
+    if(event!=='SIGNED_OUT'){
+  const licensed=await checkTintaLicense();
+  if(!licensed) return;
+  await cloudInitialSync();
+    }
     if($('identityOverlay')?.style.display==='flex') closeIdentitySetup();
   }else{ out.style.display='block'; inn.style.display='none'; if($('cloudSetupHint')) $('cloudSetupHint').textContent=cloudReady()?'':'La nube todavía no está conectada en esta versión.'; }
 }
+  async function checkTintaLicense(){
+  const c=initCloud();
+  if(!c) return false;
+
+  const {data,error}=await c
+    .from('notfome_licenses')
+    .select('status,plan')
+    .eq('user_id',(await c.auth.getUser()).data.user.id)
+    .maybeSingle();
+
+  if(error){
+    console.error('Error comprobando licencia:',error);
+    alert('No pudimos comprobar tu licencia. Revisá tu conexión e intentá nuevamente.');
+    return false;
+  }
+
+  if(!data || data.status!=='active'){
+    alert('🔒 Esta cuenta todavía no tiene una licencia activa de TINTA.');
+    return false;
+  }
+
+  return true;
+  }
 async function cloudSession(){const c=initCloud(); if(!c)return null; const r=await c.auth.getSession(); return r.data?.session||null;}
 function cloudPayload(){ return {data:db, client_updated_at:db.dataUpdatedAt||new Date().toISOString()}; }
 function cloudSetStatus(msg){if($('cloudStatus')) $('cloudStatus').textContent=msg;}
