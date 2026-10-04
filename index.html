@@ -387,110 +387,6 @@ nav::before{display:none!important}
 @keyframes tintaNameIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){#tintaSplash::before,#tintaSplash::after,.tinta-splash-logo,.tinta-splash-name{animation:none!important}.tinta-splash-logo,.tinta-splash-name{opacity:1}}
 </style>
-
-<style id="tinta-button-modern-v1">
-/* TINTA · SOLO REDISEÑO DE BOTONES — no altera layout, navegación ni lógica */
-button{
-  font-family:var(--font-body)!important;
-  font-weight:600!important;
-  letter-spacing:.01em;
-  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease!important;
-}
-button:hover{transform:translateY(-1px)}
-button:active{transform:translateY(1px) scale(.985)!important}
-
-/* Botones principales: estilo pill moderno, como el ejemplo */
-button:not(.soft):not(.sky):not(.yellow):not(.danger):not(.paid-btn):not(.pending-btn):not(.toggle):not(.user-menu-btn):not(.pedido-action):not(.tinta-floating-new):not(nav button){
-  background:linear-gradient(135deg,#ff42b5 0%,#f451b0 52%,#ee3da8 100%)!important;
-  color:#fff!important;
-  border:0!important;
-  border-radius:999px!important;
-  box-shadow:0 8px 20px rgba(238,61,168,.24), inset 0 1px 0 rgba(255,255,255,.28)!important;
-  min-height:42px;
-}
-button:not(.soft):not(.sky):not(.yellow):not(.danger):not(.paid-btn):not(.pending-btn):not(.toggle):not(.user-menu-btn):not(.pedido-action):not(.tinta-floating-new):not(nav button):hover{
-  box-shadow:0 11px 24px rgba(238,61,168,.30), inset 0 1px 0 rgba(255,255,255,.32)!important;
-}
-
-/* Secundarios: blancos/pastel, icono de color y flecha */
-button.soft, button.sky, button.yellow, button.danger{
-  border-radius:999px!important;
-  min-height:42px;
-  padding:10px 16px!important;
-  border:1px solid transparent!important;
-  box-shadow:0 5px 15px rgba(80,40,90,.08)!important;
-}
-button.soft{background:linear-gradient(180deg,#fffafd,#fff3fa)!important;color:#25212c!important;border-color:#f7d6eb!important}
-button.sky{background:linear-gradient(180deg,#f7fdff,#e9f9fd)!important;color:#146b7b!important;border-color:#d1eef4!important}
-button.yellow{background:linear-gradient(180deg,#fffdf5,#fff3cf)!important;color:#785600!important;border-color:#f5e3b2!important}
-button.danger{background:linear-gradient(180deg,#fff8fa,#ffe9ef)!important;color:#a42c50!important;border-color:#f5c7d4!important}
-button.soft:hover{background:#fff!important;border-color:#f2acd6!important}
-button.sky:hover{background:#fff!important;border-color:#9eddea!important}
-button.yellow:hover{background:#fff!important;border-color:#edcf78!important}
-button.danger:hover{background:#fff!important;border-color:#ef9eb5!important}
-
-/* Botón Limpiar formulario: mismo lenguaje visual que el ejemplo */
-.btn-clear-form{display:inline-flex!important;align-items:center;gap:10px;justify-content:flex-start!important;min-width:190px}
-.btn-clear-form .btn-svg-icon{color:#f02b9d}
-.btn-chevron{margin-left:auto;font-size:29px;line-height:18px;color:#e72a9c;font-weight:400!important}
-.btn-svg-icon{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 24px}
-.btn-svg-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-
-/* Acciones circulares del pedido: círculo de color + etiqueta debajo */
-.pedido-actions{align-items:flex-start!important}
-.pedido-action{
-  background:transparent!important;
-  color:#25212c!important;
-  box-shadow:none!important;
-  border:0!important;
-  border-radius:0!important;
-  width:92px!important;
-  height:102px!important;
-  padding:0!important;
-  gap:7px!important;
-  font-family:var(--font-body)!important;
-  font-weight:600!important;
-  font-size:11px!important;
-}
-.pedido-action .pedido-icon{
-  width:68px!important;height:68px!important;border-radius:50%!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  box-shadow:0 8px 18px rgba(80,40,90,.12), inset 0 1px 0 rgba(255,255,255,.35)!important;
-  transition:transform .16s ease,box-shadow .16s ease!important;
-}
-.pedido-action:hover .pedido-icon{transform:translateY(-2px);box-shadow:0 11px 22px rgba(80,40,90,.16), inset 0 1px 0 rgba(255,255,255,.4)!important}
-.pedido-action .pedido-icon svg{width:30px!important;height:30px!important;stroke-width:1.9!important}
-.pedido-action>span:last-child{font-size:11px!important;line-height:1.15!important;font-weight:600!important;color:#35303a!important;white-space:normal!important}
-.pedido-save .pedido-icon{background:linear-gradient(145deg,#ff3eb0,#f24aa9)!important;color:#fff!important}
-.pedido-pdf .pedido-icon{background:linear-gradient(145deg,#ff66bd,#ff86cf)!important;color:#fff!important}
-.pedido-share .pedido-icon{background:linear-gradient(145deg,#5bc9ee,#36a9dc)!important;color:#fff!important}
-.pedido-delete .pedido-icon{background:linear-gradient(145deg,#ff8fb0,#f56c94)!important;color:#fff!important}
-
-/* Acciones de la lista de pedidos: compactas y limpias */
-#pedidosLista .actions button{font-family:var(--font-body)!important;font-weight:600!important;box-shadow:0 4px 11px rgba(80,40,90,.07)!important}
-#pedidosLista .actions button.paid-btn,#pedidosLista .actions button.pending-btn{border-radius:999px!important;border:1px solid transparent!important}
-
-/* Calendario/lista generado dentro de Pedidos */
-#tintaCalendarToggle{display:inline-flex!important;align-items:center!important;gap:10px!important;justify-content:flex-start!important;min-width:185px!important;text-align:left!important}
-#tintaCalendarToggle .btn-svg-icon{color:currentColor}
-
-/* Botón flotante: conserva tamaño/posición, moderniza acabado */
-.tinta-floating-new{
-  background:linear-gradient(145deg,#ff45b7,#f13ca9)!important;
-  box-shadow:0 12px 28px rgba(255,59,145,.30),0 0 0 5px rgba(255,255,255,.78),inset 0 1px 0 rgba(255,255,255,.35)!important;
-}
-
-/* Menú/configuración: mismo lenguaje, sin cambiar estructura */
-.config-menu-item,.user-menu-item,.help-card{font-weight:600!important}
-.config-menu-arrow,.user-menu-arrow{font-weight:400!important}
-
-@media(max-width:600px){
-  .btn-clear-form,#tintaCalendarToggle{min-width:0!important;width:auto!important}
-  .pedido-action{width:78px!important;height:96px!important}
-  .pedido-action .pedido-icon{width:62px!important;height:62px!important}
-  .pedido-action>span:last-child{font-size:10px!important}
-}
-</style>
 </head>
 <body>
 <div id="tintaSplash" aria-label="Cargando TINTA">
@@ -571,7 +467,7 @@ button.danger:hover{background:#fff!important;border-color:#ef9eb5!important}
 </section>
 <section class="page" id="nuevoPedido">
 <div class="card">
-<div class="row"><div><h2 id="pedidoTitulo">🏷️ Nuevo Pedido</h2><small>Armá el pedido del cliente.</small></div><button class="soft btn-clear-form" onclick="limpiarForm()" type="button"><span class="btn-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 15c3.5-1 5-3 6-6l1-3 3 3-2 2c2.5.5 4.5 2 6 4"/><path d="M4 20c2-2 4-3 7-3"/></svg></span><span>Limpiar formulario</span><span class="btn-chevron" aria-hidden="true">›</span></button></div>
+<div class="row"><div><h2 id="pedidoTitulo">🏷️ Nuevo Pedido</h2><small>Armá el pedido del cliente.</small></div><button class="soft" onclick="limpiarForm()">Limpiar form</button></div>
 
 <div class="form"><div><label>Nombre del Cliente *</label><input id="pNombre"/></div><div><label>Teléfono</label><input id="pTelefono"/></div><div><label>Fecha de entrega *</label><input id="pEntrega" type="date"/></div></div>
 
@@ -600,7 +496,7 @@ button.danger:hover{background:#fff!important;border-color:#ef9eb5!important}
 </div>
 </div>
 </section>
-<section class="page" id="pedidos"><div class="card"><div class="row"><div><h2>📅 Pedidos</h2><small>Primero aparecen los que requieren atención: pago pendiente o entrega pendiente.</small></div><button onclick="abrirPedido()">＋ Nuevo pedido</button></div><div id="borradorBanner"></div><input id="buscaPedido" oninput="renderOrders()" placeholder="🔍 Buscar por nombre, teléfono o Nº" style="margin:10px 0" type="search"/><div id="pedidosLista"></div></div></section>
+<section class="page" id="pedidos"><div class="card"><div class="row"><div><h2>📅 Pedidos</h2><small>Primero aparecen los que requieren atención: pago pendiente o entrega pendiente.</small></div></div><div id="borradorBanner"></div><input id="buscaPedido" oninput="renderOrders()" placeholder="🔍 Buscar por nombre, teléfono o Nº" style="margin:10px 0" type="search"/><div id="pedidosLista"></div></div></section>
 <section class="page" id="costos"><button class="soft" id="costConfigBack" onclick="go('ajustes');setTimeout(()=&gt;showConfigMenu(),0)" style="display:none;margin-bottom:8px" type="button">⚙️ Volver a configuración</button>
 <div class="actions" style="margin-bottom:10px"><button class="soft" onclick="go('calculadora')">🧮 Abrir calculadora de presupuesto</button></div>
 <div class="card costs-main-card">
@@ -3128,6 +3024,20 @@ renderInicio();renderOrders();
 .tinta-catalog-actions{display:flex;gap:8px;margin-top:10px}.tinta-catalog-actions>*{flex:1}
 @keyframes tintaFadeIn{from{opacity:0}to{opacity:1}}@keyframes tintaSheetIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}@keyframes tintaToastIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}@keyframes tintaToastOut{to{opacity:0;transform:translateY(10px) scale(.98)}}
 @media(min-width:700px){.tinta-modal-back{align-items:center}.tinta-floating-new{bottom:30px;right:28px}}
+
+/* TINTA · controles compactos: no alterar la interfaz ni el espacio de las secciones */
+#pedidos > .card > .row:first-child > button,
+#pedidos .tinta-calendar-icon-btn{flex:none}
+.tinta-calendar-icon-btn{width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;border-radius:50%!important;background:#fff!important;color:var(--pink-700)!important;border:1px solid color-mix(in srgb,var(--pink) 20%,#fff)!important;box-shadow:0 4px 12px rgba(255,59,145,.10)!important;display:flex!important;align-items:center;justify-content:center;font-size:0!important}
+.tinta-calendar-icon-btn svg{width:21px;height:21px;display:block}
+.costs-header-actions{align-items:center!important}
+.costs-header-actions button{min-height:34px!important;height:34px!important;padding:6px 10px!important;font-size:12px!important;border-radius:999px!important;box-shadow:none!important;line-height:1.1!important;white-space:nowrap}
+#costos .costs-header-actions .sky{background:#e9f9fc!important;color:var(--sky-700)!important}
+#costos .costs-header-actions button:not(.soft):not(.sky):not(.yellow):not(.danger){background:linear-gradient(135deg,#ff66c4,#ff8fd6)!important}
+#calculadora button, #costos button{max-height:40px}
+#calculadora .stickybar button, #costos .stickybar button{height:auto;min-height:34px;padding:7px 10px!important;font-size:12px!important}
+#pedidos .row:first-child{align-items:center}
+#pedidos .row:first-child > div{min-width:0}
 </style>
 <script>
 (function(){
@@ -3244,7 +3154,7 @@ renderInicio();renderOrders();
       const first=ped.querySelector('.card');
       if(first){
         const head=first.querySelector('.row');
-        if(head){const btn=document.createElement('button');btn.id='tintaCalendarToggle';btn.className='soft';btn.type='button';btn.innerHTML='<span class="btn-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/></svg></span><span>Ver calendario</span><span class="btn-chevron" aria-hidden="true">›</span>';btn.onclick=()=>{const w=$f('tintaCalendarWrap');w.classList.toggle('open');btn.innerHTML=w.classList.contains('open')?'<span class="btn-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><circle cx="10" cy="18" r="1.5" fill="currentColor"/></svg></span><span>Ver lista</span><span class="btn-chevron" aria-hidden="true">›</span>':'<span class="btn-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/></svg></span><span>Ver calendario</span><span class="btn-chevron" aria-hidden="true">›</span>'};head.appendChild(btn)}
+        if(head){const btn=document.createElement('button');btn.id='tintaCalendarToggle';btn.className='tinta-calendar-icon-btn';btn.type='button';btn.setAttribute('aria-label','Ver calendario');btn.title='Ver calendario';btn.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M7 2.8v4M17 2.8v4M3 9h18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M7.5 13h.01M12 13h.01M16.5 13h.01M7.5 17h.01M12 17h.01M16.5 17h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';btn.onclick=()=>{const w=$f('tintaCalendarWrap');w.classList.toggle('open');btn.setAttribute('aria-label',w.classList.contains('open')?'Cerrar calendario':'Ver calendario');btn.title=w.classList.contains('open')?'Cerrar calendario':'Ver calendario'};head.appendChild(btn)}
         const w=document.createElement('div');w.id='tintaCalendarWrap';w.className='tinta-calendar-wrap';w.innerHTML='<div id="tintaCalendar"></div><div id="tintaCalendarDetail"></div>';const list=$f('pedidosLista');if(list)list.before(w);else first.appendChild(w);
       }
     }
