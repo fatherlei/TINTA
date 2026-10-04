@@ -368,6 +368,26 @@ nav::before{display:none!important}
 .ticket-icon svg{width:30px;height:30px;display:block}
 .pedido-pdf .ticket-icon{display:inline-flex;align-items:center;justify-content:center}
 </style>
+
+<style id="tinta-scroll-fix">
+html, body {
+  min-height: 100% !important;
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: auto !important;
+  touch-action: pan-y !important;
+}
+body.identity-lock {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+main {
+  min-height: calc(100vh - 75px);
+  padding-bottom: 120px !important;
+}
+</style>
 </head>
 <body>
 <div class="identity-overlay" id="identityOverlay" style="display:none">
