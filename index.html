@@ -397,22 +397,23 @@ nav::before{display:none!important}
 <div class="identity-overlay" id="identityOverlay" style="display:none">
 <div class="identity-box">
 <div class="identity-logo-preview" id="identityPreview">✦</div>
-<h1>Empecemos con tu negocio ✨</h1>
-<p>Personalizá la app con los datos de tu emprendimiento. Para usar TINTA necesitás iniciar sesión con Google y tener una licencia activa.</p>
+<h1 id="identityTitle">Entrá a TINTA ✨</h1>
+<p id="identityText">Para usar TINTA, iniciá sesión únicamente con tu cuenta de Google. Tu cuenta y tus datos quedan protegidos y sincronizados en la nube.</p>
 <div class="welcome-cloud">
-<div class="welcome-cloud-title">☁️ Guardá tu negocio siempre actualizado</div>
-<div class="welcome-cloud-text">Conectá Google y tus pedidos, costos, artículos y configuración quedan asociados a tu cuenta para recuperarlos desde otro dispositivo.</div>
+<div class="welcome-cloud-title">☁️ Acceso seguro con Google</div>
+<div class="welcome-cloud-text">Después de iniciar sesión, si es tu primer ingreso, vas a poder cargar el nombre y el logo de tu negocio.</div>
 <button class="google-btn" onclick="cloudGoogleSignIn('welcome')" type="button"><span class="google-g">G</span> Continuar con Google</button>
-<div class="welcome-cloud-note">Tu licencia queda asociada a esta cuenta de Google para que puedas recuperar TINTA y tus datos desde cualquier dispositivo.</div>
+<div class="welcome-cloud-note">El acceso sin cuenta no está disponible.</div>
 </div>
+<div id="identityBusinessFields" style="display:none;text-align:left">
 <label for="identityName">Nombre de tu negocio</label>
 <input id="identityName" maxlength="60" placeholder="Ej.: Cata Toppers" type="text"/>
 <label>Logo <span style="font-weight:500;color:#999">(opcional)</span></label>
 <button class="identity-logo-btn" onclick="document.getElementById('identityLogoFile').click()" type="button">🖼️ Elegir logo desde el celular</button>
 <input accept="image/*" id="identityLogoFile" onchange="previewIdentityLogo(this)" style="display:none" type="file"/>
 <div class="identity-actions">
-
 <button class="identity-start" onclick="saveIdentitySetup()" type="button">Guardar y comenzar</button>
+</div>
 </div>
 </div>
 </div>
@@ -1195,8 +1196,8 @@ const NOTFOME_CLOUD_CONFIG = {
 </script>
 <script>
 const KEY='NOT_GESTION_ADAPTABLE_2026_V8';
-const APP_VERSION='10.0.0';
-const DATA_VERSION=2;
+const APP_VERSION='10.1.0';
+const DATA_VERSION=3;
 function normalizeDb(raw){
   const base=JSON.parse(JSON.stringify(initial));
   const d=(raw&&typeof raw==='object')?raw:{};
@@ -1370,8 +1371,11 @@ async function cloudApplySession(session,event){
       await cloudInitialSync();
     }
 
-    if($('identityOverlay')?.style.display==='flex'){
-      $('identityOverlay').style.display='none';
+    if(db.identity?.onboardingDone){
+      if($('identityOverlay')) $('identityOverlay').style.display='none';
+      document.body.classList.remove('identity-lock');
+    }else{
+      showIdentitySetup(true);
     }
 
   }else{
@@ -2073,7 +2077,7 @@ async function guardarPedido(){
   }
   __guardando=true; setTimeout(()=>{__guardando=false},1500);
   save();alert('Pedido guardado.');
-  nuevoPedido();go('inicio');
+  nuevoPedido();renderOrders();renderInicio();go('pedidos');
 }
 
 async function duplicarPedido(id){
@@ -2447,7 +2451,8 @@ function renderInicio(){
  $('inicioStock').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">${db.papers.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:6px;background:${(p.stock||0)<STOCK_BAJO?'#ffe0ea':'#dff6fa'};border-radius:14px;padding:6px 10px;font-size:12px"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.name)}</span><b style="white-space:nowrap;font-size:13px">${p.stock||0} h</b></div>`).join('')}</div>`;
  
  const arr=[...db.orders].sort((a,b)=>{const ea=a.status==='Entregado',eb=b.status==='Entregado';if(ea!==eb)return ea?1:-1;return String(a.delivery||'9999').localeCompare(String(b.delivery||'9999'))||(a.orderNumber||0)-(b.orderNumber||0);});
- $('inicioPedidos').innerHTML=arr.length?arr.map(o=>`<div class="order${o.status==='Entregado'?' order-entregado':''}" onclick="loadOrder(${o.id})"><div class="row"><div><b>#${String(o.orderNumber||0).padStart(2,'0')} · ${esc(o.client)}</b><br><small>📅 ${o.delivery.split('-').reverse().join('/')} · 📌 ${o.status}</small></div><b>${money(o.total)}</b></div></div>`).join(''):'<div class="empty">Todavía no hay pedidos.</div>';
+ $('inicioPedidos').innerHTML=arr.length?arr.map(o=>`<div class="order${o.status==='Entregado'?' order-entregado':''}" onclick="loadOrder(${o.id})"><div class="row"><div><b>#${String(o.orderNumber||0).padStart(2,'0')} · <span class="tinta-client-link" data-client="${esc(o.client||'')}">${esc(o.client)}</span></b><br><small>📅 ${o.delivery?o.delivery.split('-').reverse().join('/'):'A confirmar'} · 📌 ${o.status}</small></div><b>${money(o.total)}</b></div></div>`).join(''):'<div class="empty">Todavía no hay pedidos.</div>';
+ $('inicioPedidos').querySelectorAll('.tinta-client-link').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();tintaClientModal(el.dataset.client||el.textContent)}));
  renderPrioridades();
 }
 const STOCK_BAJO=20; // hojas; por debajo de esto se marca como stock bajo
@@ -2684,11 +2689,20 @@ function hideTintaSplash(){
   setTimeout(()=>splash.remove(),520);
 }
 
-function showIdentitySetup(){
+function showIdentitySetup(afterGoogle=false){
   const ov=$('identityOverlay'); if(!ov) return;
   ov.style.display='flex'; document.body.classList.add('identity-lock');
+  const fields=$('identityBusinessFields');
+  if(fields) fields.style.display=afterGoogle?'block':'none';
+  const welcome=$('identityOverlay')?.querySelector('.welcome-cloud');
+  if(welcome) welcome.style.display=afterGoogle?'none':'block';
+  const title=$('identityTitle');
+  const text=$('identityText');
+  if(title) title.textContent=afterGoogle?'Completá tu negocio ✨':'Entrá a TINTA ✨';
+  if(text) text.textContent=afterGoogle?'Tu cuenta de Google ya está conectada. Completá estos datos una sola vez para personalizar TINTA.':'Para usar TINTA, iniciá sesión únicamente con tu cuenta de Google. Tu cuenta y tus datos quedan protegidos y sincronizados en la nube.';
   $('identityName').value=db.identity?.name||'';
   const prev=$('identityPreview');
+  if(prev) prev.style.display=afterGoogle?'flex':'none';
   if(db.identity?.logo){prev.innerHTML=`<img src="${db.identity.logo}" alt="Logo">`;}else{prev.textContent='✦';}
 }
 function closeIdentitySetup(){
@@ -2759,13 +2773,13 @@ async function saveIdentitySetup(){
 
   }catch(e){
     console.error('Error en la configuración inicial:',e);
-
+    // Fail-closed: ante un error inesperado no se habilita TINTA.
     if(ov){
-      ov.style.display='none';
-      ov.classList.remove('open');
+      ov.style.display='flex';
+      ov.classList.add('open');
     }
-
-    document.body.classList.remove('identity-lock');
+    document.body.classList.add('identity-lock');
+    alert('No pudimos completar el acceso. Iniciá sesión con Google y verificá tu licencia para continuar.');
   }
 }
 function skipIdentitySetup(){
@@ -2921,8 +2935,12 @@ if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
 
   hideTintaSplash();
 
-  if(db.identity?.onboardingDone){
-    setTimeout(showIdentitySetup,120);
+  if(!db.identity?.onboardingDone){
+    setTimeout(()=>showIdentitySetup(true),120);
+  }else{
+    const ov=$('identityOverlay');
+    if(ov){ov.style.display='none';ov.classList.remove('open');}
+    document.body.classList.remove('identity-lock');
   }
 
 })();
@@ -2982,5 +3000,230 @@ calc=function(){_c.apply(this,arguments);const o=document.getElementById('calcOu
 renderInicio();renderOrders();
 })();
 </script>
+
+<!-- TINTA-NUEVAS-FUNCIONES-V3 -->
+<style id="tinta-new-features-style">
+:root{--tinta-glow:0 8px 26px rgba(255,59,145,.20)}
+.tinta-sync-dot{position:fixed;top:72px;right:12px;width:11px;height:11px;border-radius:50%;z-index:1200;background:#b8b8b8;box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 0 5px rgba(0,0,0,.04);transition:.25s ease;cursor:default}
+.tinta-sync-dot[data-state="yellow"]{background:#f2c94c;box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 12px rgba(242,201,76,.7)}
+.tinta-sync-dot[data-state="green"]{background:#27c77a;box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 12px rgba(39,199,122,.55)}
+.tinta-sync-dot[data-state="red"]{background:#ef476f;animation:tintaSyncBlink 1s ease-in-out infinite;box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 13px rgba(239,71,111,.7)}
+@keyframes tintaSyncBlink{50%{opacity:.25;transform:scale(.78)}}
+.tinta-day-card{margin-bottom:12px;background:linear-gradient(135deg,var(--pink-50),#fff);border:2px solid color-mix(in srgb,var(--pink) 22%,#fff);box-shadow:0 5px 0 rgba(255,59,145,.08);border-radius:20px;padding:13px 14px}
+.tinta-day-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.tinta-day-title h3{margin:0;font-size:16px}.tinta-day-line{font-size:13px;color:var(--muted);margin-top:4px}.tinta-count{min-width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--pink);color:var(--on-pink);font-weight:900;box-shadow:0 6px 14px rgba(255,59,145,.25)}.tinta-more{background:none!important;color:var(--pink-700)!important;box-shadow:none!important;padding:0!important;font-size:12px!important;text-decoration:underline}
+.tinta-meta-card{margin-bottom:12px;border-radius:20px;padding:13px 14px;background:#fff;border:2px solid var(--line);box-shadow:0 5px 0 rgba(36,31,43,.05)}
+.tinta-meta-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.tinta-meta-title{font-weight:900}.tinta-meta-action{width:34px;height:34px;border-radius:50%;padding:0!important;display:flex!important;align-items:center;justify-content:center;font-size:20px!important;background:var(--pink)!important;color:var(--on-pink)!important;box-shadow:0 6px 14px rgba(255,59,145,.22)!important}
+.tinta-progress{height:12px;background:#f0edf2;border-radius:999px;overflow:hidden;margin-top:10px}.tinta-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sky),var(--pink));border-radius:999px;transition:width .5s cubic-bezier(.18,.78,.25,1)}.tinta-meta-detail{display:flex;justify-content:space-between;gap:8px;margin-top:7px;font-size:12px;color:var(--muted)}
+.tinta-calendar-wrap{display:none;margin-top:10px}.tinta-calendar-wrap.open{display:block}.tinta-cal-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.tinta-cal-nav button{min-width:38px;padding:7px 10px}.tinta-cal-title{font-weight:900;text-align:center}.tinta-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.tinta-cal-week{font-size:10px;text-align:center;color:var(--muted);font-weight:800;padding:3px}.tinta-cal-day{min-height:42px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:5px;position:relative;cursor:pointer;text-align:left}.tinta-cal-day.muted{opacity:.35}.tinta-cal-day.today{border-color:var(--pink);box-shadow:0 0 0 2px var(--pink-50)}.tinta-cal-day[data-load="1"]{border-color:#f2c94c;background:#fffdf2}.tinta-cal-day[data-load="2"]{border-color:#f2a154;background:#fff8f1}.tinta-cal-day[data-load="3"]{border-color:var(--pink);background:#fff6fb}.tinta-cal-day[data-load="4"]{border-color:#d6298f;background:#fff0f8}.tinta-cal-num{font-size:12px;font-weight:900}.tinta-cal-badge{position:absolute;right:4px;bottom:4px;min-width:18px;height:18px;border-radius:50%;background:var(--pink);color:var(--on-pink);font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:900}.tinta-cal-detail{margin-top:10px;padding:11px;border-radius:15px;background:var(--pink-50);border:1px solid color-mix(in srgb,var(--pink) 22%,#fff)}
+.tinta-client-link{cursor:pointer;color:var(--pink-700);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--pink) 30%,transparent);text-underline-offset:2px}
+.tinta-floating-new{position:fixed;right:18px;bottom:92px;width:58px;height:58px;border-radius:50%;z-index:1150;border:0!important;background:var(--pink)!important;color:var(--on-pink)!important;font-size:30px!important;font-weight:700;display:flex!important;align-items:center;justify-content:center;padding:0!important;box-shadow:0 12px 28px rgba(255,59,145,.34),0 0 0 5px rgba(255,255,255,.72)!important;transition:transform .18s ease,box-shadow .18s ease}.tinta-floating-new:active{transform:scale(.93)}
+.tinta-modal-back{position:fixed;inset:0;z-index:2100;background:rgba(36,31,43,.34);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;align-items:flex-end;justify-content:center;padding:14px;animation:tintaFadeIn .18s ease}.tinta-modal{width:min(520px,100%);max-height:min(84vh,760px);overflow:auto;background:#fff;border:2px solid var(--pink-50);border-radius:26px;padding:16px;box-shadow:0 20px 60px rgba(36,31,43,.22);animation:tintaSheetIn .25s cubic-bezier(.18,.78,.25,1)}.tinta-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.tinta-modal-close{width:36px;height:36px;border-radius:50%;padding:0!important;display:flex!important;align-items:center;justify-content:center;background:#f5f2f6!important;color:var(--ink)!important;box-shadow:none!important;font-size:20px!important}.tinta-modal h2,.tinta-modal h3{margin:0}.tinta-modal-list{display:grid;gap:7px;margin-top:10px}.tinta-modal-row{padding:9px 10px;border-radius:13px;background:#faf8fb;border:1px solid var(--line)}
+.tinta-toast{position:fixed;left:14px;right:14px;bottom:86px;z-index:2200;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#241f2b;color:#fff;border-radius:17px;padding:11px 13px;font-size:13px;font-weight:800;box-shadow:0 12px 30px rgba(36,31,43,.24);animation:tintaToastIn .28s cubic-bezier(.18,.78,.25,1)}.tinta-toast.out{animation:tintaToastOut .22s ease forwards}.tinta-toast button{border:0;background:var(--pink);color:var(--on-pink);border-radius:10px;padding:7px 10px;font-weight:900}
+.tinta-catalog-preview{width:100%;border-radius:18px;border:1px solid var(--line);display:block;background:#fff}
+.tinta-catalog-actions{display:flex;gap:8px;margin-top:10px}.tinta-catalog-actions>*{flex:1}
+@keyframes tintaFadeIn{from{opacity:0}to{opacity:1}}@keyframes tintaSheetIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}@keyframes tintaToastIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}@keyframes tintaToastOut{to{opacity:0;transform:translateY(10px) scale(.98)}}
+@media(min-width:700px){.tinta-modal-back{align-items:center}.tinta-floating-new{bottom:30px;right:28px}}
+</style>
+<script>
+(function(){
+  'use strict';
+  const TINTA_FEATURES_VERSION=3;
+  function ensureFeaturesData(){
+    db.settings=db.settings||{};
+    if(typeof db.settings.monthlyGoal!=='number') db.settings.monthlyGoal=0;
+    if(typeof db.settings.tintaFeaturesVersion!=='number') db.settings.tintaFeaturesVersion=TINTA_FEATURES_VERSION;
+    if(!Array.isArray(db.settings.featureBackups)) db.settings.featureBackups=[];
+    // Migración no destructiva: conserva todos los datos existentes y agrega solo campos nuevos.
+    if(!db.settings.featureMigrationDone){
+      try{db.settings.featureMigrationDone=true;save();}catch(e){console.warn('Migración TINTA',e)}
+    }
+  }
+  ensureFeaturesData();
+
+  const $f=id=>document.getElementById(id);
+  const isoDate=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+  const today=()=>isoDate(new Date());
+  const monthKey=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')};
+  const escapeHtml=v=>typeof esc==='function'?esc(v):String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+  function featureModal(html,opts={}){
+    document.querySelectorAll('.tinta-modal-back').forEach(x=>x.remove());
+    const back=document.createElement('div');back.className='tinta-modal-back';
+    const box=document.createElement('div');box.className='tinta-modal';
+    box.innerHTML='<div class="tinta-modal-head"><div></div><button class="tinta-modal-close" type="button" aria-label="Cerrar">×</button></div><div class="tinta-modal-body"></div>';
+    box.querySelector('.tinta-modal-head>div').innerHTML=opts.title?'<h2>'+opts.title+'</h2>':'';
+    box.querySelector('.tinta-modal-body').innerHTML=html;
+    back.appendChild(box);document.body.appendChild(back);
+    const close=()=>{back.style.animation='tintaFadeIn .16s ease reverse';box.style.animation='tintaSheetIn .16s ease reverse';setTimeout(()=>back.remove(),150)};
+    box.querySelector('.tinta-modal-close').onclick=close;
+    back.addEventListener('click',e=>{if(e.target===back)close()});
+    return {back,box,close};
+  }
+  let toastTimer=null;
+  function ftoast(message,undo){
+    document.querySelectorAll('.tinta-toast').forEach(x=>x.remove());
+    const t=document.createElement('div');t.className='tinta-toast';
+    const span=document.createElement('span');span.textContent=message;t.appendChild(span);
+    if(undo){const b=document.createElement('button');b.type='button';b.textContent='Deshacer';b.onclick=()=>{try{undo()}finally{t.remove()}};t.appendChild(b)}
+    document.body.appendChild(t);clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),220)},undo?5000:2200);
+  }
+  window.tintaToast=ftoast;
+
+  // Indicador permanente de sincronización. No altera la lógica de Supabase.
+  const sync=document.createElement('div');sync.id='tintaSyncDot';sync.className='tinta-sync-dot';sync.dataset.state='gray';sync.title='Sincronización';document.body.appendChild(sync);
+  function syncState(state,title){sync.dataset.state=state;sync.title=title||'Sincronización';}
+  window.tintaSyncState=syncState;
+  const oldCloudSetStatus=window.cloudSetStatus;
+  if(typeof oldCloudSetStatus==='function'){
+    window.cloudSetStatus=function(msg){oldCloudSetStatus(msg);const m=String(msg||'');if(/❌|error|no se pudo/i.test(m))syncState('red',m);else if(/guardando|comprobando|enviando|actualizando/i.test(m))syncState('yellow',m);else if(/sincroniz|actualizad|activa|conectada/i.test(m))syncState('green',m);else syncState('gray',m||'Sin configurar')};
+  }
+  setTimeout(()=>{try{const st=$f('cloudStatus')?.textContent||'';if(st)window.cloudSetStatus(st)}catch(e){}},700);
+
+  function activeOrders(){return db.orders.filter(o=>!['Entregado','Cancelado'].includes(o.status));}
+  function todayDeliveries(){return db.orders.filter(o=>o.delivery===today()&&o.status!=='Cancelado');}
+  function monthSales(){const k=monthKey(new Date());return db.orders.filter(o=>o.status!=='Cancelado'&&String(o.delivery||o.registeredISO||'').slice(0,7)===k).reduce((s,o)=>s+(Number(o.total)||0),0)}
+
+  function renderDaySummary(){
+    const host=$f('tintaDaySummary');if(!host)return;
+    const arr=todayDeliveries();
+    const due=arr.reduce((s,o)=>s+(typeof saldoDe==='function'?saldoDe(o):Math.max(0,(Number(o.total)||0)-(Number(o.sena)||0))),0);
+    const count=arr.length>10?'10+':arr.length>5?'5+':String(arr.length);
+    const label=arr.length===0?'Hoy no tenés entregas':arr.length>3?'Hoy tenés '+arr.length+' pedidos para entregar':'Hoy entregás '+arr.length+' pedido'+(arr.length===1?'':'s')+' ('+arr.map(o=>escapeHtml(o.client||'Sin nombre')).join(', ')+')';
+    const more=arr.length>3?'<button class="tinta-more" type="button" onclick="go(\'pedidos\')">Ver más →</button>':'';
+    host.innerHTML='<div class="tinta-day-card"><div class="tinta-day-title"><div style="min-width:0;flex:1"><h3>📋 Resumen del día</h3><div class="tinta-day-line">'+label+(due>0?' · <b>'+money(due)+'</b> por cobrar':'')+'</div></div>'+more+'<div class="tinta-count">'+count+'</div></div></div>';
+  }
+
+  function renderGoal(hostId){
+    const host=$f(hostId);if(!host)return;
+    const goal=Math.max(0,Number(db.settings?.monthlyGoal)||0),sales=monthSales(),pct=goal?Math.min(100,sales/goal*100):0;
+    host.innerHTML='<div class="tinta-meta-card"><div class="tinta-meta-head"><div><div class="tinta-meta-title">🎯 Meta de ventas del mes</div><small style="color:var(--muted)">'+(goal?'Llevás <b>'+money(sales)+'</b> de <b>'+money(goal)+'</b>':'Definí cuánto querés vender este mes')+'</small></div><button class="tinta-meta-action" type="button" onclick="tintaEditGoal()">'+(goal?'✎':'+')+'</button></div>'+(goal?'<div class="tinta-progress"><i style="width:'+pct+'%"></i></div><div class="tinta-meta-detail"><span>Meta: '+money(goal)+'</span><b>'+Math.round(pct)+'%</b></div>':'')+'</div>';
+  }
+  window.tintaEditGoal=function(){
+    const current=Number(db.settings?.monthlyGoal)||0;
+    const m=featureModal('<label>Meta de ventas mensual</label><input id="tintaGoalInput" type="number" min="0" inputmode="decimal" value="'+(current||'')+'" placeholder="Ej.: 80000"><small style="display:block;margin-top:6px;color:var(--muted)">La meta se guarda en TINTA y se puede editar cuando quieras.</small><div class="actions" style="margin-top:12px"><button class="soft" type="button" id="tintaGoalCancel">Cancelar</button><button type="button" id="tintaGoalSave">Guardar</button></div>',{title:'🎯 Meta mensual'});
+    m.box.querySelector('#tintaGoalCancel').onclick=m.close;
+    m.box.querySelector('#tintaGoalSave').onclick=()=>{db.settings.monthlyGoal=Math.max(0,Number(m.box.querySelector('#tintaGoalInput').value)||0);save();renderAll();renderDaySummary();renderGoal('tintaGoalInicio');renderGoal('tintaGoalBalance');m.close();ftoast('✓ Meta mensual guardada')};
+  };
+
+  function injectHosts(){
+    const ini=$f('inicio');
+    if(ini&&!$f('tintaDaySummary')){const host=document.createElement('div');host.id='tintaDaySummary';ini.insertBefore(host,ini.firstChild)}
+    if(ini&&!$f('tintaGoalInicio')){const host=document.createElement('div');host.id='tintaGoalInicio';const day=$f('tintaDaySummary');(day?day.nextSibling:ini.firstChild)?ini.insertBefore(host,day?day.nextSibling:ini.firstChild):ini.appendChild(host)}
+    const bal=$f('balance');
+    if(bal&&!$f('tintaGoalBalance')){const host=document.createElement('div');host.id='tintaGoalBalance';const card=bal.querySelector('.card');if(card)card.parentNode.insertBefore(host,card)}
+    const ped=$f('pedidos');
+    if(ped&&!$f('tintaCalendarToggle')){
+      const first=ped.querySelector('.card');
+      if(first){
+        const head=first.querySelector('.row');
+        if(head){const btn=document.createElement('button');btn.id='tintaCalendarToggle';btn.className='soft';btn.type='button';btn.textContent='🗓️ Calendario';btn.onclick=()=>{const w=$f('tintaCalendarWrap');w.classList.toggle('open');btn.textContent=w.classList.contains('open')?'📋 Lista':'🗓️ Calendario'};head.appendChild(btn)}
+        const w=document.createElement('div');w.id='tintaCalendarWrap';w.className='tinta-calendar-wrap';w.innerHTML='<div id="tintaCalendar"></div><div id="tintaCalendarDetail"></div>';const list=$f('pedidosLista');if(list)list.before(w);else first.appendChild(w);
+      }
+    }
+    if(!$f('tintaFloatingNew')){const b=document.createElement('button');b.id='tintaFloatingNew';b.className='tinta-floating-new';b.type='button';b.setAttribute('aria-label','Nuevo pedido');b.textContent='+';b.onclick=()=>{nuevoPedido();go('nuevoPedido')};document.body.appendChild(b)}
+  }
+  injectHosts();
+
+  let calDate=new Date();
+  function renderCalendar(){
+    const host=$f('tintaCalendar');if(!host)return;
+    const y=calDate.getFullYear(),m=calDate.getMonth();
+    const first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate();
+    const prevDays=new Date(y,m,0).getDate();
+    const counts={};db.orders.filter(o=>o.status!=='Cancelado'&&o.delivery).forEach(o=>{const d=String(o.delivery);counts[d]=(counts[d]||0)+1});
+    let h='<div class="tinta-cal-nav"><button class="soft" type="button" onclick="tintaCalMove(-1)">‹</button><div class="tinta-cal-title">'+first.toLocaleDateString('es-AR',{month:'long',year:'numeric'})+'</div><button class="soft" type="button" onclick="tintaCalMove(1)">›</button></div><div class="tinta-cal-grid">'+['L','M','X','J','V','S','D'].map(x=>'<div class="tinta-cal-week">'+x+'</div>').join('');
+    for(let i=0;i<42;i++){
+      const n=i-start+1;let date,muted=false;if(n<1){date=new Date(y,m-1,prevDays+n);muted=true}else if(n>days){date=new Date(y,m+1,n-days);muted=true}else date=new Date(y,m,n);
+      const key=isoDate(date),c=counts[key]||0;const detail=c?' onclick="tintaCalendarDay(\''+key+'\')"':'';h+='<button type="button" class="tinta-cal-day '+(muted?'muted ':'')+(key===today()?'today ':'')+'" data-load="'+Math.min(4,c)+'"'+detail+'><span class="tinta-cal-num">'+date.getDate()+'</span>'+(c?'<span class="tinta-cal-badge">'+c+'</span>':'')+'</button>';
+    }
+    h+='</div>';host.innerHTML=h;
+  }
+  window.tintaCalMove=function(n){calDate.setMonth(calDate.getMonth()+n);renderCalendar()};
+  window.tintaCalendarDay=function(key){
+    const arr=db.orders.filter(o=>o.delivery===key&&o.status!=='Cancelado');const d=new Date(key+'T00:00:00');
+    const box=$f('tintaCalendarDetail');if(!box)return;
+    box.innerHTML='<div class="tinta-cal-detail"><b>📅 '+d.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'})+'</b><div class="tinta-modal-list">'+(arr.length?arr.map(o=>'<button type="button" class="tinta-modal-row" style="text-align:left;border:0" onclick="tintaOrderModal('+o.id+')"><b>#'+String(o.orderNumber||0).padStart(2,'0')+' · '+escapeHtml(o.client||'Sin nombre')+'</b><br><small>'+money(o.total||0)+' · '+escapeHtml(o.status||'Pendiente')+'</small></button>').join(''):'<small>Sin pedidos.</small>')+'</div></div>';
+  };
+
+  function orderDetailHtml(o){
+    const paid=typeof paidTotal==='function'?paidTotal(o):Number(o.sena)||0, saldo=typeof saldoDe==='function'?saldoDe(o):Math.max(0,(Number(o.total)||0)-paid);
+    const items=(o.items||[]).map(i=>'<div class="tinta-modal-row"><b>'+escapeHtml(i.name||i.type||'Artículo')+'</b><div style="font-size:12px;color:var(--muted)">'+money(i.quote?.total||0)+(i.detail?' · '+escapeHtml(i.detail):'')+'</div></div>').join('');
+    return '<div class="tinta-modal-list"><div class="tinta-modal-row"><b>👤 '+escapeHtml(o.client||'Sin nombre')+'</b><br><small>📞 '+escapeHtml(o.phone||'Sin teléfono')+'</small></div><div class="tinta-modal-row"><b>📅 Entrega</b><br><small>'+(o.delivery?o.delivery.split('-').reverse().join('/'): 'A confirmar')+'</small></div><div class="tinta-modal-row"><b>💵 Estado de pago</b><br><small>Pagado: '+money(paid)+' · Saldo: '+money(saldo)+'</small></div><div class="tinta-modal-row"><b>📌 Estado</b><br><small>'+escapeHtml(o.status||'Pendiente')+'</small></div>'+(o.tematica?'<div class="tinta-modal-row"><b>🎨 Temática</b><br><small>'+escapeHtml(o.tematica)+'</small></div>':'')+(o.details?'<div class="tinta-modal-row"><b>📝 Detalles</b><br><small>'+escapeHtml(o.details)+'</small></div>':'')+'<div><b>🛍️ Artículos</b>'+items+'</div><div class="row" style="margin-top:10px"><b>TOTAL</b><b>'+money(o.total||0)+'</b></div></div>';
+  }
+  window.tintaOrderModal=function(id){const o=db.orders.find(x=>Number(x.id)===Number(id));if(!o)return;const m=featureModal(orderDetailHtml(o)+'<div class="actions" style="margin-top:12px"><button class="soft" type="button" onclick="tintaClientModal(\''+String(o.client||'').replace(/'/g,"\\'")+'\');this.closest(\'.tinta-modal-back\').remove()">👤 Ver cliente</button><button type="button" onclick="this.closest(\'.tinta-modal-back\').remove();loadOrder('+o.id+')">✏️ Editar</button></div>',{title:'📋 Pedido #'+String(o.orderNumber||0).padStart(2,'0')});};
+
+  function clientStats(name){
+    const norm=String(name||'').trim().toLowerCase();const list=db.orders.filter(o=>String(o.client||'').trim().toLowerCase()===norm);return {list,total:list.reduce((s,o)=>s+(Number(o.total)||0),0),paid:list.reduce((s,o)=>s+(typeof paidTotal==='function'?paidTotal(o):Number(o.sena)||0),0),active:list.filter(o=>!['Entregado','Cancelado'].includes(o.status)).length};
+  }
+  window.tintaClientModal=function(name){
+    const s=clientStats(name);const m=featureModal('<div class="tinta-modal-list"><div class="tinta-modal-row"><b>🛍️ Cantidad de compras</b><br><strong>'+s.list.length+'</strong></div><div class="tinta-modal-row"><b>💰 Total gastado</b><br><strong>'+money(s.total)+'</strong></div><div class="tinta-modal-row"><b>💵 Pagado</b><br><strong>'+money(s.paid)+'</strong></div><div class="tinta-modal-row"><b>📦 Pedidos activos</b><br><strong>'+s.active+'</strong></div><div><b>Últimos pedidos</b>'+s.list.slice().sort((a,b)=>Number(b.id)-Number(a.id)).slice(0,8).map(o=>'<button type="button" class="tinta-modal-row" style="width:100%;text-align:left;border:0" onclick="tintaOrderModal('+o.id+')">#'+String(o.orderNumber||0).padStart(2,'0')+' · '+escapeHtml(o.delivery?o.delivery.split('-').reverse().join('/'): 'Sin fecha')+' · '+money(o.total||0)+'</button>').join('')+'</div></div>',{title:'👤 '+escapeHtml(name||'Cliente')});
+  };
+
+  function decorateOrderClients(){
+    const list=$f('pedidosLista');if(!list)return;
+    list.querySelectorAll('.order').forEach(card=>{
+      const b=card.querySelector('.row b');if(!b||b.dataset.clientDecorated)return;
+      const text=b.textContent||'';const idx=text.indexOf('·');if(idx<0)return;const name=text.slice(idx+1).trim();b.innerHTML='#'+escapeHtml(text.split('·')[0].replace('#','').trim())+' · <span class="tinta-client-link">'+escapeHtml(name)+'</span>';b.dataset.clientDecorated='1';
+      b.querySelector('.tinta-client-link')?.addEventListener('click',e=>{e.stopPropagation();tintaClientModal(name)});
+      card.addEventListener('click',e=>{if(e.target.closest('button,a,input,select,textarea,.tinta-client-link'))return;const id=(card.querySelector('button[onclick*="loadOrder"]')?.getAttribute('onclick')||'').match(/loadOrder\((\d+)\)/)?.[1];if(id)tintaOrderModal(id)});
+    });
+  }
+  const realRenderOrders=window.renderOrders;
+  window.renderOrders=function(){realRenderOrders.apply(this,arguments);setTimeout(()=>{decorateOrderClients();renderCalendar()},0)};
+
+  // Deshacer para artículos y papeles, sin confirmación.
+  const articleDeleteOriginal=window.deleteArticle,paperDeleteOriginal=window.deletePaper;
+  window.deleteArticle=function(i){if(i<6)return;const item=clone(db.articles[i]);db.articles.splice(i,1);save();renderAll();ftoast('Artículo eliminado',()=>{db.articles.splice(Math.min(i,db.articles.length),0,item);save();renderAll();ftoast('✓ Artículo recuperado')})};
+  window.deletePaper=function(i){const paper=db.papers[i];if(!paper)return;if(paper.fixed){alert('Este papel es predeterminado y no se puede eliminar. Podés modificar su nombre, precio y stock.');return}const snap=clone(paper);db.papers.splice(i,1);save();renderAll();ftoast('Papel eliminado',()=>{db.papers.splice(Math.min(i,db.papers.length),0,snap);save();renderAll();ftoast('✓ Papel recuperado')})};
+
+  // Deshacer para pedidos. Mantiene stock y pagos tal como estaban al momento de eliminar.
+  const orderDeleteOriginal=window.eliminarPedido;
+  window.eliminarPedido=async function(){
+    const id=Number(editId);const o=db.orders.find(x=>Number(x.id)===id);if(!o)return;
+    const index=db.orders.findIndex(x=>Number(x.id)===id);const snap=clone(o);adjustStock(o.items,+1);db.orders.splice(index,1);save();nuevoPedido();renderAll();go('pedidos');
+    ftoast('Pedido eliminado',()=>{db.orders.splice(Math.min(index,db.orders.length),0,snap);adjustStock(snap.items,-1);save();renderAll();go('pedidos');ftoast('✓ Pedido recuperado')});
+  };
+
+  // Ventana de detalle al tocar cualquier pedido.
+  // Ya se incorpora en decorateOrderClients; los botones internos siguen funcionando normalmente.
+
+  function buildCatalogCanvas(){
+    const canvas=document.createElement('canvas');const items=db.articles.filter(a=>String(a.name||'').trim());const w=900,h=Math.max(520,190+items.length*76);canvas.width=w;canvas.height=h;const c=canvas.getContext('2d');
+    c.fillStyle='#ffffff';c.fillRect(0,0,w,h);c.fillStyle='#ff3b91';c.fillRect(0,0,w,105);c.fillStyle='#ffffff';c.font='900 42px Arial';c.fillText(String(db.identity?.name||'TINTA'),42,66);c.fillStyle='#241f2b';c.font='700 28px Arial';c.fillText('Catálogo',42,160);c.font='18px Arial';c.fillStyle='#6f6675';c.fillText('Precios sujetos a personalización y disponibilidad.',42,188);
+    items.forEach((a,i)=>{const y=245+i*76;c.fillStyle=i%2?'#faf7fb':'#fff3fa';c.fillRect(32,y-36,w-64,58);c.fillStyle='#241f2b';c.font='700 22px Arial';c.fillText(String(a.name||'Artículo').slice(0,48),52,y);c.fillStyle='#ff3b91';c.font='900 22px Arial';c.textAlign='right';c.fillText(money(a.price||0),w-52,y);c.textAlign='left'});
+    return canvas;
+  }
+  window.tintaCatalog=function(){
+    const items=db.articles.filter(a=>String(a.name||'').trim());
+    const m=featureModal('<p style="margin:0 0 10px;color:var(--muted)">TINTA genera una imagen con tus artículos y precios para compartirla con clientes.</p><div id="tintaCatalogCanvas"></div><div class="tinta-catalog-actions"><button class="soft" type="button" id="tintaCatalogShare">📲 Compartir</button><button type="button" id="tintaCatalogSave">💾 Guardar imagen</button></div>',{title:'📲 Catálogo'});
+    const canvas=buildCatalogCanvas();canvas.className='tinta-catalog-preview';m.box.querySelector('#tintaCatalogCanvas').appendChild(canvas);
+    const filename='catalogo-tinta.png';
+    m.box.querySelector('#tintaCatalogSave').onclick=()=>{const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download=filename;a.click();ftoast('✓ Catálogo generado')};
+    m.box.querySelector('#tintaCatalogShare').onclick=async()=>{try{const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));const file=new File([blob],filename,{type:'image/png'});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'Catálogo',files:[file]})}else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();ftoast('Imagen lista para compartir')}}catch(e){if(e?.name!=='AbortError')alert('No pudimos compartir la imagen. Podés guardarla y enviarla desde el celular.')}};
+  };
+  function addCatalogButton(){
+    const ini=$f('inicio');if(!ini||$f('tintaCatalogBtn'))return;const b=document.createElement('button');b.id='tintaCatalogBtn';b.type='button';b.className='soft';b.textContent='📲 Catálogo';b.onclick=()=>tintaCatalog();const first=ini.querySelector('.row');if(first)first.appendChild(b);else ini.insertBefore(b,ini.firstChild);
+  }
+  addCatalogButton();
+
+  // Re-render de las nuevas tarjetas después de cada render general.
+  const oldRenderAll=window.renderAll;
+  window.renderAll=function(){oldRenderAll.apply(this,arguments);setTimeout(()=>{injectHosts();renderDaySummary();renderGoal('tintaGoalInicio');renderGoal('tintaGoalBalance');renderCalendar();decorateOrderClients();addCatalogButton()},0)};
+
+  // Cuando cambia de sección, mantenemos las funciones visuales actualizadas.
+  const oldGo=window.go;
+  window.go=function(page){oldGo.apply(this,arguments);setTimeout(()=>{renderDaySummary();renderGoal('tintaGoalInicio');renderGoal('tintaGoalBalance');renderCalendar();decorateOrderClients()},0)};
+
+  // Si se inicia TINTA sin Google, no se permite continuar: el flujo original sigue mandando.
+  // Además, ocultamos las funciones nuevas hasta que el boot haya validado Google + licencia.
+  const oldShow=window.showIdentitySetup;
+  window.showIdentitySetup=function(){oldShow.apply(this,arguments);document.querySelectorAll('.tinta-floating-new').forEach(x=>x.style.display='none')};
+  setInterval(()=>{const gate=$f('identityOverlay');const blocked=gate&&getComputedStyle(gate).display!=='none';const licensedGate=$f('tintaLicenseLock');const hide=blocked||!!licensedGate;const b=$f('tintaFloatingNew');if(b)b.style.display=hide?'none':'flex'},500);
+
+  // Primer render de funciones nuevas.
+  setTimeout(()=>{injectHosts();renderDaySummary();renderGoal('tintaGoalInicio');renderGoal('tintaGoalBalance');renderCalendar();decorateOrderClients();addCatalogButton()},50);
+})();
+</script>
+
 </body>
 </html>
