@@ -387,6 +387,110 @@ nav::before{display:none!important}
 @keyframes tintaNameIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){#tintaSplash::before,#tintaSplash::after,.tinta-splash-logo,.tinta-splash-name{animation:none!important}.tinta-splash-logo,.tinta-splash-name{opacity:1}}
 </style>
+
+<style id="tinta-button-modern-v1">
+/* TINTA · SOLO REDISEÑO DE BOTONES — no altera layout, navegación ni lógica */
+button{
+  font-family:var(--font-body)!important;
+  font-weight:600!important;
+  letter-spacing:.01em;
+  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease!important;
+}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(1px) scale(.985)!important}
+
+/* Botones principales: estilo pill moderno, como el ejemplo */
+button:not(.soft):not(.sky):not(.yellow):not(.danger):not(.paid-btn):not(.pending-btn):not(.toggle):not(.user-menu-btn):not(.pedido-action):not(.tinta-floating-new):not(nav button){
+  background:linear-gradient(135deg,#ff42b5 0%,#f451b0 52%,#ee3da8 100%)!important;
+  color:#fff!important;
+  border:0!important;
+  border-radius:999px!important;
+  box-shadow:0 8px 20px rgba(238,61,168,.24), inset 0 1px 0 rgba(255,255,255,.28)!important;
+  min-height:42px;
+}
+button:not(.soft):not(.sky):not(.yellow):not(.danger):not(.paid-btn):not(.pending-btn):not(.toggle):not(.user-menu-btn):not(.pedido-action):not(.tinta-floating-new):not(nav button):hover{
+  box-shadow:0 11px 24px rgba(238,61,168,.30), inset 0 1px 0 rgba(255,255,255,.32)!important;
+}
+
+/* Secundarios: blancos/pastel, icono de color y flecha */
+button.soft, button.sky, button.yellow, button.danger{
+  border-radius:999px!important;
+  min-height:42px;
+  padding:10px 16px!important;
+  border:1px solid transparent!important;
+  box-shadow:0 5px 15px rgba(80,40,90,.08)!important;
+}
+button.soft{background:linear-gradient(180deg,#fffafd,#fff3fa)!important;color:#25212c!important;border-color:#f7d6eb!important}
+button.sky{background:linear-gradient(180deg,#f7fdff,#e9f9fd)!important;color:#146b7b!important;border-color:#d1eef4!important}
+button.yellow{background:linear-gradient(180deg,#fffdf5,#fff3cf)!important;color:#785600!important;border-color:#f5e3b2!important}
+button.danger{background:linear-gradient(180deg,#fff8fa,#ffe9ef)!important;color:#a42c50!important;border-color:#f5c7d4!important}
+button.soft:hover{background:#fff!important;border-color:#f2acd6!important}
+button.sky:hover{background:#fff!important;border-color:#9eddea!important}
+button.yellow:hover{background:#fff!important;border-color:#edcf78!important}
+button.danger:hover{background:#fff!important;border-color:#ef9eb5!important}
+
+/* Botón Limpiar formulario: mismo lenguaje visual que el ejemplo */
+.btn-clear-form{display:inline-flex!important;align-items:center;gap:10px;justify-content:flex-start!important;min-width:190px}
+.btn-clear-form .btn-svg-icon{color:#f02b9d}
+.btn-chevron{margin-left:auto;font-size:29px;line-height:18px;color:#e72a9c;font-weight:400!important}
+.btn-svg-icon{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 24px}
+.btn-svg-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* Acciones circulares del pedido: círculo de color + etiqueta debajo */
+.pedido-actions{align-items:flex-start!important}
+.pedido-action{
+  background:transparent!important;
+  color:#25212c!important;
+  box-shadow:none!important;
+  border:0!important;
+  border-radius:0!important;
+  width:92px!important;
+  height:102px!important;
+  padding:0!important;
+  gap:7px!important;
+  font-family:var(--font-body)!important;
+  font-weight:600!important;
+  font-size:11px!important;
+}
+.pedido-action .pedido-icon{
+  width:68px!important;height:68px!important;border-radius:50%!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  box-shadow:0 8px 18px rgba(80,40,90,.12), inset 0 1px 0 rgba(255,255,255,.35)!important;
+  transition:transform .16s ease,box-shadow .16s ease!important;
+}
+.pedido-action:hover .pedido-icon{transform:translateY(-2px);box-shadow:0 11px 22px rgba(80,40,90,.16), inset 0 1px 0 rgba(255,255,255,.4)!important}
+.pedido-action .pedido-icon svg{width:30px!important;height:30px!important;stroke-width:1.9!important}
+.pedido-action>span:last-child{font-size:11px!important;line-height:1.15!important;font-weight:600!important;color:#35303a!important;white-space:normal!important}
+.pedido-save .pedido-icon{background:linear-gradient(145deg,#ff3eb0,#f24aa9)!important;color:#fff!important}
+.pedido-pdf .pedido-icon{background:linear-gradient(145deg,#ff66bd,#ff86cf)!important;color:#fff!important}
+.pedido-share .pedido-icon{background:linear-gradient(145deg,#5bc9ee,#36a9dc)!important;color:#fff!important}
+.pedido-delete .pedido-icon{background:linear-gradient(145deg,#ff8fb0,#f56c94)!important;color:#fff!important}
+
+/* Acciones de la lista de pedidos: compactas y limpias */
+#pedidosLista .actions button{font-family:var(--font-body)!important;font-weight:600!important;box-shadow:0 4px 11px rgba(80,40,90,.07)!important}
+#pedidosLista .actions button.paid-btn,#pedidosLista .actions button.pending-btn{border-radius:999px!important;border:1px solid transparent!important}
+
+/* Calendario/lista generado dentro de Pedidos */
+#tintaCalendarToggle{display:inline-flex!important;align-items:center!important;gap:10px!important;justify-content:flex-start!important;min-width:185px!important;text-align:left!important}
+#tintaCalendarToggle .btn-svg-icon{color:currentColor}
+
+/* Botón flotante: conserva tamaño/posición, moderniza acabado */
+.tinta-floating-new{
+  background:linear-gradient(145deg,#ff45b7,#f13ca9)!important;
+  box-shadow:0 12px 28px rgba(255,59,145,.30),0 0 0 5px rgba(255,255,255,.78),inset 0 1px 0 rgba(255,255,255,.35)!important;
+}
+
+/* Menú/configuración: mismo lenguaje, sin cambiar estructura */
+.config-menu-item,.user-menu-item,.help-card{font-weight:600!important}
+.config-menu-arrow,.user-menu-arrow{font-weight:400!important}
+
+@media(max-width:600px){
+  .btn-clear-form,#tintaCalendarToggle{min-width:0!important;width:auto!important}
+  .pedido-action{width:78px!important;height:96px!important}
+  .pedido-action .pedido-icon{width:62px!important;height:62px!important}
+  .pedido-action>span:last-child{font-size:10px!important}
+}
+</style>
 </head>
 <body>
 <div id="tintaSplash" aria-label="Cargando TINTA">
@@ -467,7 +571,7 @@ nav::before{display:none!important}
 </section>
 <section class="page" id="nuevoPedido">
 <div class="card">
-<div class="row"><div><h2 id="pedidoTitulo">🏷️ Nuevo Pedido</h2><small>Armá el pedido del cliente.</small></div><button class="soft" onclick="limpiarForm()">Limpiar form</button></div>
+<div class="row"><div><h2 id="pedidoTitulo">🏷️ Nuevo Pedido</h2><small>Armá el pedido del cliente.</small></div><button class="soft btn-clear-form" onclick="limpiarForm()" type="button"><span class="btn-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 15c3.5-1 5-3 6-6l1-3 3 3-2 2c2.5.5 4.5 2 6 4"/><path d="M4 20c2-2 4-3 7-3"/></svg></span><span>Limpiar formulario</span><span class="btn-chevron" aria-hidden="true">›</span></button></div>
 
 <div class="form"><div><label>Nombre del Cliente *</label><input id="pNombre"/></div><div><label>Teléfono</label><input id="pTelefono"/></div><div><label>Fecha de entrega *</label><input id="pEntrega" type="date"/></div></div>
 
@@ -2457,7 +2561,7 @@ function renderInicio(){
 }
 const STOCK_BAJO=20; // hojas; por debajo de esto se marca como stock bajo
 function renderPrioridades(){
- const box=$('inicioPrioridades'); if(!box) return;
+ const box=document.getElementById('tintaPriorityDetail')||$('inicioPrioridades'); if(!box) return;
  const d=new Date(); const iso=x=>x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');
  const hoy=iso(d); const lim=new Date(d); lim.setDate(lim.getDate()+7); const en7=iso(lim);
  const vivos=db.orders.filter(o=>!['Entregado','Cancelado'].includes(o.status));
@@ -3085,20 +3189,21 @@ renderInicio();renderOrders();
   function monthSales(){const k=monthKey(new Date());return db.orders.filter(o=>o.status!=='Cancelado'&&String(o.delivery||o.registeredISO||'').slice(0,7)===k).reduce((s,o)=>s+(Number(o.total)||0),0)}
 
   function renderDaySummary(){
-    const host=$f('tintaDaySummary');if(!host)return;
+    const box=$f('inicioPrioridades');if(!box)return;
     const arr=db.orders.filter(o=>!['Entregado','Cancelado'].includes(o.status));
     const due=arr.reduce((s,o)=>s+(typeof saldoDe==='function'?saldoDe(o):Math.max(0,(Number(o.total)||0)-(Number(o.sena)||0))),0);
     const count=arr.length>10?'10+':arr.length>5?'5+':String(arr.length);
     const label=arr.length===0?'No tenés pedidos pendientes':arr.length<=3?'Tenés '+arr.length+' pedido'+(arr.length===1?'':'s')+' pendiente'+(arr.length===1?'':'s'):'Tenés '+arr.length+' pedidos pendientes';
-    host.innerHTML='<div class="tinta-day-card" role="button" aria-expanded="false" onclick="tintaTogglePrioridades()"><div class="tinta-day-title"><div style="min-width:0;flex:1"><h3>📋 Resumen del día</h3><div class="tinta-day-line">'+label+(due>0?' · <b>'+money(due)+'</b> por cobrar':'')+'</div></div><div class="tinta-count">'+count+'</div></div></div>';
-    const detail=$f('inicioPrioridades');
-    if(detail){detail.style.display='none';detail.dataset.tintaCollapsed='1';}
+    box.innerHTML='<div class="tinta-day-card" role="button" aria-expanded="false" onclick="tintaTogglePrioridades()"><div class="tinta-day-title"><div style="min-width:0;flex:1"><h3>📋 Resumen del día</h3><div class="tinta-day-line">'+label+(due>0?' · <b>'+money(due)+'</b> por cobrar':'')+'</div></div><div class="tinta-count">'+count+'</div></div></div><div id="tintaPriorityDetail" style="display:none;margin-top:10px"></div>';
+    const detail=$f('tintaPriorityDetail');
+    if(detail){detail.dataset.tintaCollapsed='1';renderPrioridades();}
   }
   window.tintaTogglePrioridades=function(){
-    const box=$f('inicioPrioridades'),card=$f('tintaDaySummary')?.querySelector('.tinta-day-card');if(!box)return;
-    const open=box.dataset.tintaCollapsed!=='1';
-    box.dataset.tintaCollapsed=open?'1':'0';box.style.display=open?'none':'block';
-    if(card)card.setAttribute('aria-expanded',open?'false':'true');
+    const detail=$f('tintaPriorityDetail'),card=$f('inicioPrioridades')?.querySelector('.tinta-day-card');if(!detail)return;
+    const closed=detail.dataset.tintaCollapsed==='1';
+    detail.dataset.tintaCollapsed=closed?'0':'1';
+    detail.style.display=closed?'block':'none';
+    if(card)card.setAttribute('aria-expanded',closed?'true':'false');
   };
 
   function renderGoal(hostId){
@@ -3115,8 +3220,23 @@ renderInicio();renderOrders();
 
   function injectHosts(){
     const ini=$f('inicio');
-    if(ini&&!$f('tintaDaySummary')){const host=document.createElement('div');host.id='tintaDaySummary';ini.insertBefore(host,ini.firstChild)}
-    if(ini&&!$f('tintaGoalInicio')){const host=document.createElement('div');host.id='tintaGoalInicio';const day=$f('tintaDaySummary');(day?day.nextSibling:ini.firstChild)?ini.insertBefore(host,day?day.nextSibling:ini.firstChild):ini.appendChild(host)}
+    if(ini&&$f('tintaDaySummary')) $f('tintaDaySummary').remove();
+    const grid=ini?.querySelector('.grid');
+    if(ini&&!$f('tintaGoalInicio')){const host=document.createElement('div');host.id='tintaGoalInicio';if(grid)grid.after(host);else ini.appendChild(host)}
+    if(ini&&$f('tintaGoalInicio')&&grid&&$f('tintaGoalInicio').previousElementSibling!==grid) grid.after($f('tintaGoalInicio'));
+    if(ini){
+      const priority=$f('inicioPrioridades'),goal=$f('tintaGoalInicio'),cards=[...ini.children];
+      const pedidos=[...ini.querySelectorAll('.card')].find(x=>x.querySelector('#inicioPedidos'));
+      const stock=[...ini.querySelectorAll('.card')].find(x=>x.querySelector('#inicioStock'));
+      const welcome=$f('nxWelcome');
+      if(priority) ini.insertBefore(priority,ini.firstChild);
+      if(grid) priority?.after(grid);
+      if(goal&&grid) grid.after(goal);
+      if(pedidos&&goal) goal.after(pedidos);
+      if(stock&&pedidos) pedidos.after(stock);
+      if(welcome&&stock) stock.after(welcome);
+      else if(welcome&&pedidos) pedidos.after(welcome);
+    }
     const bal=$f('balance');
     if(bal&&!$f('tintaGoalBalance')){const host=document.createElement('div');host.id='tintaGoalBalance';const card=bal.querySelector('.card');if(card)card.parentNode.insertBefore(host,card)}
     const ped=$f('pedidos');
@@ -3124,7 +3244,7 @@ renderInicio();renderOrders();
       const first=ped.querySelector('.card');
       if(first){
         const head=first.querySelector('.row');
-        if(head){const btn=document.createElement('button');btn.id='tintaCalendarToggle';btn.className='soft';btn.type='button';btn.textContent='🗓️ Calendario';btn.onclick=()=>{const w=$f('tintaCalendarWrap');w.classList.toggle('open');btn.textContent=w.classList.contains('open')?'📋 Lista':'🗓️ Calendario'};head.appendChild(btn)}
+        if(head){const btn=document.createElement('button');btn.id='tintaCalendarToggle';btn.className='soft';btn.type='button';btn.innerHTML='<span class="btn-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/></svg></span><span>Ver calendario</span><span class="btn-chevron" aria-hidden="true">›</span>';btn.onclick=()=>{const w=$f('tintaCalendarWrap');w.classList.toggle('open');btn.innerHTML=w.classList.contains('open')?'<span class="btn-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><circle cx="10" cy="18" r="1.5" fill="currentColor"/></svg></span><span>Ver lista</span><span class="btn-chevron" aria-hidden="true">›</span>':'<span class="btn-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"/></svg></span><span>Ver calendario</span><span class="btn-chevron" aria-hidden="true">›</span>'};head.appendChild(btn)}
         const w=document.createElement('div');w.id='tintaCalendarWrap';w.className='tinta-calendar-wrap';w.innerHTML='<div id="tintaCalendar"></div><div id="tintaCalendarDetail"></div>';const list=$f('pedidosLista');if(list)list.before(w);else first.appendChild(w);
       }
     }
