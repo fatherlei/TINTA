@@ -1942,16 +1942,7 @@ function updateQuote(){
  const q=currentQuote();
  const quoteName = selected==='topper' ? 'Set Topper' : selected==='metal' ? 'Topper Metalizado' : selected==='free' ? (freeArt.name||'Artículo nuevo') : (selected&&selected.startsWith('article:') ? (db.articles[+selected.split(':')[1]]?.name||'Artículo') : 'Artículo');
  if(q.lines.length){
-   const sheets = Number(q.materialSheets||0);
-   const costDetail=(q.costParts||[]).map(x=>`<div class="row" style="padding:4px 0"><span>${esc(x[0])}</span><b>${money(x[1])}</b></div>`).join('');
-   const adminDetails = `
-     <div class="admin-quote-detail">
-       <div style="font-weight:800;margin-bottom:5px">🧾 Detalle de costos</div>
-       ${costDetail||'<div class="empty">Sin detalle de costos.</div>'}
-       <div class="row" style="border-top:1px solid var(--line);padding-top:7px;margin-top:4px"><span><b>Costo real</b></span><b>${money(q.cost||0)}</b></div>
-       ${sheets>0?`<div class="row"><span>Hojas utilizadas</span><b>${Number.isInteger(sheets)?sheets:sheets.toFixed(2)}</b></div>`:''}
-     </div>`;
-   $('quote').innerHTML=`<div class="row line"><span>${esc(quoteName)}</span><b>${money(q.total)}</b></div>${adminDetails}`;
+   $('quote').innerHTML=`<div class="row line"><span>${esc(quoteName)}</span><b>${money(q.total)}</b></div>`;
  }else{
    $('quote').innerHTML='<div class="empty">Seleccioná un artículo.</div>';
  }
@@ -1988,8 +1979,10 @@ function removeFromCart(index){currentCart.splice(index, 1); renderCarrito();}
 
 function renderCarrito(){
   let gt = 0;
+  let materialCostTotal = 0;
   $('carritoLista').innerHTML = currentCart.map((item, i) => {
     gt += Number(item.quote?.total)||0;
+    materialCostTotal += Number(item.quote?.cost)||0;
     return `<div class="row line">
       <div style="font-size:14px; width:100%"><b style="color:var(--pink-700)">${esc(item.name)}</b>
       ${item.detail?`<br><span style="color:var(--muted)">📝 ${esc(item.detail)}</span>`:''}
@@ -1997,6 +1990,16 @@ function renderCarrito(){
     </div>`;
   }).join('') || '<div class="empty">Carrito vacío.</div>';
   $('granTotal').textContent = money(gt);
+  let materialBox=$('pedidoCostoMateriales');
+  if(!materialBox){
+    materialBox=document.createElement('div');
+    materialBox.id='pedidoCostoMateriales';
+    materialBox.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;padding:8px 0;border-top:1px solid var(--line);';
+    const gran=$('granTotal');
+    const granRow=gran?.closest('.row');
+    if(granRow) granRow.after(materialBox);
+  }
+  materialBox.innerHTML=`<span>🧱 Costo de materiales del pedido</span><b>${money(materialCostTotal)}</b>`;
   const __ed=editId?db.orders.find(o=>Number(o.id)===Number(editId)):null;
   if($('pSena')) $('pSena').readOnly=!!__ed;
   const sena = Math.min(__ed?paidTotal(__ed):Math.max(0, Number($('pSena')?.value) || 0), gt);
@@ -3141,11 +3144,11 @@ renderInicio();renderOrders();
       const welcome=$f('nxWelcome');
       if(priority) ini.insertBefore(priority,ini.firstChild);
       if(grid) priority?.after(grid);
-      if(goal&&grid) grid.after(goal);
+      if(stock&&grid) grid.after(stock);
+      if(goal&&stock) stock.after(goal);
       if(pedidos&&goal) goal.after(pedidos);
-      if(stock&&pedidos) pedidos.after(stock);
-      if(welcome&&stock) stock.after(welcome);
-      else if(welcome&&pedidos) pedidos.after(welcome);
+      if(welcome&&pedidos) pedidos.after(welcome);
+      else if(welcome&&goal) goal.after(welcome);
     }
     const bal=$f('balance');
     if(bal&&!$f('tintaGoalBalance')){const host=document.createElement('div');host.id='tintaGoalBalance';const card=bal.querySelector('.card');if(card)card.parentNode.insertBefore(host,card)}
