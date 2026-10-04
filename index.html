@@ -325,7 +325,12 @@ nav button{font-size:10px}
 .identity-actions button{flex:1;border:0;border-radius:17px;padding:13px 12px;font-weight:900;font-size:14px;cursor:pointer}
 .identity-start{background:var(--pink);color:var(--on-pink)}
 .identity-skip{background:#fff2cf;color:#765800}
-body.identity-lock{overflow:hidden}
+body.identity-lock{
+  overflow-x:hidden;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+}
 </style>
 <style>
 /* Adaptación de la onda al tema actual */
