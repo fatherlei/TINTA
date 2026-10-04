@@ -1954,6 +1954,8 @@ function addToCart(){
   if(!selected){alert('Configurá un artículo primero.');return;}
   if(selected==='free' && !freeArt.name.trim()){alert('Poné un nombre para el artículo libre.');return;}
   const q = currentQuote();
+  const itemTotal = Number(q?.total)||0;
+  const itemMaterialCost = Number(q?.cost)||0;
   let itemName = "Extra", paperId = null;
   if(selected === 'topper'){ itemName = "Set Topper"; paperId = topper.paperId; }
   if(selected === 'metal') itemName = "Topper Metal";
@@ -1961,7 +1963,15 @@ function addToCart(){
   if(selected.startsWith('article:')){ const a = db.articles[+selected.split(':')[1]]; itemName = a.name; paperId = (typeof a.paperId!=='undefined')?a.paperId:null; }
   const detail = ($('itemDetalle').value||'').trim();
 
-  currentCart.push({name: itemName, type: selected, paperId, detail, topper: selected==='topper'?clone(topper):null, metal: selected==='metal'?clone(metal):null, quote: q});
+  currentCart.push({
+    name: itemName,
+    type: selected,
+    paperId,
+    detail,
+    topper: selected==='topper'?clone(topper):null,
+    metal: selected==='metal'?clone(metal):null,
+    quote: { ...clone(q), total:itemTotal, cost:itemMaterialCost }
+  });
   if(selected==='free'){
     const nm=freeArt.name.trim();
     const entry={name:nm, price:freeArt.price, pricePerSheet:freeArt.pricePerSheet||0, sheets:freeArt.sheets, paperId:freeArt.paperId};
@@ -1978,18 +1988,30 @@ function addToCart(){
 function removeFromCart(index){currentCart.splice(index, 1); renderCarrito();}
 
 function renderCarrito(){
-  let gt = 0;
-  let materialCostTotal = 0;
-  $('carritoLista').innerHTML = currentCart.map((item, i) => {
-    gt += Number(item.quote?.total)||0;
-    materialCostTotal += Number(item.quote?.cost)||0;
-    return `<div class="row line">
-      <div style="font-size:14px; width:100%"><b style="color:var(--pink-700)">${esc(item.name)}</b>
-      ${item.detail?`<br><span style="color:var(--muted)">📝 ${esc(item.detail)}</span>`:''}
-      </div><div style="text-align:right;white-space:nowrap"><b class="big">${money(item.quote?.total||0)}</b> <button class="cart-remove" type="button" aria-label="Eliminar artículo" onclick="removeFromCart(${i})"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-    </div>`;
-  }).join('') || '<div class="empty">Carrito vacío.</div>';
-  $('granTotal').textContent = money(gt);
+  const totals=currentCart.reduce((acc,item)=>{
+    acc.total += Number(item?.quote?.total)||0;
+    acc.materials += Number(item?.quote?.cost)||0;
+    return acc;
+  },{total:0,materials:0});
+
+  $('carritoLista').innerHTML = currentCart.map((item,i)=>`
+    <div class="row line">
+      <div style="font-size:14px; width:100%">
+        <b style="color:var(--pink-700)">${esc(item.name)}</b>
+        ${item.detail?`<br><span style="color:var(--muted)">📝 ${esc(item.detail)}</span>`:''}
+      </div>
+      <div style="text-align:right;white-space:nowrap">
+        <b class="big">${money(Number(item?.quote?.total)||0)}</b>
+        <button class="cart-remove" type="button" aria-label="Eliminar artículo" onclick="removeFromCart(${i})">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+    </div>`
+  ).join('') || '<div class="empty">Carrito vacío.</div>';
+
+  // Totales del pedido: se calculan siempre desde los artículos realmente agregados al carrito.
+  $('granTotal').textContent = money(totals.total);
+
   let materialBox=$('pedidoCostoMateriales');
   if(!materialBox){
     materialBox=document.createElement('div');
@@ -1999,11 +2021,13 @@ function renderCarrito(){
     const granRow=gran?.closest('.row');
     if(granRow) granRow.after(materialBox);
   }
-  materialBox.innerHTML=`<span>🧱 Costo de materiales del pedido</span><b>${money(materialCostTotal)}</b>`;
+  materialBox.innerHTML=`<span>🧱 Costo de materiales del pedido</span><b>${money(totals.materials)}</b>`;
+
   const __ed=editId?db.orders.find(o=>Number(o.id)===Number(editId)):null;
   if($('pSena')) $('pSena').readOnly=!!__ed;
-  const sena = Math.min(__ed?paidTotal(__ed):Math.max(0, Number($('pSena')?.value) || 0), gt);
-  const resta = Math.max(0, gt - sena);
+  const sena = Math.min(__ed?paidTotal(__ed):Math.max(0, Number($('pSena')?.value) || 0), totals.total);
+  const resta = Math.max(0, totals.total - sena);
+
   let saldoBox = $('pedidoSaldoResumen');
   if(!saldoBox){
     saldoBox = document.createElement('div');
