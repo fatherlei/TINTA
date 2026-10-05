@@ -291,8 +291,10 @@ nav button{font-size:10px}
 .pedido-share{background:#d9f6fb!important;color:#006d82!important}
 .pedido-share .pedido-icon{background:#c9f2f8;color:#006d82}
 .pedido-delete{background:#fde8ef!important;color:#9d284e!important}
-.cart-remove{width:30px!important;height:30px!important;padding:0!important;border-radius:50%!important;background:transparent!important;color:var(--pink-700)!important;border:0!important;box-shadow:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
-.cart-remove svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.cart-remove,.cart-dup{width:30px!important;height:30px!important;padding:0!important;border-radius:50%!important;background:transparent!important;color:var(--pink-700)!important;border:0!important;box-shadow:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+.cart-remove svg,.cart-dup svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.cart-dup{color:var(--sky-700)!important}
+.cart-badge{position:absolute;top:1px;left:50%;margin-left:9px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#fdce43;color:#6b4c06;font:800 10.5px/17px var(--font-body);font-style:normal;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.28);pointer-events:none}
 /* v5 — botones de acción redondos, didácticos */
 @media(max-width:719px){
 .pedido-actions{gap:5px!important;justify-content:space-between!important}
@@ -436,6 +438,7 @@ nav::before{display:none!important}
 </header>
 <main>
 <section class="page active" id="inicio">
+<div id="inicioBorrador"></div>
 <div class="card" id="inicioPrioridades"></div>
 <div class="grid">
 <div class="stat acc-pink"><small>Ventas activas</small><strong id="sVentas">$0</strong></div>
@@ -448,7 +451,7 @@ nav::before{display:none!important}
 <div id="inicioStock"></div>
 </div>
 <div class="card">
-<div class="row"><div><h2>📋 Pedidos registrados</h2><small>Hacé click en un pedido para editarlo.</small></div><button onclick="go('pedidos')">+ Pedido</button></div>
+<div class="row"><div><h2>📋 Pedidos registrados</h2><small>Hacé click en un pedido para editarlo.</small></div><button onclick="abrirNuevo()">+ Pedido</button></div>
 <div id="inicioPedidos"></div>
 </div>
 </section>
@@ -472,11 +475,11 @@ nav::before{display:none!important}
 <div class="form"><div><label>Nombre del Cliente *</label><input id="pNombre"/></div><div><label>Teléfono</label><input id="pTelefono"/></div><div><label>Fecha de entrega *</label><input id="pEntrega" type="date"/></div></div>
 
 <h3>✨ Configurar artículo</h3><div id="artChoices"></div><div id="builder"></div>
-<div class="result"><h3 style="margin-top:0">🧾 Cotización de este artículo</h3><div id="quote"></div><div class="row"><b>Subtotal</b><span class="big" id="total">$0</span></div><label style="margin-top:12px">📝 Detalle / personalización de este artículo</label><textarea id="itemDetalle" placeholder="Ej: nombre 'Sofi', color dorado, motivo unicornio..." style="min-height:60px"></textarea><button class="yellow" onclick="addToCart()" style="width:100%;margin-top:10px;font-size:16px">➕ Añadir artículo al pedido</button></div>
+<div class="result"><h3 style="margin-top:0">🧾 Cotización de este artículo</h3><div id="quote"></div><div class="row"><b>Subtotal</b><span class="big" id="total">$0</span></div><label style="margin-top:12px">📝 Detalle / personalización de este artículo</label><textarea id="itemDetalle" placeholder="Ej: nombre 'Sofi', color dorado, motivo unicornio..." style="min-height:60px"></textarea><button type="button" class="yellow" onclick="addToCart(); return false;" style="width:100%;margin-top:10px;font-size:16px">➕ Añadir artículo al pedido</button></div>
 
 <div class="card"><h3 style="margin-top:0">📝 Detalles generales del pedido</h3><div class="form"><div><label>Estado de pedido</label><select id="pEstado"><option value="Pendiente">Pendiente</option><option value="Diseñado">Diseñado</option><option value="Entregado">Entregado</option></select></div><div><label>Temática</label><input id="pTematica" placeholder="Ej: Bautismo, Anime..."/></div></div><label>Notas:</label><textarea id="pDetalles" placeholder="Notas generales del pedido..."></textarea></div>
 
-<div class="card" style="border-color:var(--pink-600); background:var(--pink-50); margin-top:15px"><h3 style="margin-top:0; color:var(--pink-700)">🛒 Carrito del pedido</h3><div id="carritoLista"></div><div class="row" style="margin-top:10px; border-top:2px solid var(--pink-600); padding-top:10px"><b>GRAN TOTAL</b><span class="big" id="granTotal" style="color:var(--pink-700)">$0</span></div><div style="margin-top:12px"><label>💰 Seña / anticipo</label><input id="pSena" min="0" placeholder="$0" step="1" type="number"/></div><div id="pedidoSaldoResumen" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(211,42,139,.18);font-size:13px"></div></div>
+<div class="card" style="border-color:var(--pink-600); background:var(--pink-50); margin-top:15px"><h3 style="margin-top:0; color:var(--pink-700)">🛒 Carrito del pedido <small id="carritoCount" style="font-weight:600"></small></h3><div id="carritoLista"></div><div class="row" style="margin-top:10px; border-top:2px solid var(--pink-600); padding-top:10px"><b>GRAN TOTAL</b><span class="big" id="granTotal" style="color:var(--pink-700)">$0</span></div><div style="margin-top:12px"><label>💰 Seña / anticipo</label><input id="pSena" min="0" placeholder="$0" step="1" type="number"/></div><div id="pedidoSaldoResumen" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(211,42,139,.18);font-size:13px"></div></div>
 
 <div class="pedido-actions" style="margin-top:15px">
 <button class="pedido-action pedido-save" onclick="guardarPedido()" type="button"><span class="pedido-icon"><svg viewbox="0 0 24 24"><path d="M4 3h13l3 3v15H4z"></path><path d="M7 3v6h9V3M7 14h10v7H7z"></path></svg></span><span>Guardar<br/>Pedido</span></button>
@@ -503,7 +506,7 @@ nav::before{display:none!important}
 <div class="row costs-header" style="align-items:center">
 <div><h2>⚙️ Costos y precios</h2><small>Todo es editable. Tus 6 artículos principales se configuran en “Mis artículos”.</small></div>
 <div class="actions costs-header-actions" style="justify-content:flex-end">
-<button class="sky" onclick="nuevoPedido();go('nuevoPedido')" type="button">🛍️ Crear pedido</button>
+<button class="sky" onclick="abrirNuevo()" type="button">🛍️ Crear pedido</button>
 <button onclick="guardarCostos()">💾 Guardar</button>
 </div>
 </div>
@@ -661,7 +664,7 @@ nav::before{display:none!important}
 </main>
 <nav><div class="navinner">
 <button class="active" data-page="inicio" onclick="go('inicio')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"></path></svg></span>Inicio</button>
-<button data-page="nuevoPedido" onclick="nuevoPedido();go('nuevoPedido')" type="button"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M12 5v14M5 12h14"></path></svg></span>Nuevo</button>
+<button data-page="nuevoPedido" onclick="abrirNuevo()" type="button"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M12 5v14M5 12h14"></path></svg></span>Nuevo</button>
 <button data-page="pedidos" onclick="go('pedidos')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg></span>Pedidos</button>
 <button data-page="costos" onclick="go('costos')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><path d="M3 3h8l9.6 9.6a2 2 0 0 1 0 2.8l-5.2 5.2a2 2 0 0 1-2.8 0L3 11z"></path><circle cx="7.5" cy="7.5" r="1.2"></circle></svg></span>Costos</button>
 <button data-page="calculadora" onclick="go('calculadora')"><span><svg aria-hidden="true" fill="none" height="25" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="25"><rect height="18" rx="2" width="14" x="5" y="3"></rect><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"></path></svg></span>Calculadora</button>
@@ -1198,6 +1201,8 @@ const NOTFOME_CLOUD_CONFIG = {
 const KEY='NOT_GESTION_ADAPTABLE_2026_V8';
 const APP_VERSION='10.1.0';
 const DATA_VERSION=3;
+const DRAFT_KEY=KEY+'_DRAFT';
+var __draftTimer=null;
 function normalizeDb(raw){
   const base=JSON.parse(JSON.stringify(initial));
   const d=(raw&&typeof raw==='object')?raw:{};
@@ -1325,7 +1330,7 @@ let freeArt={name:'',price:0,pricePerSheet:0,sheets:1,paperId:null};
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:2}).format(Number(n)||0);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-function save(force=false){ if(!force && db.settings?.autoSave===false) return; db.schemaVersion=DATA_VERSION; db.appVersion=APP_VERSION; db.dataUpdatedAt=new Date().toISOString(); localStorage.setItem(KEY,JSON.stringify(db)); scheduleSync(); scheduleCloudSync(); }
+function save(force=false){ if(!force && db.settings?.autoSave===false) return; db.schemaVersion=DATA_VERSION; db.appVersion=APP_VERSION; db.dataUpdatedAt=new Date().toISOString(); localStorage.setItem(KEY,JSON.stringify(db)); scheduleCloudSync(); }
 const clone=o=>JSON.parse(JSON.stringify(o));
 
 /* ===== FASE 2 · CUENTA + NUBE (Supabase) ===== */
@@ -1519,7 +1524,26 @@ async function cloudPull(manual){
 setTimeout(()=>{try{initCloud(); cloudApplySession((cloudClient&&null)||null,'INIT'); if(cloudReady()&&cloudClient) cloudClient.auth.getSession().then(x=>cloudApplySession(x.data.session,'INIT'));}catch(e){console.warn(e)}},100);
 
 
-function go(page){ const target=$(page); if(!target) return; document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); target.classList.add('active'); document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page)); if(page==='ajustes') showConfigMenu(); renderAll(); window.scrollTo(0,0); }
+function pageJob(page){
+  switch(page){
+    case 'inicio': return ()=>renderInicio();
+    case 'pedidos': return ()=>renderOrders();
+    case 'nuevoPedido': return ()=>{renderChoices();renderBuilder();renderCarrito()};
+    case 'costos': return ()=>{renderPriceInputs();renderInkPurchases()};
+    case 'calculadora': return ()=>{fillCalcPapers();calc()};
+    case 'balance': return ()=>{if($('balDesde'))renderBalance()};
+    default: return null; // ajustes, ayuda, etc.: render completo como antes
+  }
+}
+function go(page){
+  const target=$(page); if(!target) return;
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x===target));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  if(page==='ajustes') showConfigMenu();
+  const job=pageJob(page);
+  if(job){try{job()}catch(e){console.error('Render '+page,e)}} else renderAll();
+  window.scrollTo(0,0);
+}
 
 function nuevoPedido(){
     editId=null; selected=null; currentCart=[];
@@ -1531,8 +1555,7 @@ function nuevoPedido(){
     $('pedidoTitulo').textContent='🏷️ Nuevo Pedido';
     if($('btnEliminarPedido')) $('btnEliminarPedido').style.display='none';
     if($('btnShare')) $('btnShare').style.display='inline-block';
-    renderCarrito();
-    renderAll();
+    renderChoices();renderBuilder();renderCarrito();
 }
 
 function unitPaper(p){return p?Number(p.packPrice||0)/Math.max(1,Number(p.packQty)||1):0}
@@ -1950,7 +1973,8 @@ function updateQuote(){
 }
 
 /* --- CARRITO --- */
-function addToCart(){
+function addToCart(e){
+  if(e && typeof e.preventDefault==='function') e.preventDefault();
   if(!selected){alert('Configurá un artículo primero.');return;}
   if(selected==='free' && !freeArt.name.trim()){alert('Poné un nombre para el artículo libre.');return;}
   const q = currentQuote();
@@ -1960,7 +1984,7 @@ function addToCart(){
   if(selected === 'topper'){ itemName = "Set Topper"; paperId = topper.paperId; }
   if(selected === 'metal') itemName = "Topper Metal";
   if(selected==='free'){ itemName = freeArt.name.trim(); paperId = freeArt.paperId; }
-  if(selected.startsWith('article:')){ const a = db.articles[+selected.split(':')[1]]; itemName = a.name; paperId = (typeof a.paperId!=='undefined')?a.paperId:null; }
+  if(selected.startsWith('article:')){ const a = db.articles[+selected.split(':')[1]]; if(!a){alert('Ese artículo ya no existe.');return;} itemName = a.name; paperId = (typeof a.paperId!=='undefined')?a.paperId:null; }
   const detail = ($('itemDetalle').value||'').trim();
 
   currentCart.push({
@@ -1982,19 +2006,31 @@ function addToCart(){
     freeArt={name:'',price:0,pricePerSheet:0,sheets:1,paperId:null};
   }
   $('itemDetalle').value='';
-  renderCarrito(); selected=null; renderChoices(); renderBuilder();
+  selected=null; renderCarrito(); renderChoices(); renderBuilder();
+  avisar('✓ Añadido al carrito · '+currentCart.length+' artículo'+(currentCart.length===1?'':'s')+' · '+money(cartTotals().total));
 }
 
-function removeFromCart(index){currentCart.splice(index, 1); renderCarrito();}
+function avisar(msg,undo){ if(typeof window.tintaToast==='function') window.tintaToast(msg,undo); }
+function cartTotals(){
+  let total=0,cost=0;
+  for(const it of currentCart){ total+=Number(it?.quote?.total)||0; cost+=Number(it?.quote?.cost)||0; }
+  return {total,cost};
+}
+function removeFromCart(index){
+  const it=currentCart[index]; if(!it) return;
+  currentCart.splice(index,1); renderCarrito();
+  avisar('Artículo quitado',()=>{currentCart.splice(Math.min(index,currentCart.length),0,it); renderCarrito();});
+}
+function duplicateCartItem(index){
+  const it=currentCart[index]; if(!it) return;
+  currentCart.splice(index+1,0,clone(it)); renderCarrito(); avisar('✓ Artículo duplicado');
+}
 
 function renderCarrito(){
-  const totals=currentCart.reduce((acc,item)=>{
-    acc.total += Number(item?.quote?.total)||0;
-    acc.materials += Number(item?.quote?.cost)||0;
-    return acc;
-  },{total:0,materials:0});
-
-  $('carritoLista').innerHTML = currentCart.map((item,i)=>`
+  const totals=cartTotals();
+  const n=currentCart.length;
+  const lista=$('carritoLista');
+  if(lista) lista.innerHTML = currentCart.map((item,i)=>`
     <div class="row line">
       <div style="font-size:14px; width:100%">
         <b style="color:var(--pink-700)">${esc(item.name)}</b>
@@ -2002,26 +2038,27 @@ function renderCarrito(){
       </div>
       <div style="text-align:right;white-space:nowrap">
         <b class="big">${money(Number(item?.quote?.total)||0)}</b>
+        <button class="cart-dup" type="button" aria-label="Duplicar artículo" onclick="duplicateCartItem(${i})">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+        </button>
         <button class="cart-remove" type="button" aria-label="Eliminar artículo" onclick="removeFromCart(${i})">
           <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
       </div>
     </div>`
   ).join('') || '<div class="empty">Carrito vacío.</div>';
-
-  // Totales del pedido: se calculan siempre desde los artículos realmente agregados al carrito.
-  $('granTotal').textContent = money(totals.total);
+  if($('carritoCount')) $('carritoCount').textContent = n?'('+n+')':'';
+  if($('granTotal')) $('granTotal').textContent = money(totals.total);
 
   let materialBox=$('pedidoCostoMateriales');
-  if(!materialBox){
+  if(!materialBox && $('granTotal')){
     materialBox=document.createElement('div');
     materialBox.id='pedidoCostoMateriales';
     materialBox.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;padding:8px 0;border-top:1px solid var(--line);';
-    const gran=$('granTotal');
-    const granRow=gran?.closest('.row');
+    const granRow=$('granTotal').closest('.row');
     if(granRow) granRow.after(materialBox);
   }
-  materialBox.innerHTML=`<span>🧱 Costo de materiales del pedido</span><b>${money(totals.materials)}</b>`;
+  if(materialBox) materialBox.innerHTML=`<span>🧱 Costo de materiales del pedido</span><b>${money(totals.cost)}</b>`;
 
   const __ed=editId?db.orders.find(o=>Number(o.id)===Number(editId)):null;
   if($('pSena')) $('pSena').readOnly=!!__ed;
@@ -2029,12 +2066,13 @@ function renderCarrito(){
   const resta = Math.max(0, totals.total - sena);
 
   let saldoBox = $('pedidoSaldoResumen');
-  if(!saldoBox){
+  if(!saldoBox && $('granTotal')){
     saldoBox = document.createElement('div');
     saldoBox.id = 'pedidoSaldoResumen';
     $('granTotal').closest('.card').appendChild(saldoBox);
   }
-  saldoBox.innerHTML = `<div class="row" style="margin:4px 0"><span>Seña</span><b>${money(sena)}</b></div><div class="row" style="margin:4px 0"><span>Resta</span><b style="color:var(--pink-700)">${money(resta)}</b></div>`;
+  if(saldoBox) saldoBox.innerHTML = `<div class="row" style="margin:4px 0"><span>Seña</span><b>${money(sena)}</b></div><div class="row" style="margin:4px 0"><span>Resta</span><b style="color:var(--pink-700)">${money(resta)}</b></div>`;
+  renderDraftUI();
 }
 
 function loadOrder(id){
@@ -2052,15 +2090,9 @@ function loadOrder(id){
   $('pedidoTitulo').textContent='✏️ Editar pedido #'+String(o.orderNumber||0).padStart(2,'0');
   if($('btnEliminarPedido')) $('btnEliminarPedido').style.display='inline-block';
   if($('btnShare')) $('btnShare').style.display='inline-block';
-  renderCarrito();
-  renderChoices();
-  renderBuilder();
-  updateQuote();
   go('nuevoPedido');
 }
 
-/* --- SYNC A GOOGLE SHEETS (una sola dirección: app -> Sheets, vía Apps Script) --- */
-let __syncTimer=null;
 
 
 let __guardando=false;
@@ -2068,43 +2100,43 @@ async function guardarPedido(){
   if(__guardando) return;
   if(!$('pNombre').value.trim()||!$('pEntrega').value){alert('Completá nombre y entrega.');return;}
   if(currentCart.length===0){alert('Agregá algo al carrito.');return;}
-  const gt=currentCart.reduce((s,i)=>s+(Number(i.quote?.total)||0),0);
-  const gc=currentCart.reduce((s,i)=>s+(Number(i.quote?.cost)||0),0);
-  const data={
-    client:$('pNombre').value.trim(),phone:$('pTelefono').value.trim(),delivery:$('pEntrega').value,
-    status:$('pEstado').value,paid:(db.orders.find(o=>Number(o.id)===Number(editId))?.paid||false),
-    sena:Math.max(0,Number($('pSena').value)||0),
-    tematica:$('pTematica').value.trim(),details:$('pDetalles').value.trim(),sena:Math.max(0,Number($('pSena').value)||0),items:clone(currentCart),
-    total:gt,cost:gc,article:`Varios (${currentCart.length})`
-  };
-  const prev=editId?db.orders.find(o=>Number(o.id)===Number(editId)):null;
-  const falta=stockFaltante(data.items,prev?prev.items:[]);
-  if(falta.length&&!await askOk('⚠️ Stock insuficiente:\n'+falta.join('\n')+'\n\n¿Guardar igual?'))return;
-  const pagado=prev?paidTotal(prev):data.sena;
-  if(data.status==='Entregado'&&gt-pagado>0&&!await askOk('Este pedido tiene un saldo de '+money(gt-pagado)+'. ¿Marcarlo como Entregado igual?'))return;
-  if(editId){delete data.sena;delete data.paid;}else{data.payments=data.sena>0?[{date:new Date().toISOString().slice(0,10),amount:data.sena,method:'Seña'}]:[];}
-  let savedOrder;
-  if(editId){
-    const existing=db.orders.find(o=>Number(o.id)===Number(editId));
-    if(existing){
-      adjustStock(existing.items, +1); // devuelve el stock que había consumido la versión anterior
-      Object.assign(existing,data);
-      adjustStock(existing.items, -1); // descuenta el stock según el carrito actualizado
-      syncPay(existing);
-      if(!existing.snap||existing.snap.hojas!==(existing.items||[]).reduce((a,i)=>a+(Number(i.quote&&i.quote.materialSheets)||0),0)) snapConsumo(existing);
-      savedOrder=existing;
+  __guardando=true; // bloquea doble toque desde el principio, también mientras se esperan confirmaciones
+  try{
+    const {total:gt,cost:gc}=cartTotals();
+    const sena=Math.max(0,Number($('pSena').value)||0);
+    const prev=editId?db.orders.find(o=>Number(o.id)===Number(editId)):null;
+    if(editId&&!prev) editId=null; // el pedido ya no existe: se guarda como nuevo
+    const data={
+      client:$('pNombre').value.trim(),phone:$('pTelefono').value.trim(),delivery:$('pEntrega').value,
+      status:$('pEstado').value,paid:prev?.paid||false,sena,
+      tematica:$('pTematica').value.trim(),details:$('pDetalles').value.trim(),items:clone(currentCart),
+      total:gt,cost:gc,article:`Varios (${currentCart.length})`
+    };
+    const falta=stockFaltante(data.items,prev?prev.items:[]);
+    if(falta.length&&!await askOk('⚠️ Stock insuficiente:\n'+falta.join('\n')+'\n\n¿Guardar igual?'))return;
+    const pagado=prev?paidTotal(prev):sena;
+    if(data.status==='Entregado'&&gt-pagado>0&&!await askOk('Este pedido tiene un saldo de '+money(gt-pagado)+'. ¿Marcarlo como Entregado igual?'))return;
+    if(prev){
+      delete data.sena;delete data.paid;
+      adjustStock(prev.items, +1); // devuelve el stock que había consumido la versión anterior
+      Object.assign(prev,data);
+      adjustStock(prev.items, -1); // descuenta el stock según el carrito actualizado
+      syncPay(prev);
+      if(!prev.snap||prev.snap.hojas!==(prev.items||[]).reduce((a,i)=>a+(Number(i.quote&&i.quote.materialSheets)||0),0)) snapConsumo(prev);
+    }else{
+      data.payments=sena>0?[{date:new Date().toISOString().slice(0,10),amount:sena,method:'Seña'}]:[];
+      db.lastOrderNumber++;
+      const nuevo={...data,id:Date.now(),orderNumber:db.lastOrderNumber,registered:new Date().toLocaleDateString('es-AR')};
+      syncPay(nuevo);snapConsumo(nuevo);
+      db.orders.push(nuevo);
+      adjustStock(nuevo.items, -1);
     }
-  }else{
-    db.lastOrderNumber++;
-    const nuevo={...data,id:Date.now(),orderNumber:db.lastOrderNumber,registered:new Date().toLocaleDateString('es-AR')};
-    syncPay(nuevo);snapConsumo(nuevo);
-    db.orders.push(nuevo);
-    adjustStock(nuevo.items, -1);
-    savedOrder=nuevo;
+    save();
+    nuevoPedido(); go('pedidos');
+    avisar('✓ Pedido guardado');
+  }finally{
+    setTimeout(()=>{__guardando=false},400);
   }
-  __guardando=true; setTimeout(()=>{__guardando=false},1500);
-  save();alert('Pedido guardado.');
-  nuevoPedido();renderOrders();renderInicio();go('pedidos');
 }
 
 async function duplicarPedido(id){
@@ -2406,7 +2438,7 @@ function compartirPDFActual(){
     details:$('pDetalles')?.value.trim()||'',
     items:clone(currentCart),
     sena:Math.max(0,Number($('pSena')?.value)||0),
-    total:currentCart.reduce((s,i)=>s+(Number(i.quote?.total)||0),0)
+    total:cartTotals().total
   };
   compartirPDF(temp);
 }
@@ -2428,17 +2460,75 @@ function compartirActual(){
     orderNumber:0,client:$('pNombre').value.trim(),phone:$('pTelefono').value.trim(),
     delivery:$('pEntrega').value,tematica:$('pTematica').value.trim(),details:$('pDetalles').value.trim(),items:clone(currentCart),
     sena:Math.max(0,Number($('pSena').value)||0),
-    total:currentCart.reduce((s,i)=>s+(Number(i.quote?.total)||0),0)
+    total:cartTotals().total
   };
   share(temp);
 }
 
 function hayBorrador(){return !!(editId||currentCart.length||($('pNombre')&&$('pNombre').value.trim()));}
 function abrirPedido(){ if(!hayBorrador()) nuevoPedido(); go('nuevoPedido'); }
-async function descartarBorrador(){ if(await askOk('¿Descartar el pedido en curso? Se pierde lo que cargaste.')){ nuevoPedido(); renderOrders(); } }
+// Botón "Nuevo": si hay un pedido a medio armar lo retoma en vez de borrarlo.
+function abrirNuevo(){
+  const enCurso=!editId&&(currentCart.length||($('pNombre')&&$('pNombre').value.trim()));
+  if(!enCurso) nuevoPedido();
+  go('nuevoPedido');
+}
+const DRAFT_FIELDS=['pNombre','pTelefono','pEntrega','pTematica','pDetalles','pSena','pEstado'];
+function getDraft(){
+  const f={}; DRAFT_FIELDS.forEach(id=>{ if($(id)) f[id]=$(id).value; });
+  return {editId:editId||null,cart:clone(currentCart),f};
+}
+function applyDraft(d){
+  if(!d) return;
+  const f=d.f||{};
+  editId=(d.editId&&db.orders.some(o=>Number(o.id)===Number(d.editId)))?Number(d.editId):null;
+  currentCart=Array.isArray(d.cart)?d.cart:[];
+  DRAFT_FIELDS.forEach(id=>{ if($(id)) $(id).value=f[id]??(id==='pEstado'?'Pendiente':''); });
+  const o=editId?db.orders.find(x=>Number(x.id)===Number(editId)):null;
+  if($('pedidoTitulo')) $('pedidoTitulo').textContent=o?'✏️ Editar pedido #'+String(o.orderNumber||0).padStart(2,'0'):'🏷️ Nuevo Pedido';
+  if($('btnEliminarPedido')) $('btnEliminarPedido').style.display=o?'inline-block':'none';
+  renderCarrito();
+}
+function saveDraft(){
+  clearTimeout(__draftTimer);
+  __draftTimer=setTimeout(()=>{
+    try{ if(hayBorrador()) localStorage.setItem(DRAFT_KEY,JSON.stringify(getDraft())); else localStorage.removeItem(DRAFT_KEY); }catch(e){}
+  },300);
+}
+function restoreDraft(){
+  try{
+    const raw=localStorage.getItem(DRAFT_KEY); if(!raw) return;
+    const d=JSON.parse(raw); const f=d?.f||{};
+    const tiene=(d?.cart||[]).length||['pNombre','pTelefono','pEntrega','pTematica','pDetalles','pSena'].some(k=>String(f[k]||'').trim());
+    if(tiene) applyDraft(d);
+  }catch(e){console.warn('Borrador',e)}
+}
+function draftBannerHtml(){
+  const n=currentCart.length, nom=($('pNombre')?.value||'').trim();
+  const o=editId?db.orders.find(x=>Number(x.id)===Number(editId)):null;
+  const tit=o?'✏️ Editando #'+String(o.orderNumber||0).padStart(2,'0'):'📝 Pedido en curso';
+  return `<div style="background:var(--yellow-50);border:2px dashed var(--yellow);border-radius:18px;padding:10px 12px;margin:8px 0"><b>${tit}</b>${nom?' · '+esc(nom):''} · 🛒 ${n} artículo${n===1?'':'s'}${n?' · <b>'+money(cartTotals().total)+'</b>':''}<div class="actions" style="margin-top:8px"><button type="button" onclick="go('nuevoPedido')">Continuar</button><button type="button" class="soft" onclick="descartarBorrador()">Descartar</button></div></div>`;
+}
+// Una sola función mantiene al día el banner (Inicio y Pedidos), el globito del botón Nuevo y el borrador guardado.
+function renderDraftUI(){
+  const html=hayBorrador()?draftBannerHtml():'';
+  ['borradorBanner','inicioBorrador'].forEach(id=>{const el=$(id); if(el&&el.__h!==html){el.innerHTML=html;el.__h=html;}});
+  const nb=document.querySelector('nav button[data-page="nuevoPedido"]');
+  if(nb){
+    let b=nb.querySelector('.cart-badge');
+    if(currentCart.length){ if(!b){b=document.createElement('i');b.className='cart-badge';nb.appendChild(b);} b.textContent=currentCart.length; }
+    else if(b) b.remove();
+  }
+  saveDraft();
+}
+async function descartarBorrador(){ if(await askOk('¿Descartar el pedido en curso? Se pierde lo que cargaste.')){ const snap=getDraft(); nuevoPedido(); avisar('Pedido descartado',()=>{applyDraft(snap)}); } }
+async function limpiarForm(){
+  if(!hayBorrador()){nuevoPedido();return;}
+  if(!await askOk('¿Limpiar el formulario? Se pierde lo que cargaste.'))return;
+  const snap=getDraft(); nuevoPedido(); avisar('Formulario limpio',()=>{applyDraft(snap)});
+}
 function renderOrders(){
-  const bb=$('borradorBanner');
-  if(bb) bb.innerHTML=hayBorrador()?`<div style="background:var(--yellow-50);border:2px dashed var(--yellow);border-radius:18px;padding:10px 12px;margin:8px 0"><b>📝 Pedido en curso</b>${$('pNombre').value.trim()?' · '+esc($('pNombre').value.trim()):''} · ${currentCart.length} artículo${currentCart.length===1?'':'s'}<div class="actions" style="margin-top:8px"><button type="button" onclick="go('nuevoPedido')">Continuar</button><button type="button" class="soft" onclick="descartarBorrador()">Descartar</button></div></div>`:'';
+  renderDraftUI();
   const q=(($('buscaPedido')||{}).value||'').trim().toLowerCase();
   const arr=db.orders.filter(o=>!q||[o.client,o.phone,String(o.orderNumber)].join(' ').toLowerCase().includes(q)).sort((a,b)=>{
     const ea=a.status==='Entregado', eb=b.status==='Entregado';
@@ -2481,6 +2571,7 @@ function renderInicio(){
  $('inicioPedidos').innerHTML=arr.length?arr.map(o=>`<div class="order${o.status==='Entregado'?' order-entregado':''}" onclick="loadOrder(${o.id})"><div class="row"><div><b>#${String(o.orderNumber||0).padStart(2,'0')} · <span class="tinta-client-link" data-client="${esc(o.client||'')}">${esc(o.client)}</span></b><br><small>📅 ${o.delivery?o.delivery.split('-').reverse().join('/'):'A confirmar'} · 📌 ${o.status}</small></div><b>${money(o.total)}</b></div></div>`).join(''):'<div class="empty">Todavía no hay pedidos.</div>';
  $('inicioPedidos').querySelectorAll('.tinta-client-link').forEach(el=>el.addEventListener('click',e=>{e.stopPropagation();tintaClientModal(el.dataset.client||el.textContent)}));
  renderPrioridades();
+ renderDraftUI();
 }
 const STOCK_BAJO=20; // hojas; por debajo de esto se marca como stock bajo
 function renderPrioridades(){
@@ -2913,21 +3004,27 @@ function changeAppTheme(theme){ db.settings=db.settings||{}; db.settings.theme=t
 function toggleAutoSave(){ db.settings=db.settings||{}; db.settings.autoSave=db.settings.autoSave===false; const on=db.settings.autoSave; if(on) save(); else localStorage.setItem(KEY,JSON.stringify(db)); loadUserMenuSettings(); }
 document.addEventListener('click',()=>closeUserMenu());
 
+function fillCalcPapers(){
+  const cp=$('cPapel'); if(!cp) return;
+  const html=db.papers.length ? db.papers.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('') : '<option value="">Sin papeles configurados</option>';
+  if(cp.__h===html) return;
+  const prev=cp.value; cp.innerHTML=html; cp.__h=html; if(prev!==''&&[...cp.options].some(o=>o.value===prev)) cp.value=prev;
+}
 function renderAll(){
   applyTheme(db.settings?.theme||'not');
+  fillCalcPapers();
   const jobs=[
     ['inicio',renderInicio],['pedidos',renderOrders],['choices',renderChoices],['builder',renderBuilder],
-    ['costos',renderPriceInputs],['tinta',renderInkPurchases],['calculadora',calc],
+    ['carrito',renderCarrito],['costos',renderPriceInputs],['tinta',renderInkPurchases],['calculadora',calc],
   ];
-  const cp=$('cPapel');
-  if(cp) cp.innerHTML=db.papers.length ? db.papers.map((p,i)=>`<option value="${i}">${esc(p.name)}</option>`).join('') : '<option value="">Sin papeles configurados</option>';
   jobs.forEach(([name,fn])=>{try{fn()}catch(e){console.error('Render '+name,e)}});
   if($('balDesde')){try{renderBalance()}catch(e){console.error('Render balance',e)}}
 }
 
 ['cHojas','cTiempo','cHoras','cMinutos','cMargen'].forEach(id=>$(id).addEventListener('input',calc)); $('cPapel').addEventListener('change',calc);
 if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
-if($('pSena')) $('pSena').addEventListener('input', renderCarrito);
+['pNombre','pTelefono','pEntrega','pTematica','pDetalles','pEstado'].forEach(id=>{const el=$(id); if(el){el.addEventListener('input',renderDraftUI);el.addEventListener('change',renderDraftUI);}});
+restoreDraft();
 (async function bootTinta(){
 
   const c=initCloud();
@@ -2993,7 +3090,7 @@ eliminarPedido=async function(){const snap=JSON.stringify(db),n=db.orders.length
 const _ex=exportJSON;exportJSON=function(){localStorage.setItem('NOT_LAST_BACKUP',String(Date.now()));return _ex.apply(this,arguments);};
 /* 1. guías de Ayuda */
 const G=[['🚀 Primeros pasos',['Tocá tu ícono de usuario (arriba a la izquierda) → <b>Mi cuenta</b> y poné nombre y logo.','En <b>Costos</b> cargá el precio de tus papeles y tus costos reales.','Con <b>＋ Nuevo</b> creá tu primer pedido.','Seguilo desde <b>Pedidos</b>.'],'Ir a Costos',"go('costos')"],
-['📦 Pedidos y artículos',['En <b>＋ Nuevo</b> poné nombre del cliente y fecha de entrega.','Elegí el artículo, configuralo y sumalo al carrito.','Guardá el pedido: aparece en <b>Pedidos</b>.','Tocá <b>Cobrar</b> cuando recibas un pago y <b>Entregado</b> al terminar.'],'Crear pedido',"nuevoPedido();go('nuevoPedido')"],
+['📦 Pedidos y artículos',['En <b>＋ Nuevo</b> poné nombre del cliente y fecha de entrega.','Elegí el artículo, configuralo y sumalo al carrito.','Guardá el pedido: aparece en <b>Pedidos</b>.','Tocá <b>Cobrar</b> cuando recibas un pago y <b>Entregado</b> al terminar.'],'Crear pedido',"abrirNuevo()"],
 ['💰 Costos y calculadora',['En <b>Costos → Papeles</b> cargá lo que te cuesta cada papel.','En <b>Costos reales</b> cargá tinta, electricidad, desgaste y tu hora de trabajo.','En <b>Calculadora</b> elegí papel, hojas, tiempo y recargo.','Mirá el <b>precio sugerido</b> y tu ganancia.'],'Abrir calculadora',"go('calculadora')"],
 ['💾 Datos y copias',['Todo se guarda solo en este dispositivo.','Menú de usuario → <b>Configuración</b> → exportá una copia cada tanto.','Para recuperar tu información, usá <b>Importar</b> con ese archivo.','Si cambiás de celular, importá la copia allí.'],'Ir a Configuración',"openAppSettings()"]];
 document.querySelectorAll('#ayuda button.help-card').forEach((b,i)=>{const g=G[i];if(!g)return;b.onclick=()=>{const o=ov('<h3>'+g[0]+'</h3><ol>'+g[1].map(x=>'<li>'+x+'</li>').join('')+'</ol><div class="nx-btns"><button class="soft" type="button" onclick="this.closest(\'.nx-ov\').remove()">Cerrar</button><button type="button" onclick="this.closest(\'.nx-ov\').remove();'+g[3]+'">'+g[2]+'</button></div>')}});
@@ -3004,7 +3101,7 @@ if(bs){const c=document.createElement('div');c.className='nx-chips';[['all','Tod
 const _ro=renderOrders;
 renderOrders=function(){const real=db.orders;db.orders=real.filter(F[pf]);try{_ro.apply(this,arguments)}finally{db.orders=real}
  const L=document.getElementById('pedidosLista');
- if(L&&!real.length)L.innerHTML='<div class="nx-empty"><p>Todavía no hay pedidos.</p><button type="button" onclick="nuevoPedido();go(\'nuevoPedido\')">＋ Crear el primero</button></div>'};
+ if(L&&!real.length)L.innerHTML='<div class="nx-empty"><p>Todavía no hay pedidos.</p><button type="button" onclick="abrirNuevo()">＋ Crear el primero</button></div>'};
 /* 3. primeros pasos + recordatorio de copia en Inicio */
 const ini=document.getElementById('inicio');
 const W=document.createElement('div');W.id='nxWelcome';ini.insertBefore(W,ini.firstChild);
@@ -3018,7 +3115,7 @@ renderInicio=function(){_ri.apply(this,arguments);
  const lb=Number(localStorage.getItem('NOT_LAST_BACKUP')||0);
  if(ordOk&&Date.now()-lb>30*864e5)h+='<div class="card" style="background:var(--yellow-50)"><div class="row"><span>💾 Hace más de 30 días que no exportás una copia.</span><button type="button" onclick="exportJSON();renderInicio()">Exportar ahora</button></div></div>';
  W.innerHTML=h;
- const ip=document.getElementById('inicioPedidos');if(ip&&!db.orders.length)ip.innerHTML='<div class="nx-empty"><p>Todavía no hay pedidos.</p><button type="button" onclick="nuevoPedido();go(\'nuevoPedido\')">＋ Crear el primero</button></div>'};
+ const ip=document.getElementById('inicioPedidos');if(ip&&!db.orders.length)ip.innerHTML='<div class="nx-empty"><p>Todavía no hay pedidos.</p><button type="button" onclick="abrirNuevo()">＋ Crear el primero</button></div>'};
 /* 8. resumen visible en Calculadora */
 const _c=calc;
 calc=function(){_c.apply(this,arguments);const o=document.getElementById('calcOut');if(!o)return;const bx=o.querySelector('.cost-detail-box'),big=o.querySelector('.big');if(!bx||!big)return;
@@ -3167,6 +3264,7 @@ renderInicio();renderOrders();
       const stock=[...ini.querySelectorAll('.card')].find(x=>x.querySelector('#inicioStock'));
       const welcome=$f('nxWelcome');
       if(priority) ini.insertBefore(priority,ini.firstChild);
+      const draft=$f('inicioBorrador');if(draft&&ini.firstChild!==draft) ini.insertBefore(draft,ini.firstChild);
       if(grid) priority?.after(grid);
       if(stock&&grid) grid.after(stock);
       if(goal&&stock) stock.after(goal);
@@ -3185,7 +3283,7 @@ renderInicio();renderOrders();
         const w=document.createElement('div');w.id='tintaCalendarWrap';w.className='tinta-calendar-wrap';w.innerHTML='<div id="tintaCalendar"></div><div id="tintaCalendarDetail"></div>';const list=$f('pedidosLista');if(list)list.before(w);else first.appendChild(w);
       }
     }
-    if(!$f('tintaFloatingNew')){const b=document.createElement('button');b.id='tintaFloatingNew';b.className='tinta-floating-new';b.type='button';b.setAttribute('aria-label','Nuevo pedido');b.textContent='+';b.onclick=()=>{nuevoPedido();go('nuevoPedido')};document.body.appendChild(b)}
+    if(!$f('tintaFloatingNew')){const b=document.createElement('button');b.id='tintaFloatingNew';b.className='tinta-floating-new';b.type='button';b.setAttribute('aria-label','Nuevo pedido');b.textContent='+';b.onclick=()=>abrirNuevo();document.body.appendChild(b)}
   }
   injectHosts();
 
